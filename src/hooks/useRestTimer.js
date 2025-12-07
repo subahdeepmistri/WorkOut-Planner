@@ -1,54 +1,80 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAudio } from './useAudio';
 
-/**
- * useRestTimer Hook
- * Manages the countdown timer state and triggers audio on completion.
- */
 export const useRestTimer = () => {
-    const [timerState, setTimerState] = useState({ isActive: false, timeLeft: 0 });
+    const [targetTime, setTargetTime] = useState(null);
+    const [timeLeft, setTimeLeft] = useState(0);
+    const [isActive, setIsActive] = useState(false);
+    const [activeContext, setActiveContext] = useState(null); // Tracks which exercise (index) is active
     const { playAlert } = useAudio();
 
-    // Tick Logic
+    // We use a ref to prevent audio playing multiple times for the same completion
+    const hasPlayedAudioRef = useRef(false);
+
     useEffect(() => {
-        let interval;
-        if (timerState.isActive && timerState.timeLeft > 0) {
-            interval = setInterval(() => {
-                setTimerState(prev => {
-                    if (prev.timeLeft <= 1) {
-                        playAlert(); // Trigger Audio Hook
-                        return { isActive: false, timeLeft: 0 };
-                    }
-                    return { ...prev, timeLeft: prev.timeLeft - 1 };
-                });
-            }, 1000);
-        } else if (timerState.timeLeft === 0) {
-            setTimerState(prev => ({ ...prev, isActive: false }));
+        if (!targetTime) {
+            setIsActive(false);
+            setTimeLeft(0);
+            return;
         }
+
+        setIsActive(true);
+        hasPlayedAudioRef.current = false; // Reset audio flag on new start
+
+        const interval = setInterval(() => {
+            const now = Date.now();
+            const remaining = Math.ceil((targetTime - now) / 1000);
+
+            if (remaining <= 0) {
+                setTimeLeft(0);
+                setIsActive(false);
+                setTargetTime(null);
+                setActiveContext(null); // Clear context on finish
+
+                // Play Audio once
+                if (!hasPlayedAudioRef.current) {
+                    playAlert();
+                    hasPlayedAudioRef.current = true;
+                }
+            } else {
+                setTimeLeft(remaining);
+            }
+        }, 200); // Check more frequently than 1s for responsiveness
+
         return () => clearInterval(interval);
-    }, [timerState.isActive, timerState.timeLeft, playAlert]);
+    }, [targetTime, playAlert]);
 
-    // Actions
-    const startTimer = useCallback((duration) => {
-        setTimerState({ isActive: true, timeLeft: duration });
+    const startRest = useCallback((seconds, contextId) => {
+        const now = Date.now();
+        setTargetTime(now + (seconds * 1000));
+        setTimeLeft(seconds);
+        setIsActive(true);
+        setActiveContext(contextId);
     }, []);
 
-    const adjustTime = useCallback((amount) => {
-        setTimerState(prev => ({
-            ...prev,
-            timeLeft: Math.max(0, prev.timeLeft + amount)
-        }));
+    const addTime = useCallback((seconds) => {
+        setTargetTime(prev => {
+            if (!prev) {
+                // If timer wasn't running, start it
+                return Date.now() + (seconds * 1000);
+            }
+            return prev + (seconds * 1000);
+        });
     }, []);
 
-    const stopTimer = useCallback(() => {
-        setTimerState({ isActive: false, timeLeft: 0 });
+    const stopRest = useCallback(() => {
+        setTargetTime(null);
+        setIsActive(false);
+        setTimeLeft(0);
+        setActiveContext(null);
     }, []);
 
     return {
-        isActive: timerState.isActive,
-        timeLeft: timerState.timeLeft,
-        startTimer,
-        adjustTime,
-        stopTimer
+        isActive,
+        timeLeft,
+        activeContext,
+        startRest,
+        addTime,
+        stopRest
     };
 };

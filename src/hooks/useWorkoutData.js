@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 
-// Default Workout Plans Data
+// Default Workout Plans Data - Updated with Antagonist Alpha Protocol
 export const WORKOUT_PLANS = [
     {
         id: 'week_a_day_1', name: "Week A: Day 1 - Chest + Abs",
@@ -79,80 +79,81 @@ export const WORKOUT_PLANS = [
             { name: "DB Reverse Lunges", targetSets: 3, targetReps: "12/leg" },
             { name: "Dumbbell Swings", targetSets: 4, targetReps: "20" },
             { name: "Metcon Circuit", targetSets: 3, targetReps: "Rounds", type: 'cardio', defaultMode: 'circuit' },
-            { name: "Plank Variations", targetSets: 3, targetReps: "1 Min", type: 'abs' }
+            { name: "Plank Variations", targetSets: 3, targetReps: "60", type: 'abs' }
         ]
     },
     {
-        id: 'week_b_day_1', name: "Week B: Day 1 - Chest & Triceps",
+        id: 'week_b_day_1', name: "Week B:  Day 1 - Chest & Back",
         exercises: [
-            { name: "Incline DB Press", targetSets: 4, targetReps: "8-10" },
-            { name: "Barbell Bench Press", targetSets: 5, targetReps: "5" },
-            { name: "Weighted Dips", targetSets: 4, targetReps: "8-12" },
-            { name: "Cable Fly (Low-to-High)", targetSets: 3, targetReps: "15" },
-            { name: "DB Hex Press", targetSets: 3, targetReps: "10 + Drop" },
-            { name: "Skull Crushers", targetSets: 4, targetReps: "10-12" },
-            { name: "Rope Pushdown", targetSets: 4, targetReps: "15" },
-            { name: "Bench Dips", targetSets: 2, targetReps: "Failure" }
+            { name: "Incline Barbell Bench Press", targetSets: 4, targetReps: "5-7" },
+            { name: "Weighted Wide Pull-Ups", targetSets: 4, targetReps: "5-7" },
+            { name: "Flat Dumbbell Press", targetSets: 3, targetReps: "8-10" },
+            { name: "Bent Over Barbell Row", targetSets: 3, targetReps: "8-10" },
+            { name: "Incline DB Hex Press", targetSets: 3, targetReps: "10-12" },
+            { name: "Single Arm Lat Pulldown", targetSets: 3, targetReps: "12-15" },
+            { name: "Dumbbell Pullovers", targetSets: 3, targetReps: "15" }
         ]
     },
     {
-        id: 'week_b_day_2', name: "Week B: Day 2 - Back & HIIT",
+        id: 'week_b_day_2', name: "Week B:  Day 2 - Legs (Quad) + Abs",
         exercises: [
-            { name: "Deadlift", targetSets: 4, targetReps: "5" },
-            { name: "Weighted Pull-Ups", targetSets: 4, targetReps: "6-8" },
-            { name: "T-Bar Row (Chest Supported)", targetSets: 4, targetReps: "10-12" },
-            { name: "Lat Pulldown (Neutral Grip)", targetSets: 3, targetReps: "12-15" },
-            { name: "Straight Arm Pullover", targetSets: 3, targetReps: "15" },
-            { name: "Face Pulls", targetSets: 4, targetReps: "15-20" },
-            { name: "HIIT Finisher", targetSets: 12, targetReps: "30s/30s", type: 'cardio', defaultMode: 'circuit' }
+            { name: "Barbell Back Squat", targetSets: 4, targetReps: "5-8" },
+            { name: "Leg Press (Low Stance)", targetSets: 4, targetReps: "10-12" },
+            { name: "Bulgarian Split Squats", targetSets: 3, targetReps: "10" },
+            { name: "Leg Extensions", targetSets: 4, targetReps: "15-20" },
+            { name: "Hanging Leg Raises", targetSets: 4, targetReps: "Failure", type: 'abs' },
+            { name: "Cable Woodchoppers", targetSets: 3, targetReps: "15", type: 'abs' },
+            { name: "Finisher: Sled Push/Stairs", targetSets: 1, targetReps: "10 Mins", type: 'cardio', defaultMode: 'distance' }
         ]
     },
     {
-        id: 'week_b_day_3', name: "Week B: Day 3 - Legs",
+        id: 'week_b_day_3', name: "Week B:  Day 3 - Shoulders & Arms",
         exercises: [
-            { name: "Back Squat", targetSets: 5, targetReps: "5-6" },
-            { name: "Leg Press", targetSets: 4, targetReps: "10-12 + Drop" },
+            { name: "Standing Military Press", targetSets: 4, targetReps: "6-8" },
+            { name: "Close Grip Bench Press", targetSets: 3, targetReps: "6-8" },
+            { name: "Barbell Drag Curl", targetSets: 3, targetReps: "8-10" },
+            { name: "Seated DB Press", targetSets: 3, targetReps: "8-10" },
+            { name: "DB Lateral Raises", targetSets: 3, targetReps: "12-15" },
+            { name: "Skullcrushers (EZ Bar)", targetSets: 3, targetReps: "10-12" },
+            { name: "Incline DB Curls", targetSets: 3, targetReps: "10-12" }
+        ]
+    },
+    {
+        id: 'week_b_day_4', name: "Week B:  Day 4 - Chest & Back ",
+        exercises: [
+            { name: "Incline DB Press (30°)", targetSets: 4, targetReps: "10-12" },
+            { name: "Chest Supported Row", targetSets: 4, targetReps: "10-12" },
+            { name: "Machine Chest Fly", targetSets: 3, targetReps: "15-20" },
+            { name: "Lat Pulldown (Neutral)", targetSets: 3, targetReps: "12-15" },
+            { name: "Cable Crossover", targetSets: 3, targetReps: "15+" },
+            { name: "Straight Arm Pulldown", targetSets: 3, targetReps: "15+" },
+            { name: "Rack Pulls", targetSets: 3, targetReps: "8" }
+        ]
+    },
+    {
+        id: 'week_b_day_5', name: "Week B:  Day 5 - Legs ",
+        exercises: [
             { name: "Romanian Deadlift (RDL)", targetSets: 4, targetReps: "8-10" },
-            { name: "Walking Lunges", targetSets: 3, targetReps: "24 steps" },
-            { name: "Leg Extension", targetSets: 3, targetReps: "15-20" },
-            { name: "Seated Leg Curl", targetSets: 3, targetReps: "12-15" },
-            { name: "Calf Raise", targetSets: 4, targetReps: "15" }
+            { name: "Hip Thrusts", targetSets: 4, targetReps: "10-12" },
+            { name: "Seated Leg Curls", targetSets: 4, targetReps: "12-15" },
+            { name: "Walking Lunges", targetSets: 3, targetReps: "20" },
+            { name: "Standing Calf Raises", targetSets: 4, targetReps: "10-12" },
+            { name: "Seated Calf Raises", targetSets: 3, targetReps: "20" }
         ]
     },
     {
-        id: 'week_b_day_4', name: "Week B: Day 4 - Shoulders",
+        id: 'week_b_day_6', name: "Week B:  Day 6 - Arms & Pump",
         exercises: [
-            { name: "Overhead Press (Barbell)", targetSets: 5, targetReps: "5" },
-            { name: "Seated DB Press", targetSets: 4, targetReps: "8-12" },
-            { name: "Cable Lateral Raise", targetSets: 4, targetReps: "15" },
-            { name: "Reverse Pec Deck", targetSets: 3, targetReps: "15-20" },
-            { name: "DB Shrugs", targetSets: 4, targetReps: "12" },
-            { name: "Face Pulls", targetSets: 3, targetReps: "20" }
+            { name: "Cable Lateral Raises", targetSets: 4, targetReps: "15-20" },
+            { name: "Face Pulls", targetSets: 4, targetReps: "15-20" },
+            { name: "Tricep Rope Pushdown", targetSets: 3, targetReps: "15-20" },
+            { name: "Hammer Curls", targetSets: 3, targetReps: "12-15" },
+            { name: "Dips", targetSets: 3, targetReps: "Failure" },
+            { name: "Rear Delt Flyes", targetSets: 3, targetReps: "20" },
+            { name: "HIIT Finisher", targetSets: 15, targetReps: "30s/30s", type: 'cardio', defaultMode: 'circuit' }
         ]
     },
-    {
-        id: 'week_b_day_5', name: "Week B: Day 5 - Arms & Core",
-        exercises: [
-            { name: "A1. Barbell Curls", targetSets: 4, targetReps: "10" },
-            { name: "A2. Close Grip Bench", targetSets: 4, targetReps: "8-10" },
-            { name: "B1. Incline DB Curls", targetSets: 3, targetReps: "12" },
-            { name: "B2. Overhead Cable Ext", targetSets: 3, targetReps: "15" },
-            { name: "C1. Hammer Curls", targetSets: 3, targetReps: "15" },
-            { name: "C2. Rope Pushdown", targetSets: 3, targetReps: "15-20" },
-            { name: "Hanging Leg Raise", targetSets: 3, targetReps: "12", type: 'abs' },
-            { name: "Cable Crunch", targetSets: 3, targetReps: "15", type: 'abs' },
-            { name: "Plank", targetSets: 3, targetReps: "60s", type: 'abs' }
-        ]
-    },
-    {
-        id: 'week_b_day_6', name: "Week B: Day 6 - Conditioning",
-        exercises: [
-            { name: "Front Squat", targetSets: 4, targetReps: "8" },
-            { name: "Incline DB Bench", targetSets: 3, targetReps: "10-12" },
-            { name: "Chin Ups", targetSets: 3, targetReps: "Failure" },
-            { name: "Metabolic Circuit", targetSets: 4, targetReps: "Complete", type: 'cardio', defaultMode: 'circuit' }
-        ]
-    },
+
 ];
 
 const HER_WORKOUT_PLANS = [
@@ -166,7 +167,7 @@ const HER_WORKOUT_PLANS = [
             { name: "Deficit Push-Ups", targetSets: 3, targetReps: "Failure" },
             { name: "Leg Raises", targetSets: 4, targetReps: "12-15", type: 'abs' },
             { name: "Woodchoppers", targetSets: 4, targetReps: "15/side", type: 'abs' },
-            { name: "Plank to Push-up", targetSets: 3, targetReps: "45s", type: 'abs' },
+            { name: "Plank to Push-up", targetSets: 3, targetReps: "45", type: 'abs' },
             { name: "Finisher: Push-ups", targetSets: 1, targetReps: "50 Total" }
         ]
     },
@@ -206,7 +207,7 @@ const HER_WORKOUT_PLANS = [
             { name: "Dumbbell Lateral Raises", targetSets: 3, targetReps: "15-20" },
             { name: "Rear Delt Fly", targetSets: 4, targetReps: "15-20" },
             { name: "Plate Front Raise", targetSets: 3, targetReps: "12" },
-            { name: "Stomach Vacuums", targetSets: 4, targetReps: "20s hold", type: 'abs' },
+            { name: "Stomach Vacuums", targetSets: 4, targetReps: "20", type: 'abs' },
             { name: "Finisher: Step-Ups", targetSets: 4, targetReps: "50 Total", type: 'cardio' }
         ]
     },
@@ -247,7 +248,7 @@ const HER_WORKOUT_PLANS = [
             { name: "Skull Crushers (EZ Bar)", targetSets: 4, targetReps: "10-12" },
             { name: "Tricep Rope Pushdown", targetSets: 3, targetReps: "12-15" },
             { name: "Overhead DB Extension", targetSets: 3, targetReps: "12-15" },
-            { name: "Weighted Plank", targetSets: 3, targetReps: "60s", type: 'abs' },
+            { name: "Weighted Plank", targetSets: 3, targetReps: "60", type: 'abs' },
             { name: "Finisher: Treadmill Sprints", targetSets: 10, targetReps: "30s/30s", type: 'cardio', defaultMode: 'circuit' }
         ]
     },
@@ -285,7 +286,7 @@ const HER_WORKOUT_PLANS = [
             { name: "Cable Lateral Raises", targetSets: 3, targetReps: "15-20" },
             { name: "Rear Delt Fly (DBs)", targetSets: 3, targetReps: "15-20" },
             { name: "Standing Calf Raises", targetSets: 4, targetReps: "10-12" },
-            { name: "Cardio: Stairmaster", targetSets: 1, targetReps: "15 Mins", type: 'cardio', defaultMode: 'distance' }
+            { name: "Trademill", targetSets: 1, targetReps: "15 Mins", type: 'cardio', defaultMode: 'distance' }
         ]
     },
     {
@@ -320,50 +321,77 @@ const HER_WORKOUT_PLANS = [
  * Centralizes all business logic for workout management.
  */
 export const useWorkoutData = (selectedDate) => {
+    const [userProfile, setUserProfile] = useState(() => {
+        return localStorage.getItem('spideylift_profile') || 'miles';
+    });
+
+    // Helper to get storage keys based on profile
+    const getStorageKeys = (profile) => ({
+        workoutKey: profile === 'miles' ? 'spideylift_workouts_v3' : 'spideylift_workouts_v3_gwen',
+        planKey: profile === 'miles' ? 'spideylift_plans_v1' : 'spideylift_plans_v1_gwen'
+    });
+
+    // Initialize state (lazy initializer only runs once, so we need useEffect for switching)
     const [workoutData, setWorkoutData] = useState(() => {
-        const saved = localStorage.getItem('spideylift_workouts_v3');
+        const { workoutKey } = getStorageKeys(localStorage.getItem('spideylift_profile') || 'miles');
+        const saved = localStorage.getItem(workoutKey);
         return saved ? JSON.parse(saved) : {};
     });
 
     const [savedPlans, setSavedPlans] = useState(() => {
-        const saved = localStorage.getItem('spideylift_plans_v1');
+        const { planKey } = getStorageKeys(localStorage.getItem('spideylift_profile') || 'miles');
+        const saved = localStorage.getItem(planKey);
         return saved ? JSON.parse(saved) : [];
-    });
-
-
-    const [userProfile, setUserProfile] = useState(() => {
-        return localStorage.getItem('spideylift_profile') || 'miles';
     });
 
     // Determine available plans based on profile
     const availablePlans = userProfile === 'miles' ? WORKOUT_PLANS : HER_WORKOUT_PLANS;
     const [activePlanId, setActivePlanId] = useState(availablePlans[0].id);
 
-    // Sync active plan if profile changes
+    // Sync active plan and RELOAD data if profile changes
     useEffect(() => {
+        // 1. Profile Persistence
+        localStorage.setItem('spideylift_profile', userProfile);
+
+        // 2. Reload Data for New Profile
+        const { workoutKey, planKey } = getStorageKeys(userProfile);
+
+        const savedWorkouts = localStorage.getItem(workoutKey);
+        setWorkoutData(savedWorkouts ? JSON.parse(savedWorkouts) : {});
+
+        const savedCustomPlans = localStorage.getItem(planKey);
+        const loadedPlans = savedCustomPlans ? JSON.parse(savedCustomPlans) : [];
+        setSavedPlans(loadedPlans);
+
+        // 3. Reset Active Plan if needed
         const plans = userProfile === 'miles' ? WORKOUT_PLANS : HER_WORKOUT_PLANS;
-        // Only reset if current ID isn't in the new list (to prevent reset on every render)
-        if (!plans.find(p => p.id === activePlanId) && !savedPlans.find(p => p.id === activePlanId)) {
+        // Check if current active plan belongs to the new profile's default OR custom plans
+        const isActivePlanValid = plans.find(p => p.id === activePlanId) || loadedPlans.find(p => p.id === activePlanId);
+
+        if (!isActivePlanValid) {
             setActivePlanId(plans[0].id);
         }
-        localStorage.setItem('spideylift_profile', userProfile);
     }, [userProfile]);
 
     const [pendingSuperset, setPendingSuperset] = useState(null);
 
-    // Persistence
+    // Persistence Effect (Save on Change)
     useEffect(() => {
-        localStorage.setItem('spideylift_workouts_v3', JSON.stringify(workoutData));
-    }, [workoutData]);
+        const { workoutKey } = getStorageKeys(userProfile);
+        localStorage.setItem(workoutKey, JSON.stringify(workoutData));
+    }, [workoutData, userProfile]);
 
     useEffect(() => {
-        localStorage.setItem('spideylift_plans_v1', JSON.stringify(savedPlans));
-    }, [savedPlans]);
+        const { planKey } = getStorageKeys(userProfile);
+        localStorage.setItem(planKey, JSON.stringify(savedPlans));
+    }, [savedPlans, userProfile]);
 
     // Derived State
     const dateKey = selectedDate.toISOString().split('T')[0];
     const currentLog = workoutData[dateKey];
-    const isLocked = currentLog?.isLocked || false;
+    // Derived Lock State: Explicitly locked OR Expired (> 24h)
+    const isExpired = currentLog?.endTime && (Date.now() - currentLog.endTime > 86400000);
+    const isLocked = currentLog?.isLocked || isExpired || false;
 
     // --- Actions ---
 
@@ -395,19 +423,40 @@ export const useWorkoutData = (selectedDate) => {
     const initializeDailyLog = () => {
         let template = availablePlans.find(p => p.id === activePlanId) || savedPlans.find(p => p.id === activePlanId);
         if (!template) template = availablePlans[0];
+
+        const parseTargetReps = (repsStr) => {
+            if (!repsStr) return 8; // Default
+            if (typeof repsStr === 'number') return repsStr;
+            const lower = repsStr.toLowerCase();
+            if (lower.includes('failure')) return 15;
+            if (lower.includes('sec') || lower.includes('min')) return 1; // Time based, treated differently or handled by cardio logic
+            if (repsStr.includes('-')) {
+                const parts = repsStr.split('-').map(s => parseInt(s.trim()));
+                if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+                    return Math.max(parts[0], parts[1]); // Use Max of range for target calculation
+                }
+            }
+            const parsed = parseInt(repsStr);
+            return isNaN(parsed) ? 8 : parsed;
+        };
+
         const newLog = {
             id: dateKey,
             templateName: template.name,
             exercises: template.exercises.map(ex => ({
                 ...ex,
+                numericalTargetReps: parseTargetReps(ex.targetReps),
                 sets: Array(ex.targetSets).fill(0).map(() => ({
                     weight: '', reps: '', completed: false,
                     distance: '', time: '', pace: '', duration: '', holdTime: ''
                 })),
                 supersetId: null,
-                cardioMode: ex.defaultMode || 'distance'
+                cardioMode: ex.defaultMode || 'distance',
+                isLocked: false,
             })),
-            isLocked: false
+            isLocked: false,
+            startTime: null,
+            endTime: null
         };
         setWorkoutData(prev => ({ ...prev, [dateKey]: newLog }));
     };
@@ -419,6 +468,16 @@ export const useWorkoutData = (selectedDate) => {
         if (isLocked) return;
         setWorkoutData(prev => {
             const day = { ...prev[dateKey] };
+            // Bulletproof Guard: Check expiration inside setter
+            const expired = day.endTime && (Date.now() - day.endTime > 86400000);
+            if (day.isLocked || expired) return prev;
+            if (day.exercises[exIndex].isLocked) return prev; // Check exercise lock
+
+            // Auto-start timer logic: First completed set of ANY exercise starts the timer
+            if (field === 'completed' && value === true && !day.startTime) {
+                day.startTime = Date.now();
+            }
+
             day.exercises = day.exercises.map((ex, i) => {
                 if (i !== exIndex) return ex;
                 const newSets = [...ex.sets];
@@ -436,6 +495,9 @@ export const useWorkoutData = (selectedDate) => {
         if (isLocked) return;
         setWorkoutData(prev => {
             const day = { ...prev[dateKey] };
+            const expired = day.endTime && (Date.now() - day.endTime > 86400000);
+            if (day.isLocked || expired) return prev;
+            if (day.exercises[exIndex].isLocked) return prev;
             day.exercises = day.exercises.map((ex, i) =>
                 i === exIndex ? { ...ex, cardioMode: mode } : ex
             );
@@ -447,9 +509,31 @@ export const useWorkoutData = (selectedDate) => {
         if (isLocked) return;
         setWorkoutData(prev => {
             const day = { ...prev[dateKey] };
+            const expired = day.endTime && (Date.now() - day.endTime > 86400000);
+            if (day.isLocked || expired) return prev;
+            if (day.exercises[exIndex].isLocked) return prev;
             day.exercises = day.exercises.map((ex, i) =>
                 i === exIndex ? { ...ex, sets: [...ex.sets, { weight: '', reps: '', completed: false }] } : ex
             );
+            return { ...prev, [dateKey]: day };
+        });
+    };
+
+    const removeSet = (exIndex, setIndex) => {
+        if (isLocked) return;
+        setWorkoutData(prev => {
+            const day = { ...prev[dateKey] };
+            const expired = day.endTime && (Date.now() - day.endTime > 86400000);
+            if (day.isLocked || expired) return prev;
+            if (day.exercises[exIndex].isLocked) return prev;
+
+            day.exercises = day.exercises.map((ex, i) => {
+                if (i !== exIndex) return ex;
+                // Prevent removing the last set if you want to keep at least 1, but user asked for delete option so 0 sets might be edge case. 
+                // Let's allow deleting any set.
+                const newSets = ex.sets.filter((_, si) => si !== setIndex);
+                return { ...ex, sets: newSets };
+            });
             return { ...prev, [dateKey]: day };
         });
     };
@@ -458,13 +542,16 @@ export const useWorkoutData = (selectedDate) => {
         if (isLocked) return;
         const newEx = {
             name: type === 'strength' ? "New Exercise" : type === 'cardio' ? "Cardio Activity" : "Core Exercise",
-            targetSets: 3, targetReps: type === 'strength' ? "10" : "Failure",
+            targetSets: 3,
+            targetReps: "", // Explicitly empty to force user input
             type: type === 'strength' ? undefined : type,
             sets: Array(3).fill(0).map(() => ({ weight: '', reps: '', completed: false })),
             supersetId: null, cardioMode: 'distance'
         };
         setWorkoutData(prev => {
             const day = { ...prev[dateKey] };
+            const expired = day.endTime && (Date.now() - day.endTime > 86400000);
+            if (day.isLocked || expired) return prev;
             day.exercises = [...day.exercises, newEx];
             return { ...prev, [dateKey]: day };
         });
@@ -474,6 +561,9 @@ export const useWorkoutData = (selectedDate) => {
         if (isLocked) return;
         setWorkoutData(prev => {
             const day = { ...prev[dateKey] };
+            const expired = day.endTime && (Date.now() - day.endTime > 86400000);
+            if (day.isLocked || expired) return prev;
+            if (day.exercises[exIndex].isLocked) return prev;
             day.exercises = day.exercises.filter((_, i) => i !== exIndex);
             return { ...prev, [dateKey]: day };
         });
@@ -483,6 +573,9 @@ export const useWorkoutData = (selectedDate) => {
         if (isLocked) return;
         setWorkoutData(prev => {
             const day = { ...prev[dateKey] };
+            const expired = day.endTime && (Date.now() - day.endTime > 86400000);
+            if (day.isLocked || expired) return prev;
+            if (day.exercises[exIndex].isLocked) return prev;
             day.exercises = day.exercises.map((ex, i) =>
                 i === exIndex ? { ...ex, name: val } : ex
             );
@@ -502,6 +595,9 @@ export const useWorkoutData = (selectedDate) => {
                 // Unlink
                 setWorkoutData(prev => {
                     const day = { ...prev[dateKey] };
+                    const expired = day.endTime && (Date.now() - day.endTime > 86400000);
+                    if (day.isLocked || expired) return prev;
+
                     const linkedId = day.exercises[index].supersetId;
                     day.exercises = day.exercises.map(e =>
                         e.supersetId === linkedId ? { ...e, supersetId: null } : e
@@ -517,6 +613,9 @@ export const useWorkoutData = (selectedDate) => {
             const newId = Date.now();
             setWorkoutData(prev => {
                 const day = { ...prev[dateKey] };
+                const expired = day.endTime && (Date.now() - day.endTime > 86400000);
+                if (day.isLocked || expired) return prev;
+
                 day.exercises = day.exercises.map((ex, i) => {
                     if (i === pendingSuperset || i === index) return { ...ex, supersetId: newId };
                     return ex;
@@ -535,7 +634,28 @@ export const useWorkoutData = (selectedDate) => {
     const toggleLock = () => {
         setWorkoutData(prev => {
             const day = { ...prev[dateKey] };
-            day.isLocked = !day.isLocked;
+            const expired = day.endTime && (Date.now() - day.endTime > 86400000);
+            // Bulletproof: Cannot toggle lock if expired (permanently locked)
+            if (expired) return prev;
+
+            const isLocking = !day.isLocked;
+
+            // Lock/Unlock
+            day.isLocked = isLocking;
+            return { ...prev, [dateKey]: day };
+        });
+    };
+
+    const toggleExerciseLock = (exIndex) => {
+        if (isLocked) return; // Cannot unlock exercise if global workout is locked
+        setWorkoutData(prev => {
+            const day = { ...prev[dateKey] };
+            const expired = day.endTime && (Date.now() - day.endTime > 86400000);
+            if (day.isLocked || expired) return prev;
+
+            day.exercises = day.exercises.map((ex, i) =>
+                i === exIndex ? { ...ex, isLocked: !ex.isLocked } : ex
+            );
             return { ...prev, [dateKey]: day };
         });
     };
@@ -548,11 +668,28 @@ export const useWorkoutData = (selectedDate) => {
 
     const discardWorkout = () => {
         setWorkoutData(prev => {
+            const day = prev[dateKey];
+            if (!day) return prev;
+
+            // Bulletproof constraint: Cannot discard if Locked or Expired
+            // We allow discard if user explicitly UNLOCKED it (and not expired)
+            const expired = day.endTime && (Date.now() - day.endTime > 86400000);
+            if (day.isLocked || expired) return prev;
+
             const copy = { ...prev };
             delete copy[dateKey];
             return copy;
         });
     }
+
+    const finishSession = (timestamp) => {
+        setWorkoutData(prev => {
+            const day = { ...prev[dateKey] };
+            if (day.endTime) return prev; // Already finished
+            day.endTime = timestamp;
+            return { ...prev, [dateKey]: day };
+        });
+    };
 
     return {
         workoutData,
@@ -569,14 +706,19 @@ export const useWorkoutData = (selectedDate) => {
         updateSet,
         updateCardioMode,
         addSet,
+        removeSet,
         addExercise,
         removeExercise,
         updateExerciseName,
+        toggleExerciseLock,
         handleLinkAction,
         saveCustomRoutine,
         toggleLock,
         deleteRoutine,
+        toggleLock,
+        deleteRoutine,
         discardWorkout,
+        finishSession,
         getPreviousBest
     };
 };
