@@ -21,7 +21,7 @@ export const AdherenceBar = ({ targetVolume, actualVolume, isSkipped = false, la
         barColor = 'bg-emerald-500';
         shadow = 'shadow-[0_0_8px_rgba(16,185,129,0.5)]'; // Green Glow
     } else if (isPartial) {
-        barColor = 'bg-amber-500';
+        barColor = 'bg-blue-500 dark:bg-amber-500'; // Blue for friendly progress in light mode
     } else if (isSkipped) {
         barColor = 'bg-red-500/50'; // Skipped state
     }
@@ -29,19 +29,19 @@ export const AdherenceBar = ({ targetVolume, actualVolume, isSkipped = false, la
     return (
         <div className="w-full">
             <div className="flex justify-between items-end mb-1">
-                <span className={`text-[10px] font-bold uppercase tracking-wider ${isOverdrive ? 'text-cyan-400 animate-pulse' : 'text-zinc-500'}`}>
+                <span className={`text-[10px] font-bold uppercase tracking-wider ${isOverdrive ? 'text-cyan-600 dark:text-cyan-400 animate-pulse' : 'text-zinc-600 dark:text-zinc-500'}`}>
                     {label} {isOverdrive && "⚡"}
                 </span>
-                <span className="text-[10px] font-mono text-zinc-400">
-                    <span className={isOverdrive ? 'text-cyan-400 font-bold' : isSuccess ? 'text-emerald-400' : 'text-zinc-300'}>
+                <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400">
+                    <span className={isOverdrive ? 'text-cyan-600 dark:text-cyan-400 font-bold' : isSuccess ? 'text-emerald-600 dark:text-emerald-400' : 'text-zinc-600 dark:text-zinc-300'}>
                         {Math.round(rawPercentage)}%
                     </span>
-                    {targetVolume > 0 && <span className="text-zinc-600 ml-1">/ 100%</span>}
+                    {targetVolume > 0 && <span className="text-zinc-400 dark:text-zinc-600 ml-1">/ 100%</span>}
                 </span>
             </div>
 
             {/* The "Ghost Bar" (Layer 1) */}
-            <div className={`w-full ${height} bg-zinc-800/80 rounded-full overflow-hidden border border-zinc-700/30 relative`}>
+            <div className={`w-full ${height} bg-zinc-100 dark:bg-zinc-800/80 rounded-md overflow-hidden border-2 border-zinc-300 dark:border-zinc-700/30 relative`}>
 
                 {/* Skipped Indicator (Layer 2 - Special) */}
                 {isSkipped && rawPercentage === 0 && (
@@ -52,7 +52,7 @@ export const AdherenceBar = ({ targetVolume, actualVolume, isSkipped = false, la
 
                 {/* The Actual Bar (Layer 2) */}
                 <div
-                    className={`h-full rounded-full transition-all duration-700 ease-out ${barColor} ${shadow}`}
+                    className={`h-full rounded-md transition-all duration-700 ease-out ${barColor} ${shadow}`}
                     style={{ width: `${visualPercentage}%` }}
                 >
                     {/* Optional: Add internal shine or texture for premium feel */}
@@ -61,7 +61,7 @@ export const AdherenceBar = ({ targetVolume, actualVolume, isSkipped = false, la
 
             {/* Layer 3: Missed Gap Context (Text) */}
             {isPartial && !isSkipped && (
-                <div className="text-[9px] text-amber-500/80 mt-1 text-right font-medium">
+                <div className="text-[9px] text-blue-500/80 dark:text-amber-500/80 mt-1 text-right font-medium">
                     {missedContext || `${Math.round(100 - rawPercentage)}% gap`}
                 </div>
             )}
