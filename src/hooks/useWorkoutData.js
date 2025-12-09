@@ -387,11 +387,15 @@ export const useWorkoutData = (selectedDate) => {
     }, [savedPlans, userProfile]);
 
     // Derived State
-    const dateKey = selectedDate.toISOString().split('T')[0];
+    // FIX: Use local date string (YYYY-MM-DD) to avoid UTC shifting issues
+    const dateKey = selectedDate.toLocaleDateString('en-CA');
     const currentLog = workoutData[dateKey];
     // Derived Lock State: Explicitly locked OR Expired (> 24h)
     const isExpired = currentLog?.endTime && (Date.now() - currentLog.endTime > 86400000);
     const isLocked = currentLog?.isLocked || isExpired || false;
+
+    // Holidays (Tuesday = 2)
+    const isHoliday = selectedDate.getDay() === 2;
 
     // --- Actions ---
 
@@ -421,6 +425,8 @@ export const useWorkoutData = (selectedDate) => {
      * Initializes a new workout log for the selected date based on the active plan.
      */
     const initializeDailyLog = () => {
+        if (isHoliday) return; // STRICT BLOCK: Cannot start workout on holiday
+
         let template = availablePlans.find(p => p.id === activePlanId) || savedPlans.find(p => p.id === activePlanId);
         if (!template) template = availablePlans[0];
 
@@ -701,6 +707,7 @@ export const useWorkoutData = (selectedDate) => {
         availablePlans,
         currentLog,
         isLocked,
+        isHoliday, // Exporting this
         pendingSuperset,
         initializeDailyLog,
         updateSet,

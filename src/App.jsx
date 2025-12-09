@@ -47,7 +47,7 @@ function App() {
     addExercise, removeExercise, updateExerciseName, handleLinkAction,
     saveCustomRoutine, toggleLock, deleteRoutine, discardWorkout, finishSession,
     getPreviousBest, userProfile, setUserProfile, availablePlans,
-    changePlan, saveAsNewPlan, startTimer, workoutStartTime, toggleExerciseLock
+    saveAsNewPlan, startTimer, workoutStartTime, toggleExerciseLock, isHoliday
   } = useWorkoutData(selectedDate);
 
   // Global Rest Timer Hook
@@ -440,88 +440,117 @@ function App() {
                     <p className="text-zinc-500 dark:text-zinc-500 font-bold tracking-[0.2em] text-[10px] uppercase mt-1">Choose your protocol</p>
                   </div>
 
-                  {isBuilderOpen ? (
-                    <RoutineBuilder onSave={handleCustomSave} onCancel={() => setIsBuilderOpen(false)} />
+                  {isHoliday ? (
+                    /* --- Holiday / Rest Day View --- */
+                    <div className="relative p-8 rounded-2xl bg-white/80 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-lg flex flex-col items-center justify-center text-center space-y-4">
+
+                      {/* Bouncing Coffee/Rest Icon */}
+                      <div className="w-20 h-20 bg-amber-100 dark:bg-amber-900/30 rounded-full flex items-center justify-center mb-2 animate-pulse">
+                        <span className="text-4xl">☕</span>
+                      </div>
+
+                      <h3 className="text-2xl font-black italic uppercase text-zinc-800 dark:text-white tracking-tight">
+                        Gym Closed
+                      </h3>
+
+                      <div className="space-y-1">
+                        <p className="text-sm font-bold text-amber-600 dark:text-amber-500 uppercase tracking-widest">
+                          Tuesdays are Rest Days
+                        </p>
+                        <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-xs mx-auto leading-relaxed">
+                          Take a break, recover, and come back stronger tomorrow. No workouts can be logged today.
+                        </p>
+                      </div>
+
+                      <div className="pt-4 opacity-50 grayscale pointer-events-none select-none filter blur-[1px]">
+                        <Button className="w-full bg-zinc-200 text-zinc-400">Locked</Button>
+                      </div>
+                    </div>
                   ) : (
-                    <div className="relative p-6 sm:p-8 rounded-2xl bg-white/80 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-lg">
+                    /* --- Normal Routine Selector --- */
+                    isBuilderOpen ? (
+                      <RoutineBuilder onSave={handleCustomSave} onCancel={() => setIsBuilderOpen(false)} />
+                    ) : (
+                      <div className="relative p-6 sm:p-8 rounded-2xl bg-white/80 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-lg">
 
-                      <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] mb-4 block ml-1">Select Routine</label>
+                        <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] mb-4 block ml-1">Select Routine</label>
 
-                      <div className="flex gap-3 mb-6">
-                        <div className="relative flex-grow group">
-                          <select
-                            value={activePlanId}
-                            onChange={(e) => setActivePlanId(e.target.value)}
-                            className="w-full appearance-none bg-zinc-50 dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-700/50 text-zinc-900 dark:text-white text-lg font-bold py-4 px-6 rounded-xl focus:outline-none focus:border-zinc-400 dark:focus:border-white/20 focus:ring-1 focus:ring-zinc-400 dark:focus:ring-white/20 transition-all shadow-inner"
-                          >
-                            <optgroup label="Default Plans" className="bg-white dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400">
-                              {availablePlans.map(plan => (<option key={plan.id} value={plan.id} className="text-zinc-900 dark:text-white bg-white dark:bg-zinc-900">{plan.name}</option>))}
-                            </optgroup>
-                            {savedPlans.length > 0 && (
-                              <optgroup label="My Custom Routines" className="bg-white dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400">
-                                {savedPlans.map(plan => (<option key={plan.id} value={plan.id} className="text-zinc-900 dark:text-white bg-white dark:bg-zinc-900">{plan.name}</option>))}
+                        <div className="flex gap-3 mb-6">
+                          <div className="relative flex-grow group">
+                            <select
+                              value={activePlanId}
+                              onChange={(e) => setActivePlanId(e.target.value)}
+                              className="w-full appearance-none bg-zinc-50 dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-700/50 text-zinc-900 dark:text-white text-lg font-bold py-4 px-6 rounded-xl focus:outline-none focus:border-zinc-400 dark:focus:border-white/20 focus:ring-1 focus:ring-zinc-400 dark:focus:ring-white/20 transition-all shadow-inner"
+                            >
+                              <optgroup label="Default Plans" className="bg-white dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400">
+                                {availablePlans.map(plan => (<option key={plan.id} value={plan.id} className="text-zinc-900 dark:text-white bg-white dark:bg-zinc-900">{plan.name}</option>))}
                               </optgroup>
-                            )}
-                          </select>
-                          <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-600 dark:group-hover:text-white transition-colors">
-                            <ChevronRight size={20} className="rotate-90" />
+                              {savedPlans.length > 0 && (
+                                <optgroup label="My Custom Routines" className="bg-white dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400">
+                                  {savedPlans.map(plan => (<option key={plan.id} value={plan.id} className="text-zinc-900 dark:text-white bg-white dark:bg-zinc-900">{plan.name}</option>))}
+                                </optgroup>
+                              )}
+                            </select>
+                            <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-600 dark:group-hover:text-white transition-colors">
+                              <ChevronRight size={20} className="rotate-90" />
+                            </div>
                           </div>
+
+                          {isCustomSelected && (
+                            <button
+                              onClick={() => setShowDeleteConfirm(true)}
+                              className="px-5 bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl hover:bg-red-500/20 hover:border-red-500/40 hover:shadow-[0_0_15px_rgba(239,68,68,0.2)] transition-all flex items-center justify-center"
+                              title="Delete this routine"
+                            >
+                              <Trash2 size={22} />
+                            </button>
+                          )}
                         </div>
 
-                        {isCustomSelected && (
-                          <button
-                            onClick={() => setShowDeleteConfirm(true)}
-                            className="px-5 bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl hover:bg-red-500/20 hover:border-red-500/40 hover:shadow-[0_0_15px_rgba(239,68,68,0.2)] transition-all flex items-center justify-center"
-                            title="Delete this routine"
-                          >
-                            <Trash2 size={22} />
-                          </button>
-                        )}
-                      </div>
-
-                      <Button
-                        onClick={loadRoutine}
-                        disabled={!!currentLog}
-                        className={`w-full py-4 text-lg font-black italic tracking-wider shadow-xl transition-all duration-300 ${!!currentLog
-                          ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600 cursor-not-allowed border border-zinc-200 dark:border-zinc-700'
-                          : userProfile === 'gwen'
-                            ? 'bg-pink-500/10 dark:bg-pink-500/20 backdrop-blur-md border border-pink-500/50 text-pink-600 dark:text-pink-300 hover:bg-pink-500/20 hover:shadow-[0_0_30px_rgba(236,72,153,0.3)] hover:scale-[1.02]'
-                            : 'bg-red-600/10 dark:bg-red-600/20 backdrop-blur-md border border-red-600/50 text-red-600 dark:text-red-400 hover:bg-red-600/20 hover:shadow-[0_0_30px_rgba(220,38,38,0.3)] hover:scale-[1.02]'
-                          }`}
-                      >
-                        {!!currentLog ? 'SESSION ACTIVE' : (
-                          <div className="flex items-center justify-center gap-6 w-full overflow-hidden">
-                            <img src={LoadRoutineSticker} alt="Decoration" className="h-10 object-contain opacity-60 grayscale-[0.3] scale-90" />
-                            <div className="flex flex-col items-center justify-center -mt-1">
-                              <img src={LoadRoutineSticker} alt="Load Routine" className="h-12 object-contain z-10 drop-shadow-md" />
-                              <span className="text-[10px] font-black uppercase tracking-widest opacity-80 leading-none mt-1">Click</span>
+                        <Button
+                          onClick={loadRoutine}
+                          disabled={!!currentLog}
+                          className={`w-full py-4 text-lg font-black italic tracking-wider shadow-xl transition-all duration-300 ${!!currentLog
+                            ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600 cursor-not-allowed border border-zinc-200 dark:border-zinc-700'
+                            : userProfile === 'gwen'
+                              ? 'bg-pink-500/10 dark:bg-pink-500/20 backdrop-blur-md border border-pink-500/50 text-pink-600 dark:text-pink-300 hover:bg-pink-500/20 hover:shadow-[0_0_30px_rgba(236,72,153,0.3)] hover:scale-[1.02]'
+                              : 'bg-red-600/10 dark:bg-red-600/20 backdrop-blur-md border border-red-600/50 text-red-600 dark:text-red-400 hover:bg-red-600/20 hover:shadow-[0_0_30px_rgba(220,38,38,0.3)] hover:scale-[1.02]'
+                            }`}
+                        >
+                          {!!currentLog ? 'SESSION ACTIVE' : (
+                            <div className="flex items-center justify-center gap-6 w-full overflow-hidden">
+                              <img src={LoadRoutineSticker} alt="Decoration" className="h-10 object-contain opacity-60 grayscale-[0.3] scale-90" />
+                              <div className="flex flex-col items-center justify-center -mt-1">
+                                <img src={LoadRoutineSticker} alt="Load Routine" className="h-12 object-contain z-10 drop-shadow-md" />
+                                <span className="text-[10px] font-black uppercase tracking-widest opacity-80 leading-none mt-1">Click</span>
+                              </div>
+                              <img src={LoadRoutineSticker} alt="Decoration" className="h-10 object-contain opacity-60 grayscale-[0.3] scale-90" />
                             </div>
-                            <img src={LoadRoutineSticker} alt="Decoration" className="h-10 object-contain opacity-60 grayscale-[0.3] scale-90" />
-                          </div>
-                        )}
-                      </Button>
+                          )}
+                        </Button>
 
-                      <div className="relative flex py-6 items-center">
-                        <div className="flex-grow border-t border-zinc-200 dark:border-zinc-800/50"></div>
-                        <span className="flex-shrink-0 mx-4 text-zinc-400 dark:text-zinc-600 text-[10px] font-bold tracking-[0.2em] uppercase">OR</span>
-                        <div className="flex-grow border-t border-zinc-200 dark:border-zinc-800/50"></div>
+                        <div className="relative flex py-6 items-center">
+                          <div className="flex-grow border-t border-zinc-200 dark:border-zinc-800/50"></div>
+                          <span className="flex-shrink-0 mx-4 text-zinc-400 dark:text-zinc-600 text-[10px] font-bold tracking-[0.2em] uppercase">OR</span>
+                          <div className="flex-grow border-t border-zinc-200 dark:border-zinc-800/50"></div>
+                        </div>
+
+                        <Button
+                          variant="secondary"
+                          onClick={() => setIsBuilderOpen(true)}
+                          className={`w-full py-4 relative group overflow-hidden border border-zinc-200/60 dark:border-white/10 bg-zinc-50/80 dark:bg-zinc-800/20 backdrop-blur-xl ${userProfile === 'gwen' ? 'hover:bg-pink-500/10 hover:border-pink-500/30' : 'hover:bg-red-500/10 hover:border-red-500/30'} transition-all duration-300 shadow-sm`}
+                        >
+                          <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-r ${userProfile === 'gwen' ? 'from-pink-500/5 via-transparent to-cyan-500/5' : 'from-red-500/5 via-transparent to-orange-500/5'}`} />
+                          <div className={`absolute inset-0 border border-dashed opacity-20 group-hover:opacity-40 transition-all ${userProfile === 'gwen' ? 'border-pink-400' : 'border-red-400'} rounded-xl`} />
+
+                          <span className={`relative z-10 flex items-center justify-center gap-2 font-bold tracking-widest text-sm group-hover:tracking-[0.2em] transition-all duration-300 ${userProfile === 'gwen' ? 'text-zinc-600 dark:text-pink-300' : 'text-zinc-600 dark:text-red-300'}`}>
+                            <Plus size={18} />
+                            CREATE CUSTOM
+                          </span>
+                        </Button>
                       </div>
 
-                      <Button
-                        variant="secondary"
-                        onClick={() => setIsBuilderOpen(true)}
-                        className={`w-full py-4 relative group overflow-hidden border border-zinc-200/60 dark:border-white/10 bg-zinc-50/80 dark:bg-zinc-800/20 backdrop-blur-xl ${userProfile === 'gwen' ? 'hover:bg-pink-500/10 hover:border-pink-500/30' : 'hover:bg-red-500/10 hover:border-red-500/30'} transition-all duration-300 shadow-sm`}
-                      >
-                        <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-r ${userProfile === 'gwen' ? 'from-pink-500/5 via-transparent to-cyan-500/5' : 'from-red-500/5 via-transparent to-orange-500/5'}`} />
-                        <div className={`absolute inset-0 border border-dashed opacity-20 group-hover:opacity-40 transition-all ${userProfile === 'gwen' ? 'border-pink-400' : 'border-red-400'} rounded-xl`} />
-
-                        <span className={`relative z-10 flex items-center justify-center gap-2 font-bold tracking-widest text-sm group-hover:tracking-[0.2em] transition-all duration-300 ${userProfile === 'gwen' ? 'text-zinc-600 dark:text-pink-300' : 'text-zinc-600 dark:text-red-300'}`}>
-                          <Plus size={18} />
-                          CREATE CUSTOM
-                        </span>
-                      </Button>
-                    </div>
-
+                    )
                   )}
                 </div>
               ) : (
