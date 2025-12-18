@@ -69,12 +69,20 @@ export const useRestTimer = () => {
         setActiveContext(null);
     }, []);
 
+    const subtractTime = useCallback((seconds) => {
+        setTargetTime(prev => {
+            if (!prev) return null;
+            return prev - (seconds * 1000);
+        });
+    }, []);
+
     return {
         isActive,
         timeLeft,
         activeContext,
         startRest,
         addTime,
+        subtractTime,
         stopRest
     };
 };

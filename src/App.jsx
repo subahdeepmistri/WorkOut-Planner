@@ -26,6 +26,9 @@ import { AdherenceBar } from './components/workout/AdherenceBar';
 import { CompletionModal } from './components/ui/CompletionModal';
 import { WorkoutTimer } from './components/workout/WorkoutTimer';
 import { RestTimer } from './components/workout/RestTimer';
+import { HeaderRest } from './components/workout/HeaderRest';
+
+import Snowfall from 'react-snowfall';
 
 function App() {
   const { theme, toggleTheme } = useTheme();
@@ -51,7 +54,7 @@ function App() {
   } = useWorkoutData(selectedDate);
 
   // Global Rest Timer Hook
-  const { isActive: isTimerActive, timeLeft, startRest, addTime, stopRest, activeContext } = useRestTimer();
+  const { isActive: isTimerActive, timeLeft, startRest, addTime, subtractTime, stopRest, activeContext } = useRestTimer();
 
 
 
@@ -127,6 +130,16 @@ function App() {
 
   return (
     <div className="relative min-h-screen font-sans pb-24 transition-colors duration-300 bg-zinc-50 dark:bg-black">
+      <div className="fixed inset-0 z-[5] pointer-events-none">
+        <Snowfall
+          snowflakeCount={150}
+          style={{
+            position: 'fixed',
+            width: '100vw',
+            height: '100vh',
+          }}
+        />
+      </div>
       <BackgroundController profile={userProfile} />
 
       {/* --- GIF Loading Overlay --- */}
@@ -287,40 +300,36 @@ function App() {
               {/* Stats Toggle (Mobile Friendly) */}
               <div className="flex justify-between items-center mt-2 px-1"></div>
               <div className="flex justify-between items-center mt-4 pt-4 border-t border-zinc-200/50 dark:border-zinc-800/50 min-h-[52px]">
-                {isTimerActive && !activeContext ? (
-                  /* --- Active Rest Timer Display --- */
-                  <div className="w-full">
-                    <RestTimer
+                {/* HEADER CONTROLS: Discard & Big Rest Button */}
+                <div className="flex justify-between items-center mt-4 pt-4 border-t border-zinc-200/50 dark:border-zinc-800/50 min-h-[60px] w-full">
+
+                  {/* Left: Discard Button */}
+                  {currentLog && !isMinimized && (
+                    <button
+                      onClick={() => setShowDiscardConfirm(true)}
+                      disabled={isLocked}
+                      className={`text-sm font-bold flex items-center gap-1.5 transition-colors px-4 py-2 rounded-full ${isLocked
+                        ? 'text-zinc-400 dark:text-zinc-600 bg-zinc-100 dark:bg-zinc-800/50 cursor-not-allowed opacity-50'
+                        : 'text-red-600/90 dark:text-red-500/80 hover:text-red-600 dark:hover:text-red-400 bg-red-100 dark:bg-red-500/10'
+                        }`}
+                    >
+                      <Trash2 size={16} /> Discard
+                    </button>
+                  )}
+
+                  {/* Right: Big Rest Button */}
+                  {currentLog && !isMinimized && (
+                    <HeaderRest
+                      isActive={isTimerActive && !activeContext}
                       timeLeft={timeLeft}
+                      onStart={startRest}
                       onAdd={addTime}
+                      onSubtract={subtractTime}
                       onStop={stopRest}
+                      userProfile={userProfile}
                     />
-                  </div>
-                ) : (
-                  /* --- Normal Controls --- */
-                  <>
-                    {currentLog && !isMinimized ? (
-                      <button
-                        onClick={() => setShowDiscardConfirm(true)}
-                        disabled={isLocked}
-                        className={`text-xs flex items-center gap-1 transition-colors px-3 py-1.5 rounded-full ${isLocked
-                          ? 'text-zinc-400 dark:text-zinc-600 bg-zinc-100 dark:bg-zinc-800/50 cursor-not-allowed opacity-50'
-                          : 'text-red-600/80 dark:text-red-500/70 hover:text-red-500 dark:hover:text-red-400 bg-red-100 dark:bg-red-500/10'
-                          }`}
-                      >
-                        <Trash2 size={12} /> Discard
-                      </button>
-                    ) : <div></div>}
-                    {currentLog && !isMinimized ? (
-                      <button
-                        onClick={() => startRest(60)}
-                        className="text-xs flex items-center gap-1 transition-colors px-3 py-1.5 rounded-full text-cyan-600 dark:text-cyan-500/70 hover:text-cyan-500 dark:hover:text-cyan-400 bg-cyan-50 dark:bg-cyan-900/20"
-                      >
-                        <Timer size={12} /> Rest 60s
-                      </button>
-                    ) : <div></div>}
-                  </>
-                )}
+                  )}
+                </div>
               </div>
             </header>
 
@@ -640,6 +649,7 @@ function App() {
           </main>
         )}
       </div>
+
 
       {/* Bottom Navigation */}
       <div className="fixed bottom-0 left-0 w-full bg-white/80 dark:bg-zinc-950/80 backdrop-blur-lg border-t border-zinc-200 dark:border-zinc-800 p-2 z-50">
