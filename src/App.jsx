@@ -14,7 +14,7 @@ import { useTheme } from './context/ThemeContext';
 import { calculateWorkoutStats } from './utils/helpers';
 
 // Components
-import { BackgroundController } from './components/layout/BackgroundController';
+import { BackgroundController } from './components/Layout/BackgroundController';
 import { Button } from './components/ui/Button';
 import { DeleteConfirmationModal } from './components/ui/DeleteConfirmationModal';
 import { CalendarModal } from './components/ui/CalendarModal';
