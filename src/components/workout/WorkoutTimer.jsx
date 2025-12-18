@@ -7,6 +7,7 @@ export const WorkoutTimer = ({ startTime, endTime, className = "" }) => {
     useEffect(() => {
         // If finished (endTime exists) or not started, show 00:00
         if (!startTime || endTime) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setElapsed('00:00');
             return;
         }

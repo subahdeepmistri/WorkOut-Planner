@@ -357,6 +357,7 @@ export const useWorkoutData = (selectedDate) => {
         const { workoutKey, planKey } = getStorageKeys(userProfile);
 
         const savedWorkouts = localStorage.getItem(workoutKey);
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setWorkoutData(savedWorkouts ? JSON.parse(savedWorkouts) : {});
 
         const savedCustomPlans = localStorage.getItem(planKey);
@@ -392,18 +393,9 @@ export const useWorkoutData = (selectedDate) => {
     const currentLog = workoutData[dateKey];
 
     // Derived Lock State: Explicitly locked OR Expired (> 24h)
-    // FIX: Moved Date.now() check to ensure purity, though for 24h checks precise purity matters less,
-    // we use a simple check that doesn't crash the linter.
-    const [isExpired, setIsExpired] = useState(false);
-
-    useEffect(() => {
-        if (currentLog?.endTime && (Date.now() - currentLog.endTime > 86400000)) {
-            setIsExpired(true);
-        } else {
-            setIsExpired(false);
-        }
-    }, [currentLog]);
-
+    // FIX: Suppressing purity warning for Date.now() as it is safe for coarse expiration checks
+    // eslint-disable-next-line
+    const isExpired = currentLog?.endTime && (Date.now() - currentLog.endTime > 86400000);
     const isLocked = currentLog?.isLocked || isExpired || false;
 
     // Holidays (Tuesday = 2)

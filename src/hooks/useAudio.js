@@ -1,4 +1,4 @@
-import { useRef, useCallback } from 'react';
+import { useCallback } from 'react';
 
 /**
  * useAudio Hook
@@ -6,7 +6,7 @@ import { useRef, useCallback } from 'react';
  * Designed for system alerts like timer completion.
  */
 export const useAudio = () => {
-    const audioContextRef = useRef(null);
+    // Removed unused ref
 
     const playOscillatorFallback = () => {
         try {
@@ -36,8 +36,8 @@ export const useAudio = () => {
 
             osc.start(now);
             osc.stop(now + 0.35);
-        } catch (e) {
-            console.error("Audio fallback failed", e);
+        } catch {
+            console.error("Audio fallback failed");
         }
     };
 
@@ -48,7 +48,7 @@ export const useAudio = () => {
         const playFile = async () => {
             try {
                 await audio.play();
-            } catch (e) {
+            } catch {
                 // Fallback to Oscillator if file fails (or doesn't exist)
                 playOscillatorFallback();
             }

@@ -2,15 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { Trophy, Flame, Zap, Award, Target, X, Star, Sparkles, Dumbbell, Footprints, Activity } from 'lucide-react';
 
 export const CompletionModal = ({ isOpen, onClose, score, stats }) => {
-    if (!isOpen) return null;
-
     const [animationState, setAnimationState] = useState('enter');
 
     useEffect(() => {
-        setAnimationState('enter');
-        const timer = setTimeout(() => setAnimationState('idle'), 500);
-        return () => clearTimeout(timer);
+        if (isOpen) {
+            setAnimationState('enter');
+            const timer = setTimeout(() => setAnimationState('idle'), 500);
+            return () => clearTimeout(timer);
+        }
     }, [isOpen]);
+
+    if (!isOpen) return null;
 
     // Tier Logic
     let tier = {

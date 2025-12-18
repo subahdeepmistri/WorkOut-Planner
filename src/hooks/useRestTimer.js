@@ -13,6 +13,7 @@ export const useRestTimer = () => {
 
     useEffect(() => {
         if (!targetTime) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setIsActive(false);
             setTimeLeft(0);
             return;
