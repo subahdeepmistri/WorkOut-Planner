@@ -8,22 +8,6 @@ import { useRef, useCallback } from 'react';
 export const useAudio = () => {
     const audioContextRef = useRef(null);
 
-    const playAlert = useCallback(() => {
-        // 1. Try to play File (if we ever successfully download one)
-        const audio = new Audio('/alarm.mp3');
-
-        const playFile = async () => {
-            try {
-                await audio.play();
-            } catch (e) {
-                // Fallback to Oscillator if file fails (or doesn't exist)
-                playOscillatorFallback();
-            }
-        };
-
-        playFile();
-    }, []);
-
     const playOscillatorFallback = () => {
         try {
             const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -56,6 +40,22 @@ export const useAudio = () => {
             console.error("Audio fallback failed", e);
         }
     };
+
+    const playAlert = useCallback(() => {
+        // 1. Try to play File (if we ever successfully download one)
+        const audio = new Audio('/alarm.mp3');
+
+        const playFile = async () => {
+            try {
+                await audio.play();
+            } catch (e) {
+                // Fallback to Oscillator if file fails (or doesn't exist)
+                playOscillatorFallback();
+            }
+        };
+
+        playFile();
+    }, []);
 
     return { playAlert };
 };

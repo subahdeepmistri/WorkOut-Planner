@@ -390,8 +390,20 @@ export const useWorkoutData = (selectedDate) => {
     // FIX: Use local date string (YYYY-MM-DD) to avoid UTC shifting issues
     const dateKey = selectedDate.toLocaleDateString('en-CA');
     const currentLog = workoutData[dateKey];
+
     // Derived Lock State: Explicitly locked OR Expired (> 24h)
-    const isExpired = currentLog?.endTime && (Date.now() - currentLog.endTime > 86400000);
+    // FIX: Moved Date.now() check to ensure purity, though for 24h checks precise purity matters less,
+    // we use a simple check that doesn't crash the linter.
+    const [isExpired, setIsExpired] = useState(false);
+
+    useEffect(() => {
+        if (currentLog?.endTime && (Date.now() - currentLog.endTime > 86400000)) {
+            setIsExpired(true);
+        } else {
+            setIsExpired(false);
+        }
+    }, [currentLog]);
+
     const isLocked = currentLog?.isLocked || isExpired || false;
 
     // Holidays (Tuesday = 2)
@@ -720,8 +732,6 @@ export const useWorkoutData = (selectedDate) => {
         toggleExerciseLock,
         handleLinkAction,
         saveCustomRoutine,
-        toggleLock,
-        deleteRoutine,
         toggleLock,
         deleteRoutine,
         discardWorkout,
