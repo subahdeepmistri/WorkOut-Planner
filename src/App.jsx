@@ -680,6 +680,7 @@ function App() {
             <span className="text-[10px] uppercase font-bold mt-1">Stats</span>
           </button>
         </div>
+        <div className="absolute bottom-1 right-2 text-[8px] text-zinc-300 dark:text-zinc-700 font-mono opacity-50">v1.1.0</div>
       </div>
     </div >
   );
