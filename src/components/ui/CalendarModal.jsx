@@ -24,7 +24,12 @@ export const CalendarModal = ({ selectedDate, onSelectDate, onClose, workoutData
         const key = d.toISOString().split('T')[0];
         const log = workoutData[key];
 
+        const isFuture = d > today;
+        const isToday = d.getTime() === today.getTime();
+        const isTuesday = d.getDay() === 2; // Rest Day
+
         let status = 'empty';
+
         if (log && log.exercises && log.exercises.length > 0) {
             let total = 0;
             let completed = 0;
@@ -36,19 +41,28 @@ export const CalendarModal = ({ selectedDate, onSelectDate, onClose, workoutData
             });
 
             if (total > 0) {
-                if (completed === total) status = 'green';
-                else if (completed > 0) status = 'yellow';
-                else status = 'red';
+                const percentage = (completed / total) * 100;
+
+                if (percentage >= 80) status = 'green'; // Best/Good
+                else if (percentage >= 50) status = 'yellow'; // Medium
+                else if (percentage > 0) status = 'faded-yellow'; // Bad/Very Bad
+                else status = 'red'; // Present but did nothing
             } else {
-                status = 'red'; // Intent to workout but added nothing?
+                status = 'red';
+            }
+        } else {
+            // Logic for Absent
+            // If it's in the past (not today), NOT a rest day, and NO log exists -> Absent (Red)
+            if (!isFuture && !isToday && !isTuesday) {
+                status = 'absent';
             }
         }
 
         return {
             date: d,
             status,
-            isTuesday: d.getDay() === 2,
-            isFuture: d > today
+            isTuesday,
+            isFuture
         };
     });
 
@@ -73,18 +87,23 @@ export const CalendarModal = ({ selectedDate, onSelectDate, onClose, workoutData
                         let baseClasses = "h-9 w-9 rounded-full flex items-center justify-center relative transition-all duration-300 transform";
 
                         // Status Colors
-                        if (day.status === 'green' && !day.isTuesday && !day.isFuture) {
+                        // Note: We prioritize status over isRestDay. If you work out on a rest day, it shows the score.
+                        if (day.status === 'green') {
                             baseClasses += " bg-emerald-500 text-white shadow-[0_0_15px_rgba(16,185,129,0.5)] border border-emerald-400 font-black hover:scale-110 hover:shadow-[0_0_20px_rgba(16,185,129,0.8)]";
-                        } else if (day.status === 'yellow' && !day.isTuesday && !day.isFuture) {
+                        } else if (day.status === 'yellow') {
                             baseClasses += " bg-amber-500 text-white shadow-[0_0_15px_rgba(245,158,11,0.5)] border border-amber-400 font-black hover:scale-110 hover:shadow-[0_0_20px_rgba(245,158,11,0.8)]";
-                        } else if (day.status === 'red' && !day.isTuesday && !day.isFuture) {
+                        } else if (day.status === 'faded-yellow') {
+                            // Faded yellow for "bad" progress (<50%)
+                            baseClasses += " bg-amber-200 dark:bg-amber-900/40 text-amber-800 dark:text-amber-200 border border-amber-300 dark:border-amber-700/50 font-bold hover:scale-105";
+                        } else if (day.status === 'red' || day.status === 'absent') {
                             baseClasses += " bg-red-500 text-white shadow-[0_0_15px_rgba(239,68,68,0.5)] border border-red-400 font-black hover:scale-110 hover:shadow-[0_0_20px_rgba(239,68,68,0.8)]";
                         } else if (day.isFuture) {
                             baseClasses += " text-zinc-300 dark:text-zinc-700 cursor-not-allowed opacity-30";
                         } else if (day.isTuesday) {
+                            // Rest Day (no workout logged)
                             baseClasses += " text-zinc-400 dark:text-zinc-600 cursor-not-allowed opacity-50";
                         } else {
-                            // Empty
+                            // Empty (Today, or other scenarios)
                             baseClasses += " text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white";
                         }
 
