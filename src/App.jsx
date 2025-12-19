@@ -184,6 +184,7 @@ function App() {
           onSelectDate={setSelectedDate}
           onClose={() => setShowCalendar(false)}
           workoutData={workoutData}
+          getPreviousBest={getPreviousBest}
         />
       )}
 

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { calculateWorkoutStats } from '../../utils/helpers';
 
-export const CalendarModal = ({ selectedDate, onSelectDate, onClose, workoutData }) => {
+export const CalendarModal = ({ selectedDate, onSelectDate, onClose, workoutData, getPreviousBest }) => {
     const [currentMonth, setCurrentMonth] = useState(new Date(selectedDate));
     const daysInMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate();
     const firstDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay();
