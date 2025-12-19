@@ -21,7 +21,10 @@ export const CalendarModal = ({ selectedDate, onSelectDate, onClose, workoutData
 
     const days = Array.from({ length: daysInMonth }, (_, i) => {
         const d = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), i + 1);
-        const key = d.toISOString().split('T')[0];
+
+        // FIX: Use 'en-CA' (YYYY-MM-DD) for local date key to match useWorkoutData storage format.
+        // toISOString() uses UTC which causes key mismatches in different timezones.
+        const key = d.toLocaleDateString('en-CA');
         const log = workoutData[key];
 
         const isFuture = d > today;
