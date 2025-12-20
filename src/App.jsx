@@ -284,18 +284,7 @@ function App() {
                     </span>
                   </button>
 
-                  <button
-                    onClick={() => setShowAboutModal(true)}
-                    className="flex flex-col items-center gap-0.5 group"
-                    title="About Developer"
-                  >
-                    <div className="p-2 rounded-full bg-emerald-100 dark:bg-zinc-800 border border-emerald-300 dark:border-zinc-700 group-hover:bg-emerald-200 dark:group-hover:bg-zinc-700 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center shadow-sm">
-                      <Code size={20} className="text-emerald-700 dark:text-emerald-500 group-hover:text-emerald-900 dark:group-hover:text-emerald-400 transition-colors" />
-                    </div>
-                    <span className="text-[10px] font-black tracking-widest text-zinc-800 dark:text-zinc-400 group-hover:text-black dark:group-hover:text-white transition-colors uppercase">
-                      About
-                    </span>
-                  </button>
+
 
                   {/* Switcher - Increased Touch Target */}
                   <button
@@ -372,8 +361,8 @@ function App() {
                     <button
                       onClick={() => setIsFocusMode(!isFocusMode)}
                       className={`p-3 rounded-full transition-all duration-300 shadow-md flex items-center justify-center ${isFocusMode
-                          ? 'bg-amber-500 text-white shadow-[0_0_15px_rgba(245,158,11,0.5)] scale-110'
-                          : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600 hover:bg-zinc-200 dark:hover:bg-zinc-700'
+                        ? 'bg-amber-500 text-white shadow-[0_0_15px_rgba(245,158,11,0.5)] scale-110'
+                        : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600 hover:bg-zinc-200 dark:hover:bg-zinc-700'
                         }`}
                       title="Toggle Focus Mode"
                     >
@@ -786,6 +775,14 @@ function App() {
           >
             <TrendingUp size={24} />
             <span className="text-[10px] uppercase font-bold mt-1">Stats</span>
+          </button>
+
+          <button
+            onClick={() => setShowAboutModal(true)}
+            className="flex flex-col items-center p-3 rounded-lg transition-colors text-zinc-500 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300"
+          >
+            <Code size={24} />
+            <span className="text-[10px] uppercase font-bold mt-1">About</span>
           </button>
         </div>
         <div className="absolute bottom-1 right-2 text-[8px] text-zinc-300 dark:text-zinc-700 font-mono opacity-50">v1.1.0</div>
