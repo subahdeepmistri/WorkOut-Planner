@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Calendar, Dumbbell, TrendingUp, Activity, Trash2, CheckCircle, Plus, Home, PlayCircle, Trophy, Code, Timer, Sun, Moon, Zap } from 'lucide-react';
 import MilesSticker from './assets/miles_sticker.gif';
 import GwenSticker from './assets/gwen_sticker.gif';
@@ -42,6 +42,11 @@ function App() {
   const [isMinimized, setIsMinimized] = useState(false);
   const [loadingGif, setLoadingGif] = useState(null); // 'miles' | 'gwen' | null
   const [isFocusMode, setIsFocusMode] = useState(false);
+
+  // Force Start on Workout Tab (Fix for persisted browser state)
+  useEffect(() => {
+    setActiveTab('workout');
+  }, []);
 
   // Core Logic Hook
   const {
