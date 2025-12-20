@@ -4,6 +4,7 @@ import { Timer, Plus, Minus, X } from 'lucide-react';
 export const HeaderRest = ({
     isActive,
     timeLeft,
+    totalDuration,
     onStart,
     onAdd,
     onSubtract,
@@ -38,11 +39,35 @@ export const HeaderRest = ({
     return (
         <div className={`flex items-center gap-2 px-2 py-1.5 rounded-xl border ${themeBorder} ${themeBg}`}>
 
-            {/* Time Display */}
-            <div className="flex items-center justify-center w-16 bg-white/50 dark:bg-black/20 rounded-lg py-1 px-2">
-                <span className={`text-xl font-black tabular-nums tracking-tight ${themeText}`}>
-                    {formatTime(timeLeft)}
-                </span>
+            {/* Circular Progress Timer */}
+            <div className="relative w-14 h-14 flex items-center justify-center -ml-1">
+                <svg className="w-full h-full rotate-[-90deg]" viewBox="0 0 36 36">
+                    {/* Background Ring */}
+                    <path
+                        className="text-black/10 dark:text-white/10"
+                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="3"
+                    />
+                    {/* Progress Ring */}
+                    <path
+                        className={`${userProfile === 'gwen' ? 'text-pink-500 dark:text-pink-400' : 'text-purple-600 dark:text-purple-400'} transition-all duration-300 ease-linear`}
+                        strokeDasharray="100, 100"
+                        strokeDashoffset={totalDuration > 0 ? 100 - ((timeLeft / totalDuration) * 100) : 0}
+                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="3"
+                        strokeLinecap="round"
+                    />
+                </svg>
+                {/* Time Text */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                    <span className={`text-[11px] font-black tabular-nums tracking-tighter ${themeText}`}>
+                        {formatTime(timeLeft)}
+                    </span>
+                </div>
             </div>
 
             {/* Controls */}

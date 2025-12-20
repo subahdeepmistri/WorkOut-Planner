@@ -8,22 +8,27 @@ export const AdherenceBar = ({ targetVolume, actualVolume, isSkipped = false, la
     // Cap visual bar at 100, but logic handles Overdrive
     const visualPercentage = Math.min(100, Math.max(0, rawPercentage));
     const isOverdrive = rawPercentage > 100;
-    const isSuccess = rawPercentage >= 90;
-    const isPartial = rawPercentage > 0 && rawPercentage < 90;
+    const isSuccess = rawPercentage >= 100;
+    const isPartial = rawPercentage > 0 && rawPercentage < 100;
 
-    let barColor = 'bg-zinc-600'; // Default / Low
+    // Adherence 2.0 Logic
+    let barColor = 'bg-zinc-300 dark:bg-zinc-700'; // Default (0%)
     let shadow = '';
 
     if (isOverdrive) {
-        barColor = 'bg-cyan-400';
-        shadow = 'shadow-[0_0_10px_rgba(34,211,238,0.8)]'; // Intense Cyan Glow
-    } else if (isSuccess) {
+        barColor = 'bg-purple-500';
+        shadow = 'shadow-[0_0_15px_rgba(168,85,247,0.6)]'; // Purple Haze
+    } else if (rawPercentage >= 100) {
         barColor = 'bg-emerald-500';
-        shadow = 'shadow-[0_0_8px_rgba(16,185,129,0.5)]'; // Green Glow
-    } else if (isPartial) {
-        barColor = 'bg-blue-500 dark:bg-amber-500'; // Blue for friendly progress in light mode
+        shadow = 'shadow-[0_0_8px_rgba(16,185,129,0.5)]'; // Perfect
+    } else if (rawPercentage >= 80) {
+        barColor = 'bg-emerald-400'; // High Adherence
+    } else if (rawPercentage >= 50) {
+        barColor = 'bg-yellow-400'; // Energized
+    } else if (rawPercentage > 0) {
+        barColor = 'bg-zinc-500 dark:bg-zinc-600'; // Started (Neutral)
     } else if (isSkipped) {
-        barColor = 'bg-red-500/50'; // Skipped state
+        barColor = 'bg-red-500/30';
     }
 
     return (

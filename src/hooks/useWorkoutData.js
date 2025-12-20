@@ -462,6 +462,7 @@ export const useWorkoutData = (selectedDate) => {
                 })),
                 supersetId: null,
                 cardioMode: ex.defaultMode || 'distance',
+                coreMode: 'reps',
                 isLocked: false,
             })),
             isLocked: false,
@@ -515,7 +516,10 @@ export const useWorkoutData = (selectedDate) => {
         });
     };
 
-    const addSet = (exIndex) => {
+    /**
+     * Toggles core tracking mode between 'reps' and 'hold' (time).
+     */
+    const updateCoreMode = (exIndex, mode) => {
         if (isLocked) return;
         setWorkoutData(prev => {
             const day = { ...prev[dateKey] };
@@ -523,8 +527,55 @@ export const useWorkoutData = (selectedDate) => {
             if (day.isLocked || expired) return prev;
             if (day.exercises[exIndex].isLocked) return prev;
             day.exercises = day.exercises.map((ex, i) =>
-                i === exIndex ? { ...ex, sets: [...ex.sets, { weight: '', reps: '', completed: false }] } : ex
+                i === exIndex ? { ...ex, coreMode: mode } : ex
             );
+            return { ...prev, [dateKey]: day };
+        });
+    };
+
+    const [lastDeletedSet, setLastDeletedSet] = useState(null);
+
+    // Auto-clear undo history after 5 seconds
+    useEffect(() => {
+        if (lastDeletedSet) {
+            const timer = setTimeout(() => {
+                setLastDeletedSet(null);
+            }, 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [lastDeletedSet]);
+
+    const addSet = (exIndex) => {
+        if (isLocked) return;
+        setWorkoutData(prev => {
+            const day = { ...prev[dateKey] };
+            const expired = day.endTime && (Date.now() - day.endTime > 86400000);
+            if (day.isLocked || expired) return prev;
+            if (day.exercises[exIndex].isLocked) return prev;
+
+            day.exercises = day.exercises.map((ex, i) => {
+                if (i === exIndex) {
+                    // Smart Defaults: Auto-fill from previous set
+                    let newSet = { weight: '', reps: '', completed: false };
+
+                    if (ex.sets.length > 0) {
+                        const lastSet = ex.sets[ex.sets.length - 1];
+                        // Copy defined values from last set
+                        newSet = {
+                            ...newSet,
+                            weight: lastSet.weight || '',
+                            reps: lastSet.reps || '',
+                            distance: lastSet.distance || '',
+                            time: lastSet.time || '',
+                            duration: lastSet.duration || '',
+                            holdTime: lastSet.holdTime || '',
+                            target: lastSet.target // Optional: copy target if user adjusted it
+                        };
+                    }
+                    return { ...ex, sets: [...ex.sets, newSet] };
+                }
+                return ex;
+            });
             return { ...prev, [dateKey]: day };
         });
     };
@@ -537,15 +588,44 @@ export const useWorkoutData = (selectedDate) => {
             if (day.isLocked || expired) return prev;
             if (day.exercises[exIndex].isLocked) return prev;
 
+            // Capture set to be deleted for Undo
+            const setToRemove = day.exercises[exIndex].sets[setIndex];
+            setLastDeletedSet({
+                exerciseIndex: exIndex,
+                setIndex: setIndex,
+                set: setToRemove
+            });
+
             day.exercises = day.exercises.map((ex, i) => {
                 if (i !== exIndex) return ex;
-                // Prevent removing the last set if you want to keep at least 1, but user asked for delete option so 0 sets might be edge case. 
-                // Let's allow deleting any set.
                 const newSets = ex.sets.filter((_, si) => si !== setIndex);
                 return { ...ex, sets: newSets };
             });
             return { ...prev, [dateKey]: day };
         });
+    };
+
+    const undoDelete = () => {
+        if (!lastDeletedSet) return;
+
+        setWorkoutData(prev => {
+            const day = { ...prev[dateKey] };
+            // Safety checks
+            const expired = day.endTime && (Date.now() - day.endTime > 86400000);
+            if (day.isLocked || expired) return prev;
+
+            const { exerciseIndex, setIndex, set } = lastDeletedSet;
+
+            day.exercises = day.exercises.map((ex, i) => {
+                if (i !== exerciseIndex) return ex;
+                // Insert back at original position
+                const newSets = [...ex.sets];
+                newSets.splice(setIndex, 0, set);
+                return { ...ex, sets: newSets };
+            });
+            return { ...prev, [dateKey]: day };
+        });
+        setLastDeletedSet(null);
     };
 
     const addExercise = (type) => {
@@ -556,7 +636,7 @@ export const useWorkoutData = (selectedDate) => {
             targetReps: "", // Explicitly empty to force user input
             type: type === 'strength' ? undefined : type,
             sets: Array(3).fill(0).map(() => ({ weight: '', reps: '', completed: false })),
-            supersetId: null, cardioMode: 'distance'
+            supersetId: null, cardioMode: 'distance', coreMode: 'reps'
         };
         setWorkoutData(prev => {
             const day = { ...prev[dateKey] };
@@ -716,6 +796,7 @@ export const useWorkoutData = (selectedDate) => {
         initializeDailyLog,
         updateSet,
         updateCardioMode,
+        updateCoreMode,
         addSet,
         removeSet,
         addExercise,
@@ -728,6 +809,8 @@ export const useWorkoutData = (selectedDate) => {
         deleteRoutine,
         discardWorkout,
         finishSession,
-        getPreviousBest
+        getPreviousBest,
+        lastDeletedSet,
+        undoDelete
     };
 };

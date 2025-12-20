@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight, Calendar, Dumbbell, TrendingUp, Activity, Trash2, CheckCircle, Plus, Home, PlayCircle, Trophy, Code, Timer, Sun, Moon } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, Dumbbell, TrendingUp, Activity, Trash2, CheckCircle, Plus, Home, PlayCircle, Trophy, Code, Timer, Sun, Moon, Zap } from 'lucide-react';
 import MilesSticker from './assets/miles_sticker.gif';
 import GwenSticker from './assets/gwen_sticker.gif';
 import LoadingSticker from './assets/loading_sticker.gif';
@@ -41,24 +41,46 @@ function App() {
   const [isBuilderOpen, setIsBuilderOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [loadingGif, setLoadingGif] = useState(null); // 'miles' | 'gwen' | null
+  const [isFocusMode, setIsFocusMode] = useState(false);
 
   // Core Logic Hook
   const {
     workoutData, savedPlans, activePlanId, setActivePlanId,
     currentLog, isLocked, pendingSuperset,
-    initializeDailyLog, updateSet, updateCardioMode, addSet, removeSet,
+    initializeDailyLog, updateSet, updateCardioMode, updateCoreMode, addSet, removeSet,
     addExercise, removeExercise, updateExerciseName, handleLinkAction,
     saveCustomRoutine, toggleLock, deleteRoutine, discardWorkout, finishSession,
     getPreviousBest, userProfile, setUserProfile, availablePlans,
-    saveAsNewPlan, startTimer, workoutStartTime, toggleExerciseLock, isHoliday
+    saveAsNewPlan, startTimer, workoutStartTime, toggleExerciseLock, isHoliday,
+    lastDeletedSet, undoDelete
   } = useWorkoutData(selectedDate);
 
   // Global Rest Timer Hook
-  const { isActive: isTimerActive, timeLeft, startRest, addTime, subtractTime, stopRest, activeContext } = useRestTimer();
 
+  const handleTimerComplete = (context) => {
+    if (context && context.type === 'set') {
+      updateSet(context.exIndex, context.setIndex, 'completed', true);
+    }
+  };
 
+  const { isActive: isTimerActive, timeLeft, totalDuration, startRest, addTime, subtractTime, stopRest, activeContext } = useRestTimer({ onComplete: handleTimerComplete });
 
+  // Wrapper to intercept set completion for Auto-Rest
+  const handleUpdateSet = (exIndex, setIndex, field, value) => {
+    updateSet(exIndex, setIndex, field, value);
 
+    // Auto-Start Rest Logic
+    if (field === 'completed' && value === true) {
+      if (!currentLog || !currentLog.exercises || !currentLog.exercises[exIndex]) return;
+      const exercise = currentLog.exercises[exIndex];
+      let restDuration = 90; // Default Strength
+      if (exercise.type === 'cardio') restDuration = 30; // Short rest for cardio
+      if (exercise.type === 'abs') restDuration = 60; // Medium rest for core
+
+      // Start the rest timer
+      startRest(restDuration, { type: 'rest', exIndex, setIndex });
+    }
+  };
   // --- Reward System Logic ---
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [completionStats, setCompletionStats] = useState({ score: 0, volume: 0, duration: '0m' });
@@ -178,6 +200,16 @@ function App() {
         />
       )}
 
+      {/* --- Undo Toast --- */}
+      {lastDeletedSet && (
+        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[60] animate-in slide-in-from-bottom-5 fade-in duration-300">
+          <div className="bg-zinc-900 dark:bg-zinc-800 text-white px-4 py-3 rounded-full shadow-xl flex items-center gap-4 border border-zinc-700">
+            <span className="text-sm font-medium">Set deleted</span>
+            <button onClick={undoDelete} className="text-sm font-bold text-amber-500 hover:text-amber-400 uppercase tracking-wider">Undo</button>
+          </div>
+        </div>
+      )}
+
       {showCalendar && (
         <CalendarModal
           selectedDate={selectedDate}
@@ -191,7 +223,7 @@ function App() {
 
 
       {/* --- Main Content --- */}
-      <div className="relative z-10 min-h-screen text-zinc-900 dark:text-zinc-100 pb-24 w-full max-w-[800px] mx-auto px-[10px]">
+      <div className="relative z-10 min-h-[100dvh] text-zinc-900 dark:text-zinc-100 pb-24 w-full max-w-[800px] mx-auto px-3 sm:px-4">
 
         {/* Tab: Workout */}
         {activeTab === 'workout' ? (
@@ -231,6 +263,19 @@ function App() {
                     </div>
                     <span className="text-[10px] font-black tracking-widest text-zinc-800 dark:text-zinc-400 group-hover:text-black dark:group-hover:text-white transition-colors uppercase">
                       {theme === 'dark' ? 'Light' : 'Dark'}
+                    </span>
+                  </button>
+
+                  <button
+                    onClick={() => setIsFocusMode(!isFocusMode)}
+                    className="flex flex-col items-center gap-0.5 group"
+                    title="Toggle Focus Mode"
+                  >
+                    <div className={`p-2 rounded-full border transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center shadow-sm ${isFocusMode ? 'bg-amber-100 dark:bg-amber-900/30 border-amber-300 dark:border-amber-700' : 'bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 group-hover:bg-amber-50 dark:group-hover:bg-zinc-700'}`}>
+                      <Zap size={20} className={`transition-colors ${isFocusMode ? 'text-amber-600 dark:text-amber-500 fill-amber-600 dark:fill-amber-500' : 'text-zinc-400 group-hover:text-amber-500'}`} />
+                    </div>
+                    <span className={`text-[10px] font-black tracking-widest transition-colors uppercase ${isFocusMode ? 'text-amber-600 dark:text-amber-500' : 'text-zinc-800 dark:text-zinc-400 group-hover:text-black dark:group-hover:text-white'}`}>
+                      Focus
                     </span>
                   </button>
 
@@ -321,12 +366,13 @@ function App() {
                   {/* Right: Big Rest Button */}
                   {currentLog && !isMinimized && (
                     <HeaderRest
-                      isActive={isTimerActive && !activeContext}
-                      timeLeft={timeLeft}
-                      onStart={startRest}
-                      onAdd={addTime}
-                      onSubtract={subtractTime}
-                      onStop={stopRest}
+                      isActive={!!isTimerActive && activeContext === null}
+                      timeLeft={timeLeft || 0}
+                      totalDuration={totalDuration || 0}
+                      onStart={startRest ? startRest : () => { }}
+                      onAdd={addTime ? addTime : () => { }}
+                      onSubtract={subtractTime ? subtractTime : () => { }}
+                      onStop={stopRest ? stopRest : () => { }}
                       userProfile={userProfile}
                     />
                   )}
@@ -570,18 +616,20 @@ function App() {
                     <h2 className="text-xl font-bold text-zinc-900 dark:text-white tracking-tight drop-shadow-md">{currentLog.templateName}</h2>
                   </div>
 
-                  {currentLog.exercises.map((exercise, i) => (
+
+                  {currentLog.exercises && currentLog.exercises.map((exercise, i) => (
                     <ExerciseCard
                       key={i}
                       exercise={exercise}
                       index={i}
-                      onUpdateSet={updateSet}
+                      onUpdateSet={handleUpdateSet}
                       onAddSet={addSet}
                       onRemoveSet={removeSet}
                       onLink={handleLinkAction}
-                      previousBest={getPreviousBest(exercise.name)}
+                      previousBest={getPreviousBest ? getPreviousBest(exercise.name) : null}
                       onRemove={removeExercise}
                       onCardioMode={updateCardioMode}
+                      onCoreMode={updateCoreMode}
                       onUpdateName={updateExerciseName}
                       pendingSuperset={pendingSuperset}
                       disabled={isLocked}
@@ -589,11 +637,13 @@ function App() {
                       activeTimer={{ isActive: isTimerActive, timeLeft, activeContext }}
                       timerControls={{ onAdd: addTime, onStop: stopRest }}
                       onToggleLock={() => toggleExerciseLock(i)}
+                      isFocusMode={isFocusMode}
+                      onStartSetTimer={(duration, setIndex) => startRest(duration, { type: 'set', exIndex: i, setIndex })}
                     />
                   ))}
 
                   <div className="mt-8 space-y-4">
-                    {!isLocked && (
+                    {!isLocked && !isFocusMode && (
                       <div className="grid grid-cols-2 gap-3 mb-6">
                         <Button variant="strength" onClick={() => addExercise('strength')} className="h-12 border-dashed border-2">+ Strength</Button>
                         <Button variant="cardio" onClick={() => addExercise('cardio')} className="h-12 border-dashed border-2">+ Cardio</Button>
@@ -634,6 +684,45 @@ function App() {
                   </div>
                 </div>
               )}
+              {/* Sticky Complete Button */}
+              {(() => {
+                let fabExIndex = -1;
+                let fabSetIndex = -1;
+                if (!isLocked && currentLog && currentLog.exercises) {
+                  for (let i = 0; i < currentLog.exercises.length; i++) {
+                    const idx = currentLog.exercises[i].sets.findIndex(s => !s.completed);
+                    if (idx !== -1) {
+                      fabExIndex = i;
+                      fabSetIndex = idx;
+                      break;
+                    }
+                  }
+                }
+
+                if (fabExIndex !== -1) {
+                  const ex = currentLog.exercises[fabExIndex];
+                  const setNum = fabSetIndex + 1;
+                  return (
+                    <button
+                      onClick={() => {
+                        handleUpdateSet(fabExIndex, fabSetIndex, 'completed', true);
+                        // Provide haptic feedback via useRestTimer's integrated logic? 
+                        // Or direct call here if not handled by handleUpdateSet. 
+                        // handleTimerComplete handles vibration on *timer* complete. 
+                        // We might want tactile click here.
+                        if (navigator.vibrate) navigator.vibrate(50);
+                      }}
+                      className="fixed bottom-24 right-4 z-50 bg-emerald-500 text-white shadow-[0_4px_20px_rgba(16,185,129,0.5)] w-14 h-14 rounded-full flex items-center justify-center animate-in zoom-in duration-300 active:scale-90 active:bg-emerald-600 transition-all"
+                    >
+                      <CheckCircle size={28} />
+                      <div className="absolute -top-2 -right-2 bg-white dark:bg-zinc-800 text-[10px] font-bold text-zinc-900 dark:text-white px-1.5 py-0.5 rounded-full border border-zinc-200 dark:border-zinc-700 shadow-sm">
+                        #{setNum}
+                      </div>
+                    </button>
+                  )
+                }
+                return null;
+              })()}
             </main>
 
             <CompletionModal

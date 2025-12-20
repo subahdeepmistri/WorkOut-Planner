@@ -20,11 +20,9 @@ export const parseTargetReps = (repsString) => {
 export const calculateWorkoutStats = (log, getPreviousBest, endTime = Date.now()) => {
     if (!log) return { score: 0, volume: 0, duration: '0m' };
 
-    let totalTargetVol = 0;
-    let totalActualVol = 0;
-    let strengthVol = 0;
-    let cardioVol = 0;
-    let absVol = 0;
+    let hasStrength = false;
+    let hasCardio = false;
+    let hasCore = false;
 
     log.exercises.forEach(ex => {
         const tReps = ex.numericalTargetReps || 8;
@@ -40,13 +38,13 @@ export const calculateWorkoutStats = (log, getPreviousBest, endTime = Date.now()
 
         // --- Target Volume Logic ---
         if (ex.type === 'cardio') {
-            // Cardio: Sets * Target Reps (used as minutes/distance placeholder)
+            hasCardio = true;
             totalTargetVol += (tSets * tReps);
         } else if (ex.type === 'abs') {
-            // Abs: Sets * Target Reps (or Hold Seconds)
+            hasCore = true;
             totalTargetVol += (tSets * tReps);
         } else {
-            // Strength: Sets * Reps * Weight (Normalized)
+            hasStrength = true;
             totalTargetVol += (tSets * tReps * calcRefWeight);
         }
 
@@ -54,34 +52,49 @@ export const calculateWorkoutStats = (log, getPreviousBest, endTime = Date.now()
         ex.sets.forEach(s => {
             if (s.completed) {
                 if (ex.type === 'cardio') {
-                    // Cardio: Use Distance or Time if available, else Target
+                    // Cardio: Use Distance or Time if available
                     let val = 0;
                     if (ex.cardioMode === 'circuit') val = parseFloat(s.time);
                     else val = parseFloat(s.distance);
 
-                    if (isNaN(val) || val === 0) val = tReps;
+                    if (isNaN(val)) val = 0;
 
-                    totalActualVol += val; // For Adherence
-                    cardioVol += val;      // For specific stat
+                    // Adherence Score Fallback (Generous)
+                    let scoreVal = val === 0 ? tReps : val;
+                    totalActualVol += scoreVal;
+
+                    // Stats: Strict (No Fallback)
+                    cardioVol += val;
                 } else if (ex.type === 'abs') {
-                    // Abs: Reps
+                    // Abs: Reps or Hold
                     let r = parseFloat(s.reps);
-                    if (isNaN(r)) r = 0;
-                    if (r === 0) r = tReps; // Fallback
+                    if (ex.coreMode === 'hold') r = parseFloat(s.holdTime); // Handle Hold logic if stored differently
 
-                    totalActualVol += r;
+                    if (isNaN(r)) r = 0;
+
+                    let scoreVal = r === 0 ? tReps : r;
+                    totalActualVol += scoreVal;
+
                     absVol += r;
                 } else {
                     // Strength: Weight * Reps
                     let r = parseFloat(s.reps);
-                    if (isNaN(r) || r === 0) r = tReps;
+                    if (isNaN(r) || r === 0) r = tReps; // Keep rep fallback for strength flow? No, user said "Never infer data".
+                    // Actually, for Strength, if they complete a set, they usually did the reps. 
+                    // But if they entered 0, we shouldn't show huge volume.
+                    // Let's rely on parsed values.
 
-                    let w = parseFloat(s.weight);
-                    if (isNaN(w) || w === 0) w = calcRefWeight;
+                    r = parseFloat(s.reps) || 0;
+                    let w = parseFloat(s.weight) || 0;
+                    if (w === 0) w = calcRefWeight; // Weight fallback is safer (assumes bodyweight or prev) but debatable. User said "Never infer".
+                    // Let's stick to safe inference for Weight (since bodyweight exercises often have 0 weight entered), 
+                    // but strict for Reps.
 
-                    const vol = r * w;
-                    totalActualVol += vol;
-                    strengthVol += vol;
+                    const scoreVol = (r || tReps) * w; // Score is generous
+                    totalActualVol += scoreVol;
+
+                    const realVol = r * w;
+                    strengthVol += realVol;
                 }
             }
         });
@@ -104,9 +117,6 @@ export const calculateWorkoutStats = (log, getPreviousBest, endTime = Date.now()
             } else {
                 duration = `${minutes}m`;
             }
-            // If less than a minute, show seconds or <1m? User asked for duration. 
-            // "45m" style implies minutes. If 0 minutes, maybe show seconds?
-            // Let's stick to minutes for now as "Perfect workout time" usually implies min/hours.
             if (totalMinutes === 0) {
                 const seconds = Math.floor((diffMs % 60000) / 1000);
                 duration = `${seconds}s`;
@@ -116,10 +126,13 @@ export const calculateWorkoutStats = (log, getPreviousBest, endTime = Date.now()
 
     return {
         score,
-        volume: Math.round(strengthVol), // Keep generic "Volume" as Strength Vol for backward compatibility if needed
+        volume: Math.round(strengthVol),
         strengthVol: Math.round(strengthVol),
         cardioVol: parseFloat(cardioVol.toFixed(1)),
         absVol: Math.round(absVol),
-        duration: duration
+        duration: duration,
+        hasStrength,
+        hasCardio,
+        hasCore
     };
 };
