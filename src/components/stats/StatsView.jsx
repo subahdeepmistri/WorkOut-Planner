@@ -36,13 +36,11 @@ export const StatsView = ({ workoutData, getPreviousBest }) => {
     // Derived: Selected Date Object for Calendar
     const selectedDateObj = useMemo(() => new Date(selectedDayKey), [selectedDayKey]);
 
-    // Derived: Stats for the selected day
+    // --- Daily Stats for Selected Day ---
     const dayStats = useMemo(() => {
-        const log = workoutData[selectedDayKey];
-        if (!log) return null;
-        // Calculate stats using the helper
-        return calculateWorkoutStats(log, getPreviousBest, log.endTime || Date.now());
-    }, [workoutData, selectedDayKey, getPreviousBest]);
+        if (!selectedDayKey || !workoutData[selectedDayKey]) return null;
+        return calculateWorkoutStats(workoutData[selectedDayKey], getPreviousBest);
+    }, [selectedDayKey, workoutData, getPreviousBest]);
 
     const handleSelectDate = (date) => {
         setSelectedDayKey(formatDateLocal(date));
