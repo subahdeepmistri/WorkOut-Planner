@@ -102,9 +102,10 @@ export const StatsView = ({ workoutData, getPreviousBest }) => {
                 let d_cd = 0;
                 let d_ar = 0;
 
-                day.exercises.forEach(ex => {
-                    ex.sets.forEach(s => {
-                        if (s.completed) {
+                (day.exercises || []).forEach(ex => {
+                    if (!ex) return;
+                    (ex.sets || []).forEach(s => {
+                        if (s && s.completed) {
                             if (ex.type === 'cardio') {
                                 if (ex.cardioMode === 'circuit') d_cm += (parseFloat(s.time) || 0);
                                 else d_cd += (parseFloat(s.distance) || 0);

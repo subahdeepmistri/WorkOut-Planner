@@ -18,20 +18,31 @@ export const parseTargetReps = (repsString) => {
  * @returns {Object} { score, volume, duration }
  */
 export const calculateWorkoutStats = (log, getPreviousBest, endTime = Date.now()) => {
-    if (!log) return { score: 0, volume: 0, duration: '0m' };
+    if (!log || !Array.isArray(log.exercises)) return { score: 0, volume: 0, duration: '0m' };
 
     let hasStrength = false;
     let hasCardio = false;
     let hasCore = false;
 
     log.exercises.forEach(ex => {
+        if (!ex) return; // Skip null exercises
+
         const tReps = ex.numericalTargetReps || 8;
         const tSets = ex.targetSets || 3;
 
         // Determine Reference Weight
-        let refWeight = getPreviousBest(ex.name)?.weight || 0;
+        let refWeight = 0;
+        try {
+            if (getPreviousBest && typeof getPreviousBest === 'function') {
+                const pb = getPreviousBest(ex.name);
+                if (pb) refWeight = pb.weight || 0;
+            }
+        } catch (e) {
+            console.warn("getPreviousBest failed", e);
+        }
+
         if (!refWeight && ex.type !== 'cardio' && ex.type !== 'abs') {
-            const usedWeights = ex.sets.map(s => parseFloat(s.weight)).filter(w => !isNaN(w) && w > 0);
+            const usedWeights = (ex.sets || []).map(s => parseFloat(s.weight)).filter(w => !isNaN(w) && w > 0);
             if (usedWeights.length > 0) refWeight = usedWeights.reduce((a, b) => a + b, 0) / usedWeights.length;
         }
         const calcRefWeight = (refWeight > 0) ? refWeight : 1;
@@ -49,8 +60,8 @@ export const calculateWorkoutStats = (log, getPreviousBest, endTime = Date.now()
         }
 
         // --- Actual Volume Logic ---
-        ex.sets.forEach(s => {
-            if (s.completed) {
+        (ex.sets || []).forEach(s => {
+            if (s && s.completed) {
                 if (ex.type === 'cardio') {
                     // Cardio: Use Distance or Time if available
                     let val = 0;
