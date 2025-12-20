@@ -23,15 +23,7 @@ export const useAiCoach = (exercise, index) => {
         const cardioMode = exercise.cardioMode;
         const coreMode = exercise.coreMode;
 
-        // --- 1. Smart Copy ("Same as Last") ---
-        suggestions.push({
-            id: 'copy_prev',
-            label: 'Same',
-            icon: Copy,
-            action: 'COPY',
-            payload: prevSet,
-            style: 'zinc'
-        });
+
 
         // --- 2. Progressive Overload & Specifics ---
 
