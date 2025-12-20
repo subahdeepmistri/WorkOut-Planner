@@ -230,22 +230,14 @@ export const SetRow = ({ set, index, onChange, onRemove, previousBest, targetRep
                                     <input type="text" readOnly disabled value={set.pace || ''} placeholder="-" className="w-full bg-zinc-100 dark:bg-zinc-950/30 border-b border-transparent px-1 py-3 text-center font-mono text-zinc-500 dark:text-zinc-500 outline-none text-xs font-bold rounded-t-md" />
                                 </div>
                             </div>
-                            {/* Chips */}
+                            {/* Chips (Horizontal Scroll) */}
                             {!set.completed && isActiveSet && !disabled && (
-                                <div className="grid gap-2 w-full grid-cols-3 mt-1.5">
-                                    <div className="flex justify-center">
-                                        <QuickChips type="cardio" mode="distance" subset={['distance']} onAdjust={adjustValue} suggestions={suggestions} onSuggestion={handleAiAction} className="mt-0 ml-0 justify-center" />
-                                    </div>
-                                    <div className="flex justify-center">
-                                        <QuickChips type="cardio" mode="distance" subset={['time']} onAdjust={adjustValue} suggestions={suggestions} onSuggestion={handleAiAction} className="mt-0 ml-0 justify-center" />
-                                    </div>
-                                    <div className="flex justify-center">
-                                        <QuickChips type="cardio" mode="distance" subset={['ai']} onAdjust={adjustValue} suggestions={suggestions} onSuggestion={handleAiAction} className="mt-0 ml-0 justify-center" />
-                                    </div>
+                                <div className="mt-2 w-full overflow-x-auto pb-1 scrollbar-hide">
+                                    <QuickChips type="cardio" mode="distance" subset={['distance', 'time', 'ai']} onAdjust={adjustValue} suggestions={suggestions} onSuggestion={handleAiAction} className="flex-nowrap" />
                                 </div>
                             )}
                         </div>
-                        <div className="flex gap-1 justify-center items-center">
+                        <div className="flex gap-1 justify-center items-center h-full">
                             <button disabled={disabled} onClick={validateAndComplete} title={set.completed ? "Mark Incomplete" : "Mark Complete"} className={`w-11 h-11 p-2 rounded flex items-center justify-center transition-colors ${set.completed ? 'bg-pink-500 text-white shadow-lg shadow-pink-500/20' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 hover:bg-zinc-300 dark:hover:bg-zinc-700 border border-zinc-300 dark:border-zinc-700'} disabled:opacity-50`}><CheckCircle size={20} /></button>
                             {!isFocusMode && <button disabled={disabled} onClick={() => onRemove()} title="Delete Set" className="w-11 h-11 flex items-center justify-center transition-colors bg-transparent text-zinc-600 hover:text-red-500 hover:bg-red-500/10 disabled:opacity-50 active:scale-95"><X size={20} /></button>}
                         </div>
@@ -274,8 +266,9 @@ export const SetRow = ({ set, index, onChange, onRemove, previousBest, targetRep
                             {!isFocusMode && <button disabled={disabled} onClick={() => onRemove()} className="w-11 h-11 flex items-center justify-center transition-colors bg-transparent text-zinc-500 dark:text-zinc-600 hover:text-red-600 dark:hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 disabled:opacity-50 active:scale-95"><X size={20} /></button>}
                         </div>
                     </div>
-                )}
-            </div>
+                )
+                }
+            </div >
         );
     }
 
@@ -300,10 +293,10 @@ export const SetRow = ({ set, index, onChange, onRemove, previousBest, targetRep
                                     </>
                                 )}
                             </div>
-                            {/* Chips */}
+                            {/* Chips (Horizontal Scroll) */}
                             {!set.completed && isActiveSet && !disabled && (
-                                <div className="mt-1.5 w-full">
-                                    <QuickChips type="abs" mode={coreMode} onAdjust={adjustValue} onCopy={handleCopy} canCopy={!!previousSet} suggestions={suggestions} onSuggestion={handleAiAction} className="mt-0 ml-0" />
+                                <div className="mt-2 w-full overflow-x-auto pb-1 scrollbar-hide">
+                                    <QuickChips type="abs" mode={coreMode} onAdjust={adjustValue} onCopy={handleCopy} canCopy={!!previousSet} suggestions={suggestions} onSuggestion={handleAiAction} className="flex-nowrap" />
                                 </div>
                             )}
                         </div>
@@ -314,7 +307,7 @@ export const SetRow = ({ set, index, onChange, onRemove, previousBest, targetRep
                         </div>
                     </div>
                 </div>
-            </div>
+            </div >
         );
     }
 
@@ -337,18 +330,10 @@ export const SetRow = ({ set, index, onChange, onRemove, previousBest, targetRep
                             {!disabled && <button onClick={() => adjustValue('reps', 1)} className="absolute right-0 top-0 h-full px-2 text-green-300 hover:text-green-600 active:scale-90 transition-all opacity-0 group-hover:opacity-100"><Plus size={14} /></button>}
                         </div>
                     </div>
-                    {/* Chips */}
+                    {/* Chips (Horizontal Scroll) */}
                     {!set.completed && isActiveSet && !disabled && (
-                        <div className="grid grid-cols-3 gap-2 w-full mt-1.5">
-                            <div className="flex justify-center">
-                                <QuickChips type="strength" subset={['copy']} onAdjust={adjustValue} onCopy={handleCopy} canCopy={!!previousSet} suggestions={suggestions} onSuggestion={handleAiAction} className="mt-0 ml-0 justify-center" />
-                            </div>
-                            <div className="flex justify-center">
-                                <QuickChips type="strength" subset={['weight']} onAdjust={adjustValue} onCopy={handleCopy} canCopy={!!previousSet} suggestions={suggestions} onSuggestion={handleAiAction} className="mt-0 ml-0 justify-center" />
-                            </div>
-                            <div className="flex justify-center">
-                                <QuickChips type="strength" subset={['ai']} onAdjust={adjustValue} onCopy={handleCopy} canCopy={!!previousSet} suggestions={suggestions} onSuggestion={handleAiAction} className="mt-0 ml-0 justify-center" />
-                            </div>
+                        <div className="mt-2 w-full overflow-x-auto pb-1 scrollbar-hide">
+                            <QuickChips type="strength" subset={['copy', 'weight', 'ai']} onAdjust={adjustValue} onCopy={handleCopy} canCopy={!!previousSet} suggestions={suggestions} onSuggestion={handleAiAction} className="flex-nowrap" />
                         </div>
                     )}
                 </div>
@@ -362,6 +347,6 @@ export const SetRow = ({ set, index, onChange, onRemove, previousBest, targetRep
             <div className="flex px-1 mt-1">
                 <div className="w-[24px] mr-2"></div><div className="flex-1 h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-sm overflow-hidden border border-zinc-200 dark:border-transparent"><div className={`h-full rounded-sm transition-all duration-300 ease-out ${barColor} ${glowClass}`} style={{ width: `${Math.min((reps / (rowTarget || 1)) * 100, 100)}%` }} /></div><div className="w-[110px] ml-2"></div>
             </div>
-        </div>
+        </div >
     );
 };
