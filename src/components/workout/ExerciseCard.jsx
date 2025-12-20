@@ -125,7 +125,7 @@ export const ExerciseCard = ({ exercise, index, onUpdateSet, onAddSet, onRemoveS
                     <>
                         {/* Timer Display if Active */}
                         {isTimerActive && (
-                            <div className="absolute top-3 right-16 sm:right-auto sm:relative sm:top-auto sm:right-auto mr-4 z-20" onClick={(e) => e.stopPropagation()}>
+                            <div className="relative mr-2 z-20" onClick={(e) => e.stopPropagation()}>
                                 <RestTimer timeLeft={timeLeft} onAdd={onAdd} onStop={onStop} />
                             </div>
                         )}

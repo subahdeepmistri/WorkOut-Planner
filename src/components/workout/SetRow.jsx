@@ -238,8 +238,8 @@ export const SetRow = ({ set, index, onChange, onRemove, previousBest, targetRep
                             )}
                         </div>
                         <div className="flex gap-1 justify-center items-center h-full">
-                            <button disabled={disabled} onClick={validateAndComplete} title={set.completed ? "Mark Incomplete" : "Mark Complete"} className={`w-11 h-11 p-2 rounded flex items-center justify-center transition-colors ${set.completed ? 'bg-pink-500 text-white shadow-lg shadow-pink-500/20' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 hover:bg-zinc-300 dark:hover:bg-zinc-700 border border-zinc-300 dark:border-zinc-700'} disabled:opacity-50`}><CheckCircle size={20} /></button>
-                            {!isFocusMode && <button disabled={disabled} onClick={() => onRemove()} title="Delete Set" className="w-11 h-11 flex items-center justify-center transition-colors bg-transparent text-zinc-600 hover:text-red-500 hover:bg-red-500/10 disabled:opacity-50 active:scale-95"><X size={20} /></button>}
+                            <button disabled={disabled} onClick={validateAndComplete} title={set.completed ? "Mark Incomplete" : "Mark Complete"} className={`w-9 h-9 p-1.5 rounded flex items-center justify-center transition-colors ${set.completed ? 'bg-pink-500 text-white shadow-lg shadow-pink-500/20' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 hover:bg-zinc-300 dark:hover:bg-zinc-700 border border-zinc-300 dark:border-zinc-700'} disabled:opacity-50`}><CheckCircle size={18} /></button>
+                            {!isFocusMode && <button disabled={disabled} onClick={() => onRemove()} title="Delete Set" className="w-9 h-9 flex items-center justify-center transition-colors bg-transparent text-zinc-600 hover:text-red-500 hover:bg-red-500/10 disabled:opacity-50 active:scale-95"><X size={18} /></button>}
                         </div>
                     </div>
                 ) : (
@@ -262,8 +262,8 @@ export const SetRow = ({ set, index, onChange, onRemove, previousBest, targetRep
                             )}
                         </div>
                         <div className="flex gap-1 justify-center items-center">
-                            <button disabled={disabled} onClick={validateAndComplete} className={`w-11 h-11 p-2 rounded flex items-center justify-center transition-colors ${set.completed ? 'bg-pink-500 text-white shadow-lg shadow-pink-500/20' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-500 hover:bg-zinc-300 dark:hover:bg-zinc-700 border border-zinc-300 dark:border-zinc-700'} disabled:opacity-50`}><CheckCircle size={20} /></button>
-                            {!isFocusMode && <button disabled={disabled} onClick={() => onRemove()} className="w-11 h-11 flex items-center justify-center transition-colors bg-transparent text-zinc-500 dark:text-zinc-600 hover:text-red-600 dark:hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 disabled:opacity-50 active:scale-95"><X size={20} /></button>}
+                            <button disabled={disabled} onClick={validateAndComplete} className={`w-9 h-9 p-1.5 rounded flex items-center justify-center transition-colors ${set.completed ? 'bg-pink-500 text-white shadow-lg shadow-pink-500/20' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-500 hover:bg-zinc-300 dark:hover:bg-zinc-700 border border-zinc-300 dark:border-zinc-700'} disabled:opacity-50`}><CheckCircle size={18} /></button>
+                            {!isFocusMode && <button disabled={disabled} onClick={() => onRemove()} className="w-9 h-9 flex items-center justify-center transition-colors bg-transparent text-zinc-500 dark:text-zinc-600 hover:text-red-600 dark:hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 disabled:opacity-50 active:scale-95"><X size={18} /></button>}
                         </div>
                     </div>
                 )
@@ -302,8 +302,8 @@ export const SetRow = ({ set, index, onChange, onRemove, previousBest, targetRep
                         </div>
 
                         <div className="flex gap-1 justify-center items-center">
-                            <button disabled={disabled} onClick={validateAndComplete} className={`w-11 h-11 p-2 rounded flex items-center justify-center transition-colors ${set.completed ? 'bg-cyan-500 text-white shadow-md shadow-cyan-500/20' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600 hover:bg-zinc-300 dark:hover:bg-zinc-700'} disabled:opacity-50 border border-zinc-300 dark:border-zinc-700`}><CheckCircle size={20} /></button>
-                            {!isFocusMode && <button disabled={disabled} onClick={() => onRemove()} className="w-11 h-11 flex items-center justify-center transition-colors text-zinc-500 dark:text-zinc-600 hover:text-red-600 dark:hover:text-red-500 disabled:opacity-50 active:scale-95"><X size={20} /></button>}
+                            <button disabled={disabled} onClick={validateAndComplete} className={`w-9 h-9 p-1.5 rounded flex items-center justify-center transition-colors ${set.completed ? 'bg-cyan-500 text-white shadow-md shadow-cyan-500/20' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600 hover:bg-zinc-300 dark:hover:bg-zinc-700'} disabled:opacity-50 border border-zinc-300 dark:border-zinc-700`}><CheckCircle size={18} /></button>
+                            {!isFocusMode && <button disabled={disabled} onClick={() => onRemove()} className="w-9 h-9 flex items-center justify-center transition-colors text-zinc-500 dark:text-zinc-600 hover:text-red-600 dark:hover:text-red-500 disabled:opacity-50 active:scale-95"><X size={18} /></button>}
                         </div>
                     </div>
                 </div>
@@ -339,8 +339,8 @@ export const SetRow = ({ set, index, onChange, onRemove, previousBest, targetRep
                 </div>
 
                 <div className="flex gap-1 justify-center items-center">
-                    <button disabled={disabled} onClick={validateAndComplete} className={`w-11 h-11 p-2 rounded flex items-center justify-center transition-colors mb-0 ${set.completed ? 'bg-green-500 text-white shadow-md shadow-green-500/20' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600 hover:bg-zinc-300 dark:hover:bg-zinc-700 border border-zinc-300 dark:border-zinc-700'} disabled:opacity-50`}><CheckCircle size={20} /></button>
-                    {!isFocusMode && <button disabled={disabled} onClick={() => onRemove()} className="w-11 h-11 flex items-center justify-center transition-colors text-zinc-500 dark:text-zinc-600 hover:text-red-600 dark:hover:text-red-500 disabled:opacity-50 active:scale-95"><X size={20} /></button>}
+                    <button disabled={disabled} onClick={validateAndComplete} className={`w-9 h-9 p-1.5 rounded flex items-center justify-center transition-colors mb-0 ${set.completed ? 'bg-green-500 text-white shadow-md shadow-green-500/20' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600 hover:bg-zinc-300 dark:hover:bg-zinc-700 border border-zinc-300 dark:border-zinc-700'} disabled:opacity-50`}><CheckCircle size={18} /></button>
+                    {!isFocusMode && <button disabled={disabled} onClick={() => onRemove()} className="w-9 h-9 flex items-center justify-center transition-colors text-zinc-500 dark:text-zinc-600 hover:text-red-600 dark:hover:text-red-500 disabled:opacity-50 active:scale-95"><X size={18} /></button>}
                 </div>
             </div>
 
