@@ -335,13 +335,23 @@ export const useWorkoutData = (selectedDate) => {
     const [workoutData, setWorkoutData] = useState(() => {
         const { workoutKey } = getStorageKeys(localStorage.getItem('spideylift_profile') || 'miles');
         const saved = localStorage.getItem(workoutKey);
-        return saved ? JSON.parse(saved) : {};
+        try {
+            return saved ? JSON.parse(saved) : {};
+        } catch (e) {
+            console.error("Failed to parse workouts:", e);
+            return {};
+        }
     });
 
     const [savedPlans, setSavedPlans] = useState(() => {
         const { planKey } = getStorageKeys(localStorage.getItem('spideylift_profile') || 'miles');
         const saved = localStorage.getItem(planKey);
-        return saved ? JSON.parse(saved) : [];
+        try {
+            return saved ? JSON.parse(saved) : [];
+        } catch (e) {
+            console.error("Failed to parse plans:", e);
+            return [];
+        }
     });
 
     // Determine available plans based on profile
