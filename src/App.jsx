@@ -355,35 +355,19 @@ function App() {
                 )}
 
                 {/* Right: Focus Toggle & Big Rest Button */}
-                <div className="flex items-center gap-3">
-                  {/* Focus Toggle */}
-                  {currentLog && !isMinimized && (
-                    <button
-                      onClick={() => setIsFocusMode(!isFocusMode)}
-                      className={`p-3 rounded-full transition-all duration-300 shadow-md flex items-center justify-center ${isFocusMode
-                        ? 'bg-amber-500 text-white shadow-[0_0_15px_rgba(245,158,11,0.5)] scale-110'
-                        : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600 hover:bg-zinc-200 dark:hover:bg-zinc-700'
-                        }`}
-                      title="Toggle Focus Mode"
-                    >
-                      <Zap size={20} className={isFocusMode ? "fill-white" : ""} />
-                    </button>
-                  )}
-
-                  {/* Big Rest Button */}
-                  {currentLog && !isMinimized && (
-                    <HeaderRest
-                      isActive={!!isTimerActive && activeContext === null}
-                      timeLeft={timeLeft || 0}
-                      totalDuration={totalDuration || 0}
-                      onStart={startRest ? startRest : () => { }}
-                      onAdd={addTime ? addTime : () => { }}
-                      onSubtract={subtractTime ? subtractTime : () => { }}
-                      onStop={stopRest ? stopRest : () => { }}
-                      userProfile={userProfile}
-                    />
-                  )}
-                </div>
+                {/* Right: Big Rest Button */}
+                {currentLog && !isMinimized && (
+                  <HeaderRest
+                    isActive={!!isTimerActive && activeContext === null}
+                    timeLeft={timeLeft || 0}
+                    totalDuration={totalDuration || 0}
+                    onStart={startRest ? (duration) => startRest(duration, null) : () => { }}
+                    onAdd={addTime ? addTime : () => { }}
+                    onSubtract={subtractTime ? subtractTime : () => { }}
+                    onStop={stopRest ? stopRest : () => { }}
+                    userProfile={userProfile}
+                  />
+                )}
               </div>
             </header>
 
