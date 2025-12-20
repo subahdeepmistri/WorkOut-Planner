@@ -213,7 +213,7 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
 
                     <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-widest mb-1">Current Streak</h3>
                     <div className="flex items-baseline gap-2">
-                        <span className="text-6xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-yellow-300 to-yellow-600 drop-shadow-lg">
+                        <span className="text-6xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-yellow-300 to-yellow-600 drop-shadow-lg pr-2 pb-1">
                             {history.currentStreak}
                         </span>
                         <span className="text-xl font-bold text-zinc-400">Days</span>
