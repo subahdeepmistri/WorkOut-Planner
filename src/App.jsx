@@ -349,26 +349,39 @@ function App() {
               </div>
 
               {/* Stats Toggle (Mobile Friendly) */}
-              <div className="flex justify-between items-center mt-2 px-1"></div>
-              <div className="flex justify-between items-center mt-4 pt-4 border-t border-zinc-200/50 dark:border-zinc-800/50 min-h-[52px]">
-                {/* HEADER CONTROLS: Discard & Big Rest Button */}
-                <div className="flex justify-between items-center mt-4 pt-4 border-t border-zinc-200/50 dark:border-zinc-800/50 min-h-[60px] w-full">
+              <div className="flex justify-between items-center mt-4 pt-4 border-t border-zinc-200/50 dark:border-zinc-800/50 min-h-[60px] w-full">
 
-                  {/* Left: Discard Button */}
+                {/* Left: Discard Button */}
+                {currentLog && !isMinimized && (
+                  <button
+                    onClick={() => setShowDiscardConfirm(true)}
+                    disabled={isLocked}
+                    className={`text-sm font-bold flex items-center gap-1.5 transition-colors px-4 py-2 rounded-full ${isLocked
+                      ? 'text-zinc-400 dark:text-zinc-600 bg-zinc-100 dark:bg-zinc-800/50 cursor-not-allowed opacity-50'
+                      : 'text-red-600/90 dark:text-red-500/80 hover:text-red-600 dark:hover:text-red-400 bg-red-100 dark:bg-red-500/10'
+                      }`}
+                  >
+                    <Trash2 size={16} /> Discard
+                  </button>
+                )}
+
+                {/* Right: Focus Toggle & Big Rest Button */}
+                <div className="flex items-center gap-3">
+                  {/* Focus Toggle */}
                   {currentLog && !isMinimized && (
                     <button
-                      onClick={() => setShowDiscardConfirm(true)}
-                      disabled={isLocked}
-                      className={`text-sm font-bold flex items-center gap-1.5 transition-colors px-4 py-2 rounded-full ${isLocked
-                        ? 'text-zinc-400 dark:text-zinc-600 bg-zinc-100 dark:bg-zinc-800/50 cursor-not-allowed opacity-50'
-                        : 'text-red-600/90 dark:text-red-500/80 hover:text-red-600 dark:hover:text-red-400 bg-red-100 dark:bg-red-500/10'
+                      onClick={() => setIsFocusMode(!isFocusMode)}
+                      className={`p-3 rounded-full transition-all duration-300 shadow-md flex items-center justify-center ${isFocusMode
+                          ? 'bg-amber-500 text-white shadow-[0_0_15px_rgba(245,158,11,0.5)] scale-110'
+                          : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600 hover:bg-zinc-200 dark:hover:bg-zinc-700'
                         }`}
+                      title="Toggle Focus Mode"
                     >
-                      <Trash2 size={16} /> Discard
+                      <Zap size={20} className={isFocusMode ? "fill-white" : ""} />
                     </button>
                   )}
 
-                  {/* Right: Big Rest Button */}
+                  {/* Big Rest Button */}
                   {currentLog && !isMinimized && (
                     <HeaderRest
                       isActive={!!isTimerActive && activeContext === null}
