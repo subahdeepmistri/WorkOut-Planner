@@ -333,7 +333,7 @@ export const SetRow = ({ set, index, onChange, onRemove, previousBest, targetRep
                     {/* Chips (Horizontal Scroll) */}
                     {!set.completed && isActiveSet && !disabled && (
                         <div className="mt-2 w-full overflow-x-auto pb-1 scrollbar-hide">
-                            <QuickChips type="strength" subset={['copy', 'weight', 'ai']} onAdjust={adjustValue} onCopy={handleCopy} canCopy={!!previousSet} suggestions={suggestions} onSuggestion={handleAiAction} className="flex-nowrap" />
+                            <QuickChips type="strength" subset={['copy']} onAdjust={adjustValue} onCopy={handleCopy} canCopy={!!previousSet} suggestions={suggestions} onSuggestion={handleAiAction} className="flex-nowrap" />
                         </div>
                     )}
                 </div>
