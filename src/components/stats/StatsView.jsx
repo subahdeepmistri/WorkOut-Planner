@@ -90,7 +90,7 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
 
     // --- Rendering ---
     return (
-        <div className="p-4 pb-32 space-y-6 animate-in fade-in duration-700 relative">
+        <div className="p-4 pb-40 space-y-6 animate-in fade-in duration-700 relative">
 
             {/* Calendar Modal */}
             {isCalendarOpen && (
@@ -103,7 +103,7 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
             )}
 
             {/* Header Section */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
+            <div className="flex flex-row items-center justify-between gap-4 mb-4">
                 <div>
                     <h2 className="text-3xl sm:text-4xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-purple-500 to-pink-500 dark:from-red-400 dark:via-purple-400 dark:to-pink-400 drop-shadow-[2px_2px_0px_rgba(0,0,0,0.1)] dark:drop-shadow-[3px_3px_0px_#000000] animate-pulse" style={{ transform: 'skew(-10deg)' }}>
                         DUO-FIT
@@ -260,7 +260,7 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
                     {/* Strength Volume Trend */}
                     {history.totalVol > 0 && (
                         <div className="p-6 rounded-3xl bg-white/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 backdrop-blur-sm">
-                            <h3 className="text-sm font-bold text-zinc-500 uppercase mb-4">Volume Load (Kg)</h3>
+                            <h3 className="text-sm font-bold text-zinc-500 uppercase mb-4">Strength Progress (Trend)</h3>
                             <div className="h-64">
                                 <Line data={{
                                     labels: history.labels,
