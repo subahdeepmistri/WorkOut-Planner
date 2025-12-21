@@ -113,7 +113,7 @@ export const StatsCard = ({
 
                     {/* Micro Trend Chart */}
                     {trendData && trendData.length >= 2 && (
-                        <div className="hidden sm:flex flex-col items-end gap-1 mb-1">
+                        <div className="hidden md:flex flex-col items-end gap-1 mb-1">
                             <MicroTrend data={trendData} />
                         </div>
                     )}
