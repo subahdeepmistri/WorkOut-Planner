@@ -15,22 +15,37 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarEleme
 
 /**
  * DEBUG CONTROL (Development Only)
- * Allows forcing user stages for testing.
+ * Allows forcing specific user journey states for verification.
  */
-const DevStatsControl = ({ currentStage, forceStage }) => {
+const DevStatsControl = ({ forceState }) => {
     if (process.env.NODE_ENV === 'production') return null;
+
+    const scenarios = [
+        { label: "D0", streak: 0, workouts: 0, desc: "New User" },
+        { label: "D1", streak: 1, workouts: 1, desc: "First Workout" },
+        { label: "D3", streak: 3, workouts: 3, desc: "Momentum" },
+        { label: "D5", streak: 5, workouts: 5, desc: "Consistency" },
+        { label: "D10", streak: 10, workouts: 10, desc: "Habit" },
+        { label: "D20", streak: 20, workouts: 20, desc: "Established" },
+        { label: "D35", streak: 35, workouts: 35, desc: "Discipline" },
+    ];
+
     return (
-        <div className="fixed bottom-20 right-4 z-50 bg-black/80 backdrop-blur-md p-2 rounded-lg border border-white/10 flex gap-1 shadow-2xl scale-75 origin-bottom-right opacity-50 hover:opacity-100 transition-opacity">
-            {[0, 1, 2, 3, 4, 5].map(stage => (
-                <button
-                    key={stage}
-                    onClick={() => forceStage(stage)}
-                    className={`w-8 h-8 rounded text-xs font-bold ${currentStage === stage ? 'bg-emerald-500 text-white' : 'bg-zinc-800 text-zinc-400'}`}
-                >
-                    S{stage}
-                </button>
-            ))}
-            <button onClick={() => forceStage(null)} className="px-2 bg-red-900/50 text-red-200 text-[10px] rounded">RST</button>
+        <div className="fixed bottom-20 right-4 z-50 bg-black/90 backdrop-blur-md p-3 rounded-xl border border-white/10 flex flex-col gap-2 shadow-2xl scale-90 origin-bottom-right opacity-30 hover:opacity-100 transition-opacity">
+            <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1">Debug Journey</div>
+            <div className="flex gap-1 flex-wrap max-w-[200px]">
+                {scenarios.map(s => (
+                    <button
+                        key={s.label}
+                        onClick={() => forceState(s)}
+                        className="px-2 py-1 bg-zinc-800 hover:bg-emerald-900 text-zinc-300 hover:text-emerald-400 text-[10px] rounded border border-zinc-700 transition-colors"
+                        title={s.desc}
+                    >
+                        {s.label}
+                    </button>
+                ))}
+                <button onClick={() => forceState(null)} className="px-2 py-1 bg-red-900/30 text-red-400 text-[10px] rounded border border-red-900/50">Reset</button>
+            </div>
         </div>
     );
 };
@@ -51,7 +66,9 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
     // --- Local UI State ---
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-    const [forcedStage, setForcedStage] = useState(null); // Debug State
+
+    // Debug State: object with { streak, totalWorkouts } or null
+    const [forcedState, setForcedState] = useState(null);
 
     // --- Helpers (View Only) ---
     const getTodayStr = () => new Date().toLocaleDateString('en-CA');
@@ -111,54 +128,39 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
         animation: { animateScale: true, animateRotate: true, duration: 1500 }
     };
 
-    // --- AI Insight Generation (Simulated for Stages) ---
+    // --- Derived State for Logic ---
+    // Use forced state if available, otherwise real history
+    const activeStreak = forcedState ? forcedState.streak : history.currentStreak;
+    const activeWorkouts = forcedState ? forcedState.workouts : history.totalWorkouts;
+
+    // --- AI Insight Generation (Strictly Gated) ---
     const insights = React.useMemo(() => {
-        // Debug Override
-        const rawStage = history.userStage;
-        const userStage = forcedStage !== null ? forcedStage : rawStage;
-        const { totalWorkouts } = history;
+        const result = { strength: null, cardio: null };
 
-        // Mock streak for visual verification if stage is forced
-        const currentStreak = forcedStage !== null
-            ? (forcedStage === 0 ? 0 : forcedStage === 1 ? 1 : forcedStage === 2 ? 3 : forcedStage === 3 ? 6 : 14)
-            : history.currentStreak;
+        // Day 0-1: No AI
+        if (activeWorkouts < 2) return result;
 
-        // Default: No insights
-        let result = { strength: null, cardio: null };
-
-        // Stage 2 (Day 3-4): Neutral Observations
-        if (userStage === 2) {
-            result.strength = { text: "Consistency is key. Good job showing up.", confidence: 0.6 };
+        // Day 2-3 (Momentum): Neutral Observation, Confidence >= 0.55
+        if (activeStreak >= 2 && activeStreak <= 3) {
+            result.strength = { text: "You've logged workouts on consecutive days.", confidence: 0.6 };
         }
-        // Stage 3 (Day 5-7): Observational
-        else if (userStage === 3) {
-            if (currentStreak > 2) {
-                result.strength = { text: "You're building a strong habit pattern.", confidence: 0.65 };
-            }
-            if (history.datasets.cDist.length > 2) {
-                result.cardio = { text: "Cardio volume is tracking steadily.", confidence: 0.6 };
-            }
+        // Day 7-13 (Habit Lock-In): Observational, Confidence >= 0.6
+        else if (activeStreak >= 7 && activeStreak <= 13) {
+            result.strength = { text: "Strength volume increased vs Day 1.", confidence: 0.65 };
         }
-        // Stage 4+ (Day 8+): Deeper Insights
-        else if (userStage >= 4) {
-            result.strength = { text: "Strength volume trending up vs last week.", confidence: 0.75 };
-            result.cardio = { text: "Pace maintenance is improving.", confidence: 0.7 };
-        }
-        // Stage 5 Refection
-        if (userStage >= 5) {
+        // Day 30+ (Discipline): Reflective, Confidence >= 0.7
+        else if (activeStreak >= 30) {
             result.strength = { text: "You maintain pace better with shorter sessions.", confidence: 0.8 };
         }
 
         return result;
-    }, [history, forcedStage]);
+    }, [activeStreak, activeWorkouts]);
 
-    // Derived stage for UI rendering
-    const activeStage = forcedStage !== null ? forcedStage : history.userStage;
 
     // --- Rendering ---
     return (
         <div className="p-4 pb-40 space-y-6 animate-in fade-in duration-700 relative">
-            <DevStatsControl currentStage={activeStage} forceStage={setForcedStage} />
+            <DevStatsControl forceState={setForcedState} />
 
             {/* Calendar Modal */}
             {isCalendarOpen && (
@@ -176,7 +178,16 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
                     <h2 className="text-3xl sm:text-4xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-purple-500 to-pink-500 dark:from-red-400 dark:via-purple-400 dark:to-pink-400 drop-shadow-[2px_2px_0px_rgba(0,0,0,0.1)] dark:drop-shadow-[3px_3px_0px_#000000] animate-pulse" style={{ transform: 'skew(-10deg)' }}>
                         DUO-FIT
                     </h2>
-                    <p className="text-xs text-zinc-500 font-bold uppercase tracking-[0.2em]">Spidey-Sense Analysis</p>
+                    <div className="flex items-center gap-2">
+                        <p className="text-xs text-zinc-500 font-bold uppercase tracking-[0.2em]">Spidey-Sense Analysis</p>
+                        {/* Dormant AI Hint (Always visible, fades in) */}
+                        <div className="group relative">
+                            <span className="text-zinc-600 dark:text-zinc-700 text-[10px] cursor-help opacity-50 hover:opacity-100 transition-opacity">🧠</span>
+                            <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 w-max px-2 py-1 bg-zinc-800 text-zinc-300 text-[10px] rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                                Insights unlock as you train
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Dropdown */}
@@ -230,6 +241,8 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
                     }}
                     trendData={history.datasets.cMin.slice(-5)}
                     dataState={!dayStats ? 'empty' : (dayStats.hasStrength || dayStats.hasCardio || dayStats.hasCore) ? 'valid' : 'partial'}
+                    // Valid override for Day 0: must show empty text
+                    emptyOverride={activeWorkouts === 0 ? "No data yet" : null}
                 />
 
                 <StatsCard
@@ -274,37 +287,21 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
 
             {/* KPI Cards (Discipline, Streak) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Day Streak */}
+                {/* Day Streak - Strictly per Master Prompt Ranges */}
                 {(() => {
-
-                    /*
-                                            // Logic moved to "Dashboard Evolution" style
-                                            // Stage 0 (0 workouts): Start Journey
-                                            // Stage 1 (1 workout): 1 Day, Great start
-                                            // Stage 2 (2-4 workouts): Building momentum
-                                            // Stage 3 (5-7 workouts): Full week strong
-                                            // Stage 4 (8+): Standard Streak
-                                        */
-                    const { totalWorkouts } = history;
-                    // Use activeStage for logic
-                    let currentStreak = history.currentStreak;
-                    if (forcedStage !== null) {
-                        currentStreak = (forcedStage === 0 ? 0 : forcedStage === 1 ? 1 : forcedStage === 2 ? 3 : forcedStage === 3 ? 6 : 14);
-                    }
-
                     let config = {
                         title: "Current Streak",
-                        value: currentStreak,
+                        value: activeStreak,
                         unit: "Days",
                         subtext: "Keep the fire burning!",
                         gradient: "from-yellow-300 to-yellow-600",
                         opacity: "opacity-10"
                     };
 
-                    // STAGE 0
-                    if (activeStage === 0) {
+                    // DAY 0 (No Workouts)
+                    if (activeWorkouts === 0) {
                         config = {
-                            title: "Start Journey",
+                            title: "Start your streak",
                             value: "START",
                             unit: "",
                             subtext: "Log your first workout to begin",
@@ -312,8 +309,8 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
                             opacity: "opacity-5"
                         };
                     }
-                    // STAGE 1
-                    else if (activeStage === 1) {
+                    // DAY 1 (First Workout)
+                    else if (activeWorkouts === 1) {
                         config = {
                             title: "Current Streak",
                             value: "1",
@@ -323,40 +320,60 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
                             opacity: "opacity-20"
                         };
                     }
-                    // STAGE 2
-                    else if (activeStage === 2) {
+                    // DAY 2-3 (Momentum Building)
+                    else if (activeStreak >= 2 && activeStreak <= 3) {
                         config = {
                             title: "Current Streak",
-                            value: String(currentStreak),
+                            value: String(activeStreak),
                             unit: "Days",
                             subtext: "You’re building momentum 💪",
                             gradient: "from-emerald-400 to-emerald-600",
                             opacity: "opacity-20"
                         };
                     }
-                    // STAGE 3
-                    else if (activeStage === 3 && currentStreak >= 7) {
+                    // DAY 4-6 (Consistency Phase)
+                    else if (activeStreak >= 4 && activeStreak <= 6) {
                         config = {
                             title: "Current Streak",
-                            value: String(currentStreak),
+                            value: String(activeStreak),
                             unit: "Days",
-                            subtext: "A full week strong 🔥",
-                            gradient: "from-purple-500 to-pink-500",
+                            subtext: "Consistency looks good",
+                            gradient: "from-teal-400 to-teal-600",
                             opacity: "opacity-20"
                         };
                     }
-                    else {
-                        // Standard / Broken Logic for higher stages
-                        if (currentStreak === 0) {
-                            config = {
-                                title: "Streak Broken",
-                                value: "--",
-                                unit: "",
-                                subtext: "Time to restart the fire!",
-                                gradient: "from-zinc-500 to-zinc-700",
-                                opacity: "opacity-10"
-                            };
-                        }
+                    // DAY 7-13 (Habit Lock-In)
+                    else if (activeStreak >= 7 && activeStreak <= 13) {
+                        config = {
+                            title: "Current Streak",
+                            value: String(activeStreak),
+                            unit: "Days",
+                            subtext: "Keep the fire burning 🔥",
+                            gradient: "from-orange-500 to-red-500",
+                            opacity: "opacity-30"
+                        };
+                    }
+                    // DAY 14-29 (Habit Established)
+                    else if (activeStreak >= 14 && activeStreak <= 29) {
+                        config = {
+                            title: "Current Streak",
+                            value: String(activeStreak),
+                            unit: "Days",
+                            subtext: "This is a real habit now",
+                            gradient: "from-purple-500 to-pink-600",
+                            opacity: "opacity-30"
+                        };
+                    }
+                    // DAY 30+ (Discipline Phase)
+                    else if (activeStreak >= 30) {
+                        config = {
+                            title: "Current Streak",
+                            value: String(activeStreak),
+                            unit: "Days",
+                            subtext: "Discipline unlocked 💯",
+                            gradient: "from-blue-500 to-indigo-600",
+                            opacity: "opacity-40"
+                        };
                     }
 
                     return (
@@ -378,7 +395,7 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
                 })()}
 
                 {/* Discipline Score (Shown > 3 sessions) */}
-                {history.totalWorkouts > 3 && (
+                {activeWorkouts > 3 && (
                     <div className="relative p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden group">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl group-hover:bg-purple-500/20 transition-colors"></div>
                         <h3 className="text-sm font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-1">Discipline Score</h3>
@@ -396,9 +413,9 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
 
 
 
-            {/* Monthly Summary (Stage 5 Only) */}
+            {/* Monthly Summary (Day 14+ Only) */}
             {
-                activeStage >= 5 && (
+                activeStreak >= 14 && (
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 animate-in slide-in-from-bottom-8 duration-700 delay-100">
                         <div className="md:col-span-3">
                             <h3 className="text-sm font-bold text-zinc-500 dark:text-zinc-500 uppercase tracking-widest pl-1 mb-2">This Month at a Glance</h3>
@@ -408,7 +425,7 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
                             <span className="text-xs font-bold text-zinc-500 uppercase">Sessions Done</span>
                         </div>
                         <div className="bg-zinc-100 dark:bg-zinc-900/50 p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 flex flex-col justify-center items-center">
-                            <span className="text-3xl font-black text-emerald-500">{history.currentStreak}</span>
+                            <span className="text-3xl font-black text-emerald-500">{activeStreak}</span>
                             <span className="text-xs font-bold text-zinc-500 uppercase">Longest Streak</span>
                         </div>
                         <div className="bg-zinc-100 dark:bg-zinc-900/50 p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 flex flex-col justify-center items-center">
@@ -419,9 +436,9 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
                 )
             }
 
-            {/* Charts Section - Conditionally Rendered based on Stage (Unlock at Stage 2+) */}
+            {/* Charts Section - Visible only if >= 2 workouts */}
             {
-                activeStage >= 2 && (
+                activeWorkouts >= 2 && (
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-8">
 
                         {/* Training Split */}
@@ -440,26 +457,33 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
                         </div>
 
                         {/* Strength Volume Trend */}
-                        {history.totalVol > 0 && (
+                        {history.totalVol >= 0 && (
                             <div className="p-6 rounded-3xl bg-white/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 backdrop-blur-sm">
                                 <h3 className="text-sm font-bold text-zinc-500 uppercase mb-4">Strength Progress (Trend)</h3>
                                 <div className="h-64">
-                                    <Line data={{
-                                        labels: history.labels,
-                                        datasets: [{
-                                            data: history.datasets.sVol,
-                                            borderColor: '#ef4444',
-                                            backgroundColor: (context) => {
-                                                const ctx = context.chart.ctx;
-                                                const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-                                                gradient.addColorStop(0, 'rgba(239, 68, 68, 0.5)');
-                                                gradient.addColorStop(1, 'rgba(239, 68, 68, 0)');
-                                                return gradient;
-                                            },
-                                            fill: true,
-                                            tension: 0.4
-                                        }]
-                                    }} options={commonOptions} />
+                                    {/* Logic: If < 2 data points (approx activeWorkouts < 2, but we are inside >=2 block), show summary text instead */}
+                                    {activeWorkouts < 2 ? (
+                                        <div className="h-full flex flex-col items-center justify-center opacity-50">
+                                            <p className="text-sm font-bold text-zinc-500">Not enough data for trend line yet.</p>
+                                        </div>
+                                    ) : (
+                                        <Line data={{
+                                            labels: history.labels,
+                                            datasets: [{
+                                                data: history.datasets.sVol,
+                                                borderColor: '#ef4444',
+                                                backgroundColor: (context) => {
+                                                    const ctx = context.chart.ctx;
+                                                    const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+                                                    gradient.addColorStop(0, 'rgba(239, 68, 68, 0.5)');
+                                                    gradient.addColorStop(1, 'rgba(239, 68, 68, 0)');
+                                                    return gradient;
+                                                },
+                                                fill: true,
+                                                tension: 0.4
+                                            }]
+                                        }} options={commonOptions} />
+                                    )}
                                 </div>
                             </div>
                         )}
@@ -469,7 +493,7 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
 
             {/* Empty State Footer CTA (Stage 0 only) */}
             {
-                activeStage === 0 && (
+                activeWorkouts === 0 && (
                     <div className="flex justify-center py-8">
                         <button className="px-8 py-3 rounded-full bg-emerald-500 text-white font-bold shadow-lg shadow-emerald-500/30 animate-pulse hover:bg-emerald-400 transition-colors">
                             Start First Workout →
