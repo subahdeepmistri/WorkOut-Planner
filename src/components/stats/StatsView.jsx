@@ -440,7 +440,6 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
                             <div className="p-4 sm:p-6 rounded-3xl bg-white/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 backdrop-blur-sm">
                                 <h3 className="text-xs sm:text-sm font-bold text-zinc-500 uppercase mb-2 sm:mb-4">Strength Progress</h3>
                                 <div className="h-48 sm:h-64">
-                                    {/* Logic: If < 2 data points (approx activeWorkouts < 2, but we are inside >=2 block), show summary text instead */}
                                     {activeWorkouts < 2 ? (
                                         <div className="h-full flex flex-col items-center justify-center opacity-50">
                                             <p className="text-sm font-bold text-zinc-500">Not enough data for trend line yet.</p>
@@ -456,6 +455,68 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
                                                     const gradient = ctx.createLinearGradient(0, 0, 0, 300);
                                                     gradient.addColorStop(0, 'rgba(239, 68, 68, 0.5)');
                                                     gradient.addColorStop(1, 'rgba(239, 68, 68, 0)');
+                                                    return gradient;
+                                                },
+                                                fill: true,
+                                                tension: 0.4
+                                            }]
+                                        }} options={commonOptions} />
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Cardio Progress (Distance) */}
+                        {history.distribution[1] > 0 && (
+                            <div className="p-4 sm:p-6 rounded-3xl bg-white/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 backdrop-blur-sm">
+                                <h3 className="text-xs sm:text-sm font-bold text-zinc-500 uppercase mb-2 sm:mb-4">Cardio Progress</h3>
+                                <div className="h-48 sm:h-64">
+                                    {activeWorkouts < 2 ? (
+                                        <div className="h-full flex flex-col items-center justify-center opacity-50">
+                                            <p className="text-sm font-bold text-zinc-500">Not enough data for trend line yet.</p>
+                                        </div>
+                                    ) : (
+                                        <Line data={{
+                                            labels: history.labels,
+                                            datasets: [{
+                                                data: history.datasets.cDist,
+                                                borderColor: '#3b82f6',
+                                                backgroundColor: (context) => {
+                                                    const ctx = context.chart.ctx;
+                                                    const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+                                                    gradient.addColorStop(0, 'rgba(59, 130, 246, 0.5)');
+                                                    gradient.addColorStop(1, 'rgba(59, 130, 246, 0)');
+                                                    return gradient;
+                                                },
+                                                fill: true,
+                                                tension: 0.4
+                                            }]
+                                        }} options={commonOptions} />
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Core Progress (Reps) */}
+                        {history.distribution[2] > 0 && (
+                            <div className="p-4 sm:p-6 rounded-3xl bg-white/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 backdrop-blur-sm">
+                                <h3 className="text-xs sm:text-sm font-bold text-zinc-500 uppercase mb-2 sm:mb-4">Core Progress</h3>
+                                <div className="h-48 sm:h-64">
+                                    {activeWorkouts < 2 ? (
+                                        <div className="h-full flex flex-col items-center justify-center opacity-50">
+                                            <p className="text-sm font-bold text-zinc-500">Not enough data for trend line yet.</p>
+                                        </div>
+                                    ) : (
+                                        <Line data={{
+                                            labels: history.labels,
+                                            datasets: [{
+                                                data: history.datasets.aRep,
+                                                borderColor: '#10b981',
+                                                backgroundColor: (context) => {
+                                                    const ctx = context.chart.ctx;
+                                                    const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+                                                    gradient.addColorStop(0, 'rgba(16, 185, 129, 0.5)');
+                                                    gradient.addColorStop(1, 'rgba(16, 185, 129, 0)');
                                                     return gradient;
                                                 },
                                                 fill: true,
