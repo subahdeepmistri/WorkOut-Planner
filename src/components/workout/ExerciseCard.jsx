@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Link as LinkIcon, Footprints, Timer, Trash2, Plus, Lock, Unlock, Hash, Brain } from 'lucide-react';
 import { SetRow } from './SetRow';
 import { AdherenceBar } from './AdherenceBar';
-import { RestTimer } from './RestTimer';
+
+
 
 export const ExerciseCard = ({ exercise, index, onUpdateSet, onAddSet, onRemoveSet, onLink, previousBest, onRemove, onCardioMode, onCoreMode, pendingSuperset, onUpdateName, disabled, onStartRest, activeTimer, timerControls, onToggleLock, isFocusMode, onStartSetTimer }) => {
     const isSuperset = exercise.supersetId !== null;
@@ -161,13 +162,6 @@ export const ExerciseCard = ({ exercise, index, onUpdateSet, onAddSet, onRemoveS
                 {/* Right: Timer & Tools */}
                 {!isWaiting && (
                     <>
-                        {/* Timer Display if Active */}
-                        {isTimerActive && (
-                            <div className="relative mr-2 z-20" onClick={(e) => e.stopPropagation()}>
-                                <RestTimer timeLeft={timeLeft} onAdd={onAdd} onStop={onStop} />
-                            </div>
-                        )}
-
                         <div className="flex items-center gap-1 sm:gap-2">
                             {/* Link Button */}
                             {onLink && !isSuperset && (
