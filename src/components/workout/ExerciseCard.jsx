@@ -30,9 +30,9 @@ export const ExerciseCard = ({ exercise, index, onUpdateSet, onAddSet, onRemoveS
     // Theme Configuration
     const CARD_THEMES = {
         default: {
-            card: "bg-white dark:bg-black/40 backdrop-blur-md border border-emerald-300 dark:border-green-500/30 shadow-sm dark:shadow-[0_0_15px_rgba(34,197,94,0.1)]",
-            header: "bg-emerald-200 dark:bg-green-900/20 border-b border-emerald-300 dark:border-green-500/20",
-            name: "text-emerald-950 dark:text-green-100"
+            card: "bg-white dark:bg-black/40 backdrop-blur-md border border-indigo-300 dark:border-indigo-500/30 shadow-sm dark:shadow-[0_0_15px_rgba(99,102,241,0.1)]",
+            header: "bg-indigo-100 dark:bg-indigo-900/20 border-b border-indigo-300 dark:border-indigo-500/20",
+            name: "text-indigo-950 dark:text-indigo-100"
         },
         cardio: {
             card: "bg-white dark:bg-black/40 backdrop-blur-md border border-pink-300 dark:border-pink-500/50 shadow-sm dark:shadow-[0_0_15px_rgba(236,72,153,0.15)]",
@@ -40,9 +40,9 @@ export const ExerciseCard = ({ exercise, index, onUpdateSet, onAddSet, onRemoveS
             name: "text-pink-950 dark:text-pink-200"
         },
         abs: {
-            card: "bg-white dark:bg-black/40 backdrop-blur-md border border-cyan-300 dark:border-cyan-500/50 shadow-sm dark:shadow-[0_0_15px_rgba(34,211,238,0.15)]",
-            header: "bg-cyan-100 dark:bg-cyan-900/30 border-b border-cyan-300 dark:border-cyan-500/30",
-            name: "text-cyan-950 dark:text-cyan-200"
+            card: "bg-white dark:bg-black/40 backdrop-blur-md border border-emerald-300 dark:border-emerald-500/50 shadow-sm dark:shadow-[0_0_15px_rgba(16,185,129,0.15)]",
+            header: "bg-emerald-100 dark:bg-emerald-900/30 border-b border-emerald-300 dark:border-emerald-500/30",
+            name: "text-emerald-950 dark:text-emerald-200"
         },
         superset: {
             card: "bg-orange-50 dark:bg-gradient-to-r dark:from-amber-500/10 dark:to-orange-500/10 border-2 border-orange-300 dark:border-orange-500/50 relative overflow-hidden shadow-sm",
@@ -111,12 +111,12 @@ export const ExerciseCard = ({ exercise, index, onUpdateSet, onAddSet, onRemoveS
                                         <button onClick={(e) => { e.stopPropagation(); onCardioMode(index, 'duration'); }} className={`py-0.5 rounded-full text-[9px] font-bold uppercase transition-all flex items-center justify-center ${exercise.cardioMode === 'duration' ? 'bg-white dark:bg-pink-500 text-pink-600 dark:text-white shadow-sm' : 'text-pink-400 dark:text-pink-300 hover:bg-white/50'}`}>Time</button>
                                     </div>
                                 ) : exercise.type === 'abs' ? (
-                                    <div className="grid grid-cols-2 bg-cyan-100 dark:bg-cyan-900/40 rounded-full p-0.5 gap-0.5 w-[110px]">
-                                        <button onClick={(e) => { e.stopPropagation(); onCoreMode(index, 'reps'); }} className={`py-0.5 rounded-full text-[9px] font-bold uppercase transition-all flex items-center justify-center ${exercise.coreMode === 'reps' ? 'bg-white dark:bg-cyan-500 text-cyan-600 dark:text-white shadow-sm' : 'text-cyan-400 dark:text-cyan-300 hover:bg-white/50'}`}>Reps</button>
-                                        <button onClick={(e) => { e.stopPropagation(); onCoreMode(index, 'hold'); }} className={`py-0.5 rounded-full text-[9px] font-bold uppercase transition-all flex items-center justify-center ${exercise.coreMode === 'hold' ? 'bg-white dark:bg-cyan-500 text-cyan-600 dark:text-white shadow-sm' : 'text-cyan-400 dark:text-cyan-300 hover:bg-white/50'}`}>Hold</button>
+                                    <div className="grid grid-cols-2 bg-emerald-100 dark:bg-emerald-900/40 rounded-full p-0.5 gap-0.5 w-[110px]">
+                                        <button onClick={(e) => { e.stopPropagation(); onCoreMode(index, 'reps'); }} className={`py-0.5 rounded-full text-[9px] font-bold uppercase transition-all flex items-center justify-center ${exercise.coreMode === 'reps' ? 'bg-white dark:bg-emerald-500 text-emerald-600 dark:text-white shadow-sm' : 'text-emerald-400 dark:text-emerald-300 hover:bg-white/50'}`}>Reps</button>
+                                        <button onClick={(e) => { e.stopPropagation(); onCoreMode(index, 'hold'); }} className={`py-0.5 rounded-full text-[9px] font-bold uppercase transition-all flex items-center justify-center ${exercise.coreMode === 'hold' ? 'bg-white dark:bg-emerald-500 text-emerald-600 dark:text-white shadow-sm' : 'text-emerald-400 dark:text-emerald-300 hover:bg-white/50'}`}>Hold</button>
                                     </div>
                                 ) : (
-                                    <span className="text-[10px] font-mono text-emerald-600/70 dark:text-emerald-400/70 bg-emerald-100/50 dark:bg-emerald-900/20 px-1.5 py-0.5 rounded">
+                                    <span className="text-[10px] font-mono text-indigo-600/70 dark:text-indigo-400/70 bg-indigo-100/50 dark:bg-indigo-900/20 px-1.5 py-0.5 rounded">
                                         Target: {exercise.targetSets} × {exercise.numericalTargetReps}
                                     </span>
                                 )}
@@ -196,19 +196,19 @@ export const ExerciseCard = ({ exercise, index, onUpdateSet, onAddSet, onRemoveS
                     )
                 ) : exercise.type === 'abs' ? (
                     <div className="grid gap-2 mb-2 px-0 items-center grid-cols-[24px_1fr_auto]">
-                        <div className="text-[10px] text-zinc-500 dark:text-cyan-500/50 font-bold text-center">#</div>
+                        <div className="text-[10px] text-zinc-500 dark:text-emerald-500/50 font-bold text-center">#</div>
                         <div className="grid gap-2 w-full" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(60px, 1fr))' }}>
-                            <div className="text-[10px] text-zinc-500 dark:text-cyan-500/50 font-bold text-center">{(exercise.coreMode === 'hold') ? 'HOLD TIME' : 'REPS'}</div>
+                            <div className="text-[10px] text-zinc-500 dark:text-emerald-500/50 font-bold text-center">{(exercise.coreMode === 'hold') ? 'HOLD TIME' : 'REPS'}</div>
                         </div>
-                        <div className="text-[10px] text-zinc-500 dark:text-cyan-500/50 font-bold text-center w-[100px]">ACTIONS</div>
+                        <div className="text-[10px] text-zinc-500 dark:text-emerald-500/50 font-bold text-center w-[100px]">ACTIONS</div>
                     </div>
                 ) : (
                     <div className="grid gap-2 mb-2 px-0 items-center grid-cols-[24px_1fr_auto]">
-                        <div className="text-[10px] text-zinc-500 dark:text-green-500/50 font-bold text-center">#</div>
+                        <div className="text-[10px] text-zinc-500 dark:text-indigo-500/50 font-bold text-center">#</div>
                         <div className="grid gap-2 w-full" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(60px, 1fr))' }}>
-                            <div className="text-[10px] text-zinc-500 dark:text-green-500/50 font-bold text-center">GOAL</div><div className="text-[10px] text-zinc-500 dark:text-green-500/50 font-bold text-center">KG</div><div className="text-[10px] text-zinc-500 dark:text-green-500/50 font-bold text-center">REPS</div>
+                            <div className="text-[10px] text-zinc-500 dark:text-indigo-500/50 font-bold text-center">GOAL</div><div className="text-[10px] text-zinc-500 dark:text-indigo-500/50 font-bold text-center">KG</div><div className="text-[10px] text-zinc-500 dark:text-indigo-500/50 font-bold text-center">REPS</div>
                         </div>
-                        <div className="text-[10px] text-zinc-500 dark:text-green-500/50 font-bold text-center w-[100px]">ACTIONS</div>
+                        <div className="text-[10px] text-zinc-500 dark:text-indigo-500/50 font-bold text-center w-[100px]">ACTIONS</div>
                     </div>
                 )}
                 {(() => {

@@ -277,19 +277,19 @@ export const SetRow = ({ set, index, onChange, onRemove, previousBest, targetRep
             <div className={`py-2 hover:bg-zinc-50/50 dark:hover:bg-zinc-800/20 transition-all duration-300 rounded-lg ${focusClass}`}>
                 <div className="py-2">
                     <div className="grid gap-3 items-center grid-cols-[24px_1fr_auto]">
-                        <span className="text-cyan-600/70 text-sm font-mono text-center">{index + 1}</span>
+                        <span className="text-emerald-600/70 text-sm font-mono text-center">{index + 1}</span>
                         <div className="flex flex-col w-full">
                             {/* Dynamic Input based on Core Mode */}
                             <div className="relative w-full group">
                                 {coreMode === 'hold' ? (
                                     <div className="relative flex items-center">
-                                        <input type="text" disabled={disabled} value={set.holdTime || ''} onChange={(e) => onChange(index, 'holdTime', e.target.value)} placeholder="mm:ss" className="w-full bg-cyan-50/50 dark:bg-zinc-900/50 border-b border-cyan-200 dark:border-cyan-900/50 focus:border-cyan-500 px-2 py-3 text-center font-mono text-cyan-900 dark:text-cyan-100 outline-none placeholder:text-cyan-700/50 dark:placeholder:text-zinc-700 disabled:opacity-50 font-bold rounded-t-md transition-colors" />
-                                        {onStartTimer && !set.completed && <button onClick={handleStartTimer} className="absolute left-0 top-0 h-full px-2 text-cyan-500 hover:text-cyan-700 active:scale-90 transition-all z-10"><Play size={14} fill="currentColor" /></button>}
+                                        <input type="text" disabled={disabled} value={set.holdTime || ''} onChange={(e) => onChange(index, 'holdTime', e.target.value)} placeholder="mm:ss" className="w-full bg-emerald-50/50 dark:bg-zinc-900/50 border-b border-emerald-200 dark:border-emerald-900/50 focus:border-emerald-500 px-2 py-3 text-center font-mono text-emerald-900 dark:text-emerald-100 outline-none placeholder:text-emerald-700/50 dark:placeholder:text-zinc-700 disabled:opacity-50 font-bold rounded-t-md transition-colors" />
+                                        {onStartTimer && !set.completed && <button onClick={handleStartTimer} className="absolute left-0 top-0 h-full px-2 text-emerald-500 hover:text-emerald-700 active:scale-90 transition-all z-10"><Play size={14} fill="currentColor" /></button>}
                                     </div>
                                 ) : (
                                     <>
-                                        <input type="number" min="0" disabled={disabled} value={set.reps || ''} onChange={(e) => handleNumChange('reps', e.target.value)} placeholder="0" className="w-full bg-cyan-50/50 dark:bg-zinc-900/50 border-b border-cyan-200 dark:border-cyan-900/50 focus:border-cyan-500 px-2 py-3 text-center font-mono text-cyan-900 dark:text-cyan-100 outline-none placeholder:text-cyan-700/50 dark:placeholder:text-zinc-700 disabled:opacity-50 font-bold rounded-t-md transition-colors" />
-                                        {!disabled && <button onClick={() => adjustValue('reps', 5)} className="absolute right-0 top-0 h-full px-2 text-cyan-300 hover:text-cyan-600 active:scale-90 transition-all opacity-0 group-hover:opacity-100"><Plus size={14} /></button>}
+                                        <input type="number" min="0" disabled={disabled} value={set.reps || ''} onChange={(e) => handleNumChange('reps', e.target.value)} placeholder="0" className="w-full bg-emerald-50/50 dark:bg-zinc-900/50 border-b border-emerald-200 dark:border-emerald-900/50 focus:border-emerald-500 px-2 py-3 text-center font-mono text-emerald-900 dark:text-emerald-100 outline-none placeholder:text-emerald-700/50 dark:placeholder:text-zinc-700 disabled:opacity-50 font-bold rounded-t-md transition-colors" />
+                                        {!disabled && <button onClick={() => adjustValue('reps', 5)} className="absolute right-0 top-0 h-full px-2 text-emerald-300 hover:text-emerald-600 active:scale-90 transition-all opacity-0 group-hover:opacity-100"><Plus size={14} /></button>}
                                     </>
                                 )}
                             </div>
@@ -302,7 +302,7 @@ export const SetRow = ({ set, index, onChange, onRemove, previousBest, targetRep
                         </div>
 
                         <div className="flex gap-1 justify-center items-center">
-                            <button disabled={disabled} onClick={validateAndComplete} className={`w-9 h-9 p-1.5 rounded flex items-center justify-center transition-colors ${set.completed ? 'bg-cyan-500 text-white shadow-md shadow-cyan-500/20' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600 hover:bg-zinc-300 dark:hover:bg-zinc-700'} disabled:opacity-50 border border-zinc-300 dark:border-zinc-700`}><CheckCircle size={18} /></button>
+                            <button disabled={disabled} onClick={validateAndComplete} className={`w-9 h-9 p-1.5 rounded flex items-center justify-center transition-colors ${set.completed ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600 hover:bg-zinc-300 dark:hover:bg-zinc-700'} disabled:opacity-50 border border-zinc-300 dark:border-zinc-700`}><CheckCircle size={18} /></button>
                             {!isFocusMode && <button disabled={disabled} onClick={() => onRemove()} className="w-9 h-9 flex items-center justify-center transition-colors text-zinc-500 dark:text-zinc-600 hover:text-red-600 dark:hover:text-red-500 disabled:opacity-50 active:scale-95"><X size={18} /></button>}
                         </div>
                     </div>
@@ -321,13 +321,13 @@ export const SetRow = ({ set, index, onChange, onRemove, previousBest, targetRep
 
                 <div className="flex flex-col w-full">
                     <div className="grid gap-2 w-full grid-cols-3">
-                        <div className="relative"><input type="number" min="0" disabled={disabled} value={set.target !== undefined ? set.target : (defaultTarget || '')} onChange={(e) => handleNumChange('target', e.target.value)} placeholder={defaultTarget || '-'} className="w-full bg-green-50/50 dark:bg-zinc-900/50 border-b border-green-200 dark:border-green-900/30 text-green-900 dark:text-green-500/70 focus:border-green-500 px-1 py-3 text-center font-mono outline-none disabled:opacity-50 font-bold rounded-t-md transition-colors placeholder:text-green-700/50 dark:placeholder:text-green-500/30" /></div>
+                        <div className="relative"><input type="number" min="0" disabled={disabled} value={set.target !== undefined ? set.target : (defaultTarget || '')} onChange={(e) => handleNumChange('target', e.target.value)} placeholder={defaultTarget || '-'} className="w-full bg-indigo-50/50 dark:bg-zinc-900/50 border-b border-indigo-200 dark:border-indigo-900/30 text-indigo-900 dark:text-indigo-500/70 focus:border-indigo-500 px-1 py-3 text-center font-mono outline-none disabled:opacity-50 font-bold rounded-t-md transition-colors placeholder:text-indigo-700/50 dark:placeholder:text-indigo-500/30" /></div>
 
-                        <div className="relative"><input type="number" min="0" disabled={disabled} value={set.weight || ''} onChange={(e) => handleNumChange('weight', e.target.value)} placeholder="kg" className="w-full bg-green-50/50 dark:bg-zinc-900/50 border-b border-green-200 dark:border-green-900/30 focus:border-green-500 px-2 py-3 text-center font-mono text-green-900 dark:text-green-100 outline-none disabled:opacity-50 font-bold rounded-t-md transition-colors placeholder:text-green-700/50 dark:placeholder:text-green-500/30" />{previousBest && (<div className="absolute -top-5 left-0 w-full text-center text-[10px] text-green-600/70 dark:text-green-500/50">Best: {previousBest.weight}kg</div>)}</div>
+                        <div className="relative"><input type="number" min="0" disabled={disabled} value={set.weight || ''} onChange={(e) => handleNumChange('weight', e.target.value)} placeholder="kg" className="w-full bg-indigo-50/50 dark:bg-zinc-900/50 border-b border-indigo-200 dark:border-indigo-900/30 focus:border-indigo-500 px-2 py-3 text-center font-mono text-indigo-900 dark:text-indigo-100 outline-none disabled:opacity-50 font-bold rounded-t-md transition-colors placeholder:text-indigo-700/50 dark:placeholder:text-indigo-500/30" />{previousBest && (<div className="absolute -top-5 left-0 w-full text-center text-[10px] text-green-600/70 dark:text-green-500/50">Best: {previousBest.weight}kg</div>)}</div>
 
                         <div className="relative group">
-                            <input type="number" min="0" disabled={disabled} value={set.reps || ''} onChange={(e) => handleNumChange('reps', e.target.value)} placeholder="-" className="w-full bg-green-50/50 dark:bg-zinc-900/50 border-b border-green-200 dark:border-green-900/30 focus:border-green-500 px-2 py-3 text-center font-mono text-green-900 dark:text-green-100 outline-none disabled:opacity-50 font-bold rounded-t-md transition-colors placeholder:text-green-700/50 dark:placeholder:text-green-500/30" />
-                            {!disabled && <button onClick={() => adjustValue('reps', 1)} className="absolute right-0 top-0 h-full px-2 text-green-300 hover:text-green-600 active:scale-90 transition-all opacity-0 group-hover:opacity-100"><Plus size={14} /></button>}
+                            <input type="number" min="0" disabled={disabled} value={set.reps || ''} onChange={(e) => handleNumChange('reps', e.target.value)} placeholder="-" className="w-full bg-indigo-50/50 dark:bg-zinc-900/50 border-b border-indigo-200 dark:border-indigo-900/30 focus:border-indigo-500 px-2 py-3 text-center font-mono text-indigo-900 dark:text-indigo-100 outline-none disabled:opacity-50 font-bold rounded-t-md transition-colors placeholder:text-indigo-700/50 dark:placeholder:text-indigo-500/30" />
+                            {!disabled && <button onClick={() => adjustValue('reps', 1)} className="absolute right-0 top-0 h-full px-2 text-indigo-300 hover:text-indigo-600 active:scale-90 transition-all opacity-0 group-hover:opacity-100"><Plus size={14} /></button>}
                         </div>
                     </div>
                     {/* Chips (Horizontal Scroll) */}
@@ -339,7 +339,7 @@ export const SetRow = ({ set, index, onChange, onRemove, previousBest, targetRep
                 </div>
 
                 <div className="flex gap-1 justify-center items-center">
-                    <button disabled={disabled} onClick={validateAndComplete} className={`w-9 h-9 p-1.5 rounded flex items-center justify-center transition-colors mb-0 ${set.completed ? 'bg-green-500 text-white shadow-md shadow-green-500/20' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600 hover:bg-zinc-300 dark:hover:bg-zinc-700 border border-zinc-300 dark:border-zinc-700'} disabled:opacity-50`}><CheckCircle size={18} /></button>
+                    <button disabled={disabled} onClick={validateAndComplete} className={`w-9 h-9 p-1.5 rounded flex items-center justify-center transition-colors mb-0 ${set.completed ? 'bg-indigo-500 text-white shadow-md shadow-indigo-500/20' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600 hover:bg-zinc-300 dark:hover:bg-zinc-700 border border-zinc-300 dark:border-zinc-700'} disabled:opacity-50`}><CheckCircle size={18} /></button>
                     {!isFocusMode && <button disabled={disabled} onClick={() => onRemove()} className="w-9 h-9 flex items-center justify-center transition-colors text-zinc-500 dark:text-zinc-600 hover:text-red-600 dark:hover:text-red-500 disabled:opacity-50 active:scale-95"><X size={18} /></button>}
                 </div>
             </div>

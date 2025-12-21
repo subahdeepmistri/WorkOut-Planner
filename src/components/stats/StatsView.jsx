@@ -432,7 +432,7 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest, theme }) => {
                                     labels: ['Strength', 'Cardio', 'Core'],
                                     datasets: [{
                                         data: history.distribution,
-                                        backgroundColor: ['#ef4444', '#3b82f6', '#10b981'],
+                                        backgroundColor: ['#6366f1', '#ec4899', '#10b981'],
                                         borderWidth: 0
                                     }]
                                 }} options={doughnutOptions} />
