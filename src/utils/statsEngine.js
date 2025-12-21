@@ -84,15 +84,18 @@ const calculateExerciseLoad = (ex, getPreviousBest) => {
 
         if (isCardio(type)) {
             // Cardio: Distance OR Time
-            const val = (ex.cardioMode === 'circuit' || ex.cardioMode === 'duration')
-                ? safeFloat(set.time)
-                : safeFloat(set.distance);
+            // TIME (sec) -> MIN
+            const isTimeMode = (ex.cardioMode === 'circuit' || ex.cardioMode === 'duration');
+            const rawVal = isTimeMode ? safeFloat(set.time) : safeFloat(set.distance);
+
+            // Normalized Value for Score (Minutes or Km)
+            const scoreVal = isTimeMode ? (rawVal / 60) : rawVal;
 
             // Score = Val (or Target Reps if val is 0 but marked complete)
-            const score = val > 0 ? val : tReps;
+            const score = scoreVal > 0 ? scoreVal : tReps;
 
             actualVol += score;
-            rawVol += val; // Strict raw
+            rawVol += scoreVal; // Normalized to Minutes or Km
         }
         else if (isCore(type)) {
             // Core: Reps OR Hold
@@ -228,18 +231,19 @@ export const calculateSessionStats = (log, getPreviousBest) => {
             if (s && s.completed) {
                 // TIME MODE (Circuit/Duration)
                 if (mode === 'circuit' || mode === 'duration') {
-                    const t = safeFloat(s.time);
-                    schemaTimeMin += t;
-                    schemaCircuitMin += t;
+                    const tSec = safeFloat(s.time);
+                    const tMin = tSec / 60; // Convert Seconds to Minutes
+                    schemaTimeMin += tMin;
+                    schemaCircuitMin += tMin;
                 }
                 // DIST MODE (Distance)
                 else {
                     schemaDistKm += safeFloat(s.distance);
                     // Critical: Add TIME from DIST mode if available (Pace calculation needs it)
                     if (s.time) {
-                        const t = safeFloat(s.time);
-                        schemaTimeMin += t;
-                        schemaDistTimeMin += t;
+                        const tMin = safeFloat(s.time); // Input is Minutes
+                        schemaTimeMin += tMin;
+                        schemaDistTimeMin += tMin;
                     }
                 }
             }

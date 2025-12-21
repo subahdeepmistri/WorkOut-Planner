@@ -59,6 +59,13 @@ function App() {
     setActiveTab('workout');
   }, []);
 
+  // Fix: Scroll to top on tab change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [activeTab]);
+
+
+
   // Core Logic Hook
   const {
     workoutData, savedPlans, activePlanId, setActivePlanId,
@@ -70,6 +77,22 @@ function App() {
     saveAsNewPlan, startTimer, workoutStartTime, toggleExerciseLock, isHoliday,
     lastDeletedSet, undoDelete
   } = useWorkoutData(selectedDate);
+
+  // Fix: Auto-minimize finished/locked workouts on reload
+  const hasCheckedAutoMinimize = React.useRef(false);
+  useEffect(() => {
+    // Only run this check once per session load (when log is first detected)
+    if (!hasCheckedAutoMinimize.current && currentLog) {
+      if (currentLog.endTime || currentLog.isLocked) {
+        setIsMinimized(true);
+      }
+      hasCheckedAutoMinimize.current = true;
+    }
+    // Reset check if log is cleared (allows re-check on next creation)
+    if (!currentLog) {
+      hasCheckedAutoMinimize.current = false;
+    }
+  }, [currentLog]);
 
   // Global Rest Timer Hook
 
@@ -488,7 +511,7 @@ function App() {
                   )}
 
                   <div className="text-center space-y-3 mb-4 pt-4">
-                    <div className="mx-auto w-28 h-28 flex items-center justify-center mb-2 animate-bounce hover:scale-110 transition-transform duration-300">
+                    <div className="mx-auto w-28 h-28 flex items-center justify-center mb-2 animate-float hover:scale-110 transition-transform duration-300">
                       <img
                         src={userProfile === 'gwen' ? GwenSticker : MilesSticker}
                         alt="Character Logo"
@@ -759,7 +782,7 @@ function App() {
 
           {/* Home Button */}
           {currentLog && !isMinimized && <button
-            onClick={() => setIsMinimized(true)}
+            onClick={() => { setIsMinimized(true); setActiveTab('workout'); }}
             className="flex flex-col items-center justify-center p-3 rounded-2xl w-24 active:scale-95 transition-all text-zinc-500 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300 outline-none"
           >
             <Home size={isMobile ? 26 : 24} />

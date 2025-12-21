@@ -25,9 +25,11 @@ export const SetRow = ({ set, index, onChange, onRemove, previousBest, targetRep
     useEffect(() => {
         if (isCardio && cardioMode === 'distance') {
             const d = parseFloat(set.distance);
-            const t = parseFloat(set.time);
+            const t = parseFloat(set.time); // Now in Seconds
             if (d > 0 && t > 0) {
-                const paceVal = (t / d).toFixed(2);
+                // Pace = Minutes / Km
+                const tMin = t; // Input is Minutes in Distance Mode
+                const paceVal = (tMin / d).toFixed(2);
                 if (set.pace !== paceVal) {
                     onChange(index, 'pace', paceVal);
                 }
@@ -71,16 +73,25 @@ export const SetRow = ({ set, index, onChange, onRemove, previousBest, targetRep
         }
     };
 
-    // Helper for safe numeric input change
+    // Helper for safe numeric input change (Strict No Alphabets)
     const handleNumChange = (field, value) => {
-        if (value === '') {
-            onChange(index, field, value);
-            return;
+        // Allow strictly only numbers and single decimal point
+        const cleanValue = value.replace(/[^0-9.]/g, '');
+
+        // Prevent multiple decimals
+        const parts = cleanValue.split('.');
+        if (parts.length > 2) {
+            return; // Ignore invalid double decimal input
         }
-        const num = parseFloat(value);
-        if (!isNaN(num) && num >= 0) {
-            onChange(index, field, value);
-        }
+
+        onChange(index, field, cleanValue);
+    };
+
+    // Helper for strictly numeric / time input (Allowing colon for holdTime)
+    const handleTimeInput = (field, value) => {
+        // Allow numbers and colon only
+        const cleanValue = value.replace(/[^0-9:]/g, '');
+        onChange(index, field, cleanValue);
     };
 
     // Quick Add Helpers
@@ -145,14 +156,14 @@ export const SetRow = ({ set, index, onChange, onRemove, previousBest, targetRep
         // Parse time: "mm:ss" or number
         const parseTime = (val) => {
             if (!val) return 0;
-            if (typeof val === 'number') return val * 60;
+            if (typeof val === 'number') return val; // Already Seconds (Cardio)
             if (val.toString().includes(':')) {
                 const parts = val.split(':');
                 const m = parseInt(parts[0]) || 0;
                 const s = parseInt(parts[1]) || 0;
                 return (m * 60) + s;
             }
-            return parseFloat(val) * 60;
+            return parseFloat(val); // Assume Seconds if raw number string
         };
 
         if (isCardio && cardioMode === 'circuit') {
@@ -249,7 +260,7 @@ export const SetRow = ({ set, index, onChange, onRemove, previousBest, targetRep
                         <div className="flex flex-col w-full">
                             <div className="grid gap-2 w-full grid-cols-1">
                                 <div className="relative group flex items-center">
-                                    <input type="text" disabled={disabled} value={set.time || ''} onChange={(e) => onChange(index, 'time', e.target.value)} placeholder="Duration (min)" className="w-full bg-pink-50/50 dark:bg-zinc-900/50 border-b border-pink-200 dark:border-pink-900/30 focus:border-pink-500 px-1 py-3 text-center font-mono text-pink-900 dark:text-pink-100 outline-none disabled:opacity-50 text-sm placeholder:text-pink-700/50 dark:placeholder:text-zinc-600 rounded-t-md transition-colors font-bold" />
+                                    <input type="text" disabled={disabled} value={set.time || ''} onChange={(e) => handleNumChange('time', e.target.value)} placeholder="Duration (sec)" className="w-full bg-pink-50/50 dark:bg-zinc-900/50 border-b border-pink-200 dark:border-pink-900/30 focus:border-pink-500 px-1 py-3 text-center font-mono text-pink-900 dark:text-pink-100 outline-none disabled:opacity-50 text-sm placeholder:text-pink-700/50 dark:placeholder:text-zinc-600 rounded-t-md transition-colors font-bold" />
                                     {onStartTimer && !set.completed && <button onClick={handleStartTimer} className="absolute left-0 top-0 h-full px-2 text-pink-400 hover:text-pink-600 active:scale-90 transition-all z-10"><Play size={14} fill="currentColor" /></button>}
                                     {!disabled && <button onClick={() => adjustValue('time', 5)} className="absolute right-0 top-0 h-full px-2 text-pink-300 hover:text-pink-600 active:scale-90 transition-all opacity-0 group-hover:opacity-100"><Plus size={14} /></button>}
                                 </div>
@@ -283,7 +294,7 @@ export const SetRow = ({ set, index, onChange, onRemove, previousBest, targetRep
                             <div className="relative w-full group">
                                 {coreMode === 'hold' ? (
                                     <div className="relative flex items-center">
-                                        <input type="text" disabled={disabled} value={set.holdTime || ''} onChange={(e) => onChange(index, 'holdTime', e.target.value)} placeholder="mm:ss" className="w-full bg-emerald-50/50 dark:bg-zinc-900/50 border-b border-emerald-200 dark:border-emerald-900/50 focus:border-emerald-500 px-2 py-3 text-center font-mono text-emerald-900 dark:text-emerald-100 outline-none placeholder:text-emerald-700/50 dark:placeholder:text-zinc-700 disabled:opacity-50 font-bold rounded-t-md transition-colors" />
+                                        <input type="text" disabled={disabled} value={set.holdTime || ''} onChange={(e) => handleTimeInput('holdTime', e.target.value)} placeholder="mm:ss" className="w-full bg-emerald-50/50 dark:bg-zinc-900/50 border-b border-emerald-200 dark:border-emerald-900/50 focus:border-emerald-500 px-2 py-3 text-center font-mono text-emerald-900 dark:text-emerald-100 outline-none placeholder:text-emerald-700/50 dark:placeholder:text-zinc-700 disabled:opacity-50 font-bold rounded-t-md transition-colors" />
                                         {onStartTimer && !set.completed && <button onClick={handleStartTimer} className="absolute left-0 top-0 h-full px-2 text-emerald-500 hover:text-emerald-700 active:scale-90 transition-all z-10"><Play size={14} fill="currentColor" /></button>}
                                     </div>
                                 ) : (

@@ -15,16 +15,16 @@ import ErrorBoundary from '../ui/ErrorBoundary';
  */
 const SectionHeader = ({ title, subtitle, icon: Icon, type = 'secondary', color = "text-zinc-500" }) => (
     <div className={`flex items-center gap-3 mb-6 mt-10 pb-3 border-b ${type === 'primary'
-            ? 'border-zinc-200 dark:border-zinc-700'
-            : 'border-zinc-100 dark:border-zinc-800/60'
+        ? 'border-zinc-200 dark:border-zinc-700'
+        : 'border-zinc-100 dark:border-zinc-800/60'
         }`}>
         <div className={`p-1.5 rounded-lg ${type === 'primary' ? 'bg-zinc-100 dark:bg-zinc-800' : 'bg-transparent'}`}>
             {Icon && <Icon size={type === 'primary' ? 18 : 16} className={color} />}
         </div>
         <div>
             <h3 className={`font-bold uppercase tracking-widest ${type === 'primary'
-                    ? 'text-sm text-zinc-800 dark:text-zinc-200'
-                    : 'text-xs text-zinc-400 dark:text-zinc-500'
+                ? 'text-sm text-zinc-800 dark:text-zinc-200'
+                : 'text-xs text-zinc-400 dark:text-zinc-500'
                 }`}>
                 {title}
             </h3>
@@ -147,7 +147,7 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest, theme }) => {
                             subtext: activeDayStats?.cDistMin > 0 ? `${activeDayStats.cDistMin} min pace` : null
                         }}
                         right={{
-                            value: activeDayStats?.cCircuitMin > 0 ? activeDayStats.cCircuitMin : (activeDayStats?.cDist === 0 ? '---' : '0'),
+                            value: activeDayStats?.cCircuitMin > 0 ? activeDayStats.cCircuitMin.toFixed(2) : (activeDayStats?.cDist === 0 ? '---' : '0'),
                             unit: activeDayStats?.cCircuitMin > 0 ? 'min' : '',
                             label: 'Circuit',
                             subtext: 'High Intensity'

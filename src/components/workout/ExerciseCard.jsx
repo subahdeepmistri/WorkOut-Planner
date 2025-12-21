@@ -21,11 +21,38 @@ export const ExerciseCard = ({ exercise, index, onUpdateSet, onAddSet, onRemoveS
     // --- Adherence Calculation (V2: Sets Momentum) ---
     const calculateAdherenceData = () => {
         const totalSets = exercise.sets.length;
+
+        if (exercise.type === 'cardio') {
+            const isTimeMode = (exercise.cardioMode === 'circuit' || exercise.cardioMode === 'duration');
+            const targetPerSet = parseFloat(exercise.numericalTargetReps) || 0;
+            const targetTotal = (exercise.targetSets || 3) * targetPerSet; // Minutes or Km
+
+            let currentTotal = 0;
+            exercise.sets.forEach(s => {
+                if (s.completed) {
+                    if (isTimeMode) {
+                        currentTotal += (parseFloat(s.time) || 0) / 60; // Seconds -> Minutes
+                    } else {
+                        currentTotal += (parseFloat(s.distance) || 0); // Km
+                    }
+                }
+            });
+
+            // If target is 0, default to showing sets count to prevent weird bars
+            if (targetTotal === 0) {
+                const completedSets = exercise.sets.filter(s => s.completed).length;
+                return { targetVol: totalSets, actualVol: completedSets, unit: 'sets' };
+            }
+
+            return { targetVol: targetTotal, actualVol: currentTotal, unit: isTimeMode ? 'min' : 'km' };
+        }
+
         const completedSets = exercise.sets.filter(s => s.completed).length;
         return { targetVol: totalSets, actualVol: completedSets, missedMessage: "" };
     };
 
-    const { targetVol, actualVol } = calculateAdherenceData();
+    const adherenceData = calculateAdherenceData();
+    const { targetVol, actualVol } = adherenceData;
 
     // --- PB / Record Logic ---
     const currentMaxWeight = exercise.sets.reduce((max, set) => {
@@ -202,7 +229,12 @@ export const ExerciseCard = ({ exercise, index, onUpdateSet, onAddSet, onRemoveS
                     <AdherenceBar
                         targetVolume={targetVol}
                         actualVolume={actualVol}
-                        label={`${actualVol} / ${targetVol} Sets Completed`}
+                        label={(() => {
+                            if (exercise.type === 'cardio' && adherenceData.unit) {
+                                return `${Math.round(actualVol * 10) / 10} / ${targetVol} ${adherenceData.unit === 'min' ? 'Minutes' : 'Km'}`;
+                            }
+                            return `${actualVol} / ${targetVol} Sets Completed`;
+                        })()}
                         height="h-2"
                         category={exercise.type === 'cardio' ? 'cardio' : (exercise.type === 'abs' ? 'default' : 'strength')}
                     />
