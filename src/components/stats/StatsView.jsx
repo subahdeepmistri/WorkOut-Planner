@@ -21,13 +21,13 @@ const DevStatsControl = ({ forceState }) => {
     // if (process.env.NODE_ENV === 'production') return null; // Enabled for user testing
 
     const scenarios = [
-        { label: "D0", streak: 0, workouts: 0, desc: "New User" },
-        { label: "D1", streak: 1, workouts: 1, desc: "First Workout" },
-        { label: "D3", streak: 3, workouts: 3, desc: "Momentum" },
-        { label: "D5", streak: 5, workouts: 5, desc: "Consistency" },
-        { label: "D10", streak: 10, workouts: 10, desc: "Habit" },
-        { label: "D20", streak: 20, workouts: 20, desc: "Established" },
-        { label: "D35", streak: 35, workouts: 35, desc: "Discipline" },
+        { label: "D0", streak: 0, workouts: 0, desc: "New User", mockDayStats: null },
+        { label: "D1", streak: 1, workouts: 1, desc: "First Workout", mockDayStats: { duration: '45m', strengthVol: 2500, cDist: 2.0, cMin: 15, aRep: 0, hasStrength: true, hasCardio: true, hasCore: false } },
+        { label: "D3", streak: 3, workouts: 3, desc: "Momentum", mockDayStats: { duration: '50m', strengthVol: 3200, cDist: 3.0, cMin: 20, aRep: 50, hasStrength: true, hasCardio: true, hasCore: true } },
+        { label: "D5", streak: 5, workouts: 5, desc: "Consistency", mockDayStats: { duration: '60m', strengthVol: 4500, cDist: 0, cMin: 0, aRep: 100, hasStrength: true, hasCardio: false, hasCore: true } },
+        { label: "D10", streak: 10, workouts: 10, desc: "Habit", mockDayStats: { duration: '65m', strengthVol: 6000, cDist: 5.0, cMin: 30, aRep: 0, hasStrength: true, hasCardio: true, hasCore: false } },
+        { label: "D20", streak: 20, workouts: 20, desc: "Established", mockDayStats: { duration: '75m', strengthVol: 8500, cDist: 4.0, cMin: 25, aRep: 120, hasStrength: true, hasCardio: true, hasCore: true } },
+        { label: "D35", streak: 35, workouts: 35, desc: "Discipline", mockDayStats: { duration: '90m', strengthVol: 12500, cDist: 10.0, cMin: 45, aRep: 200, hasStrength: true, hasCardio: true, hasCore: true } },
     ];
 
     return (
@@ -145,6 +145,8 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
     // Use forced state if available, otherwise real history
     const activeStreak = forcedState ? forcedState.streak : history.currentStreak;
     const activeWorkouts = forcedState ? forcedState.workouts : history.totalWorkouts;
+    // Use forced mockDayStats if available, otherwise real dayStats
+    const activeDayStats = forcedState && forcedState.mockDayStats !== undefined ? forcedState.mockDayStats : dayStats;
 
     // --- AI Insight Generation (Strictly Gated) ---
     const insights = React.useMemo(() => {
@@ -248,12 +250,12 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
                     title="Time"
                     timeframe={getDropdownLabel()}
                     primaryMetric={{
-                        value: dayStats ? dayStats.duration.replace('m', '') : null,
+                        value: activeDayStats ? activeDayStats.duration.replace('m', '') : null,
                         unit: 'min',
                         label: 'Duration'
                     }}
                     trendData={history.datasets.cMin.slice(-5)}
-                    dataState={!dayStats ? 'empty' : (dayStats.hasStrength || dayStats.hasCardio || dayStats.hasCore) ? 'valid' : 'partial'}
+                    dataState={!activeDayStats ? 'empty' : (activeDayStats.hasStrength || activeDayStats.hasCardio || activeDayStats.hasCore) ? 'valid' : 'partial'}
                     // Valid override for Day 0: must show empty text
                     emptyOverride={activeWorkouts === 0 ? "No data yet" : null}
                 />
@@ -262,11 +264,11 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
                     title="Volume"
                     timeframe={getDropdownLabel()}
                     primaryMetric={{
-                        value: dayStats ? dayStats.strengthVol.toLocaleString() : null,
+                        value: activeDayStats ? activeDayStats.strengthVol.toLocaleString() : null,
                         unit: 'kg',
                         label: 'Vol'
                     }}
-                    dataState={!dayStats ? 'empty' : dayStats.hasStrength ? 'valid' : 'partial'}
+                    dataState={!activeDayStats ? 'empty' : activeDayStats.hasStrength ? 'valid' : 'partial'}
                     trendData={history.datasets.sVol.slice(-5)}
                     aiInsight={insights.strength}
                 />
@@ -275,12 +277,12 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
                     title="Cardio"
                     timeframe={getDropdownLabel()}
                     primaryMetric={{
-                        value: dayStats ? dayStats.cDist.toFixed(1) : null,
+                        value: activeDayStats ? activeDayStats.cDist.toFixed(1) : null,
                         unit: 'km',
                         label: 'Dist'
                     }}
-                    secondaryMetrics={dayStats ? [{ label: 'Time', value: `${dayStats.cMin}m` }] : []}
-                    dataState={!dayStats ? 'empty' : dayStats.hasCardio ? 'valid' : 'partial'}
+                    secondaryMetrics={activeDayStats ? [{ label: 'Time', value: `${activeDayStats.cMin}m` }] : []}
+                    dataState={!activeDayStats ? 'empty' : activeDayStats.hasCardio ? 'valid' : 'partial'}
                     trendData={history.datasets.cDist.slice(-5)}
                     aiInsight={insights.cardio}
                 />
@@ -289,11 +291,11 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
                     title="Core"
                     timeframe={getDropdownLabel()}
                     primaryMetric={{
-                        value: dayStats ? dayStats.aRep : null,
+                        value: activeDayStats ? activeDayStats.aRep : null,
                         unit: 'reps',
                         label: 'Reps'
                     }}
-                    dataState={!dayStats ? 'empty' : dayStats.hasCore ? 'valid' : 'partial'}
+                    dataState={!activeDayStats ? 'empty' : activeDayStats.hasCore ? 'valid' : 'partial'}
                     trendData={history.datasets.aRep.slice(-5)}
                 />
             </div>
