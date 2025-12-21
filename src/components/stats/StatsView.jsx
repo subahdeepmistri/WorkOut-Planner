@@ -18,7 +18,7 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarEleme
  * Allows forcing specific user journey states for verification.
  */
 const DevStatsControl = ({ forceState }) => {
-    if (process.env.NODE_ENV === 'production') return null;
+    // if (process.env.NODE_ENV === 'production') return null; // Enabled for user testing
 
     const scenarios = [
         { label: "D0", streak: 0, workouts: 0, desc: "New User" },
