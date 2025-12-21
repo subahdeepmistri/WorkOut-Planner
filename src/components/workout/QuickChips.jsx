@@ -43,20 +43,6 @@ export const QuickChips = ({ type, mode, onAdjust, onCopy, canCopy, suggestions 
         return (
             <div className={`flex items-center gap-2 flex-wrap animate-in fade-in slide-in-from-top-1 duration-200 ${className || ''}`}>
                 {renderSuggestions()}
-
-                {showDist && mode === 'distance' && (
-                    <>
-                        <button onClick={() => onAdjust('distance', 0.5)} className={styles.blue}>
-                            +0.5 km
-                        </button>
-                    </>
-                )}
-
-                {showTime && (
-                    <button onClick={() => onAdjust('time', 1)} className={styles.emerald}>
-                        +1 min
-                    </button>
-                )}
             </div>
         );
     }
