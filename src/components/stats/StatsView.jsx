@@ -18,7 +18,7 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarEleme
 /**
  * Pure Presentation Component
  */
-const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
+const StatsViewUnsafe = ({ workoutData, getPreviousBest, theme }) => {
 
     // --- Hook Integration (Logic Layer) ---
     const {
@@ -64,28 +64,32 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    // --- Chart Options (Mobile Optimized) ---
+    // --- Chart Options (Mobile Optimized & Theme Aware) ---
+    const isDark = theme === 'dark';
+    const gridColor = isDark ? '#27272a' : '#f4f4f5'; // zinc-800 vs zinc-100 (very subtle)
+    const tickColor = isDark ? '#71717a' : '#a1a1aa'; // zinc-500 vs zinc-400
+
     const commonOptions = {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
             legend: { display: false },
             tooltip: {
-                backgroundColor: 'rgba(24, 24, 27, 0.95)',
-                titleColor: '#fff',
-                bodyColor: '#d4d4d8',
-                borderColor: '#3f3f46',
+                backgroundColor: isDark ? 'rgba(24, 24, 27, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+                titleColor: isDark ? '#fff' : '#18181b', // white vs zinc-900
+                bodyColor: isDark ? '#d4d4d8' : '#52525b', // zinc-300 vs zinc-600
+                borderColor: isDark ? '#3f3f46' : '#e4e4e7', // zinc-700 vs zinc-200
                 borderWidth: 1,
                 padding: 10,
                 displayColors: false
             }
         },
         scales: {
-            x: { grid: { color: '#27272a' }, ticks: { color: '#71717a', font: { size: 10 } } },
+            x: { grid: { color: gridColor }, ticks: { color: tickColor, font: { size: 10 } } },
             y: {
                 beginAtZero: true,
-                grid: { color: '#27272a' },
-                ticks: { color: '#71717a', font: { size: 10 } }
+                grid: { color: gridColor },
+                ticks: { color: tickColor, font: { size: 10 } }
             }
         },
         animation: { duration: isMobile ? 800 : 1500, easing: 'easeOutQuart' }
@@ -421,7 +425,7 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 pb-4">
 
                         {/* Training Split */}
-                        <div className="p-4 sm:p-6 rounded-3xl bg-white/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 backdrop-blur-sm">
+                        <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 shadow-sm dark:shadow-none">
                             <h3 className="text-xs sm:text-sm font-bold text-zinc-500 uppercase mb-2 sm:mb-4">Training Split</h3>
                             <div className="h-48 sm:h-64 relative">
                                 <Doughnut data={{
@@ -437,7 +441,7 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
 
                         {/* Strength Volume Trend */}
                         {history.totalVol >= 0 && (
-                            <div className="p-4 sm:p-6 rounded-3xl bg-white/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 backdrop-blur-sm">
+                            <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 shadow-sm dark:shadow-none">
                                 <h3 className="text-xs sm:text-sm font-bold text-zinc-500 uppercase mb-2 sm:mb-4">Strength Progress</h3>
                                 <div className="h-48 sm:h-64">
                                     {activeWorkouts < 2 ? (
@@ -449,12 +453,12 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
                                             labels: history.labels,
                                             datasets: [{
                                                 data: history.datasets.sVol,
-                                                borderColor: '#ef4444',
+                                                borderColor: '#6366f1',
                                                 backgroundColor: (context) => {
                                                     const ctx = context.chart.ctx;
                                                     const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-                                                    gradient.addColorStop(0, 'rgba(239, 68, 68, 0.5)');
-                                                    gradient.addColorStop(1, 'rgba(239, 68, 68, 0)');
+                                                    gradient.addColorStop(0, 'rgba(99, 102, 241, 0.5)');
+                                                    gradient.addColorStop(1, 'rgba(99, 102, 241, 0)');
                                                     return gradient;
                                                 },
                                                 fill: true,
@@ -468,7 +472,7 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
 
                         {/* Cardio Progress (Distance) */}
                         {history.distribution[1] > 0 && (
-                            <div className="p-4 sm:p-6 rounded-3xl bg-white/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 backdrop-blur-sm">
+                            <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 shadow-sm dark:shadow-none">
                                 <h3 className="text-xs sm:text-sm font-bold text-zinc-500 uppercase mb-2 sm:mb-4">Cardio Progress</h3>
                                 <div className="h-48 sm:h-64">
                                     {activeWorkouts < 2 ? (
@@ -480,12 +484,12 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
                                             labels: history.labels,
                                             datasets: [{
                                                 data: history.datasets.cDist,
-                                                borderColor: '#3b82f6',
+                                                borderColor: '#ec4899',
                                                 backgroundColor: (context) => {
                                                     const ctx = context.chart.ctx;
                                                     const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-                                                    gradient.addColorStop(0, 'rgba(59, 130, 246, 0.5)');
-                                                    gradient.addColorStop(1, 'rgba(59, 130, 246, 0)');
+                                                    gradient.addColorStop(0, 'rgba(236, 72, 153, 0.5)');
+                                                    gradient.addColorStop(1, 'rgba(236, 72, 153, 0)');
                                                     return gradient;
                                                 },
                                                 fill: true,
@@ -499,7 +503,7 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
 
                         {/* Core Progress (Reps) */}
                         {history.distribution[2] > 0 && (
-                            <div className="p-4 sm:p-6 rounded-3xl bg-white/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 backdrop-blur-sm">
+                            <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 shadow-sm dark:shadow-none">
                                 <h3 className="text-xs sm:text-sm font-bold text-zinc-500 uppercase mb-2 sm:mb-4">Core Progress</h3>
                                 <div className="h-48 sm:h-64">
                                     {activeWorkouts < 2 ? (

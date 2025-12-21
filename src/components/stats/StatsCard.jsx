@@ -78,10 +78,10 @@ export const StatsCard = ({
 
     // VALID STATE (Full Render)
     return (
-        <div className="group relative rounded-3xl bg-white/80 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 p-5 sm:p-6 shadow-xl backdrop-blur-xl transition-all hover:shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-700">
+        <div className="group relative rounded-3xl bg-white dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 p-5 sm:p-6 shadow-sm hover:shadow-md dark:shadow-xl backdrop-blur-xl transition-all overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-700">
 
-            {/* Ambient Glow */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-500/10 via-blue-500/5 to-transparent rounded-full blur-[40px] pointer-events-none -z-10 group-hover:opacity-100 transition-opacity opacity-50"></div>
+            {/* Ambient Glow (Dark Mode Only) */}
+            <div className="hidden dark:block absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-500/10 via-blue-500/5 to-transparent rounded-full blur-[40px] pointer-events-none -z-10 group-hover:opacity-100 transition-opacity opacity-50"></div>
 
             {/* Header */}
             <Header title={title} timeframe={timeframe} showAiIcon={showAi} />

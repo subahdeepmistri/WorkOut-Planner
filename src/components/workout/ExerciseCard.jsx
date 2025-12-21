@@ -30,27 +30,27 @@ export const ExerciseCard = ({ exercise, index, onUpdateSet, onAddSet, onRemoveS
     // Theme Configuration
     const CARD_THEMES = {
         default: {
-            card: "bg-zinc-50 dark:bg-black/40 backdrop-blur-md border border-emerald-300 dark:border-green-500/30 shadow-sm dark:shadow-[0_0_15px_rgba(34,197,94,0.1)]",
+            card: "bg-white dark:bg-black/40 backdrop-blur-md border border-emerald-300 dark:border-green-500/30 shadow-sm dark:shadow-[0_0_15px_rgba(34,197,94,0.1)]",
             header: "bg-emerald-200 dark:bg-green-900/20 border-b border-emerald-300 dark:border-green-500/20",
             name: "text-emerald-950 dark:text-green-100"
         },
         cardio: {
-            card: "bg-zinc-50 dark:bg-black/40 backdrop-blur-md border border-pink-300 dark:border-pink-500/50 shadow-sm dark:shadow-[0_0_15px_rgba(236,72,153,0.15)]",
-            header: "bg-pink-200 dark:bg-pink-900/30 border-b border-pink-300 dark:border-pink-500/30",
+            card: "bg-white dark:bg-black/40 backdrop-blur-md border border-pink-300 dark:border-pink-500/50 shadow-sm dark:shadow-[0_0_15px_rgba(236,72,153,0.15)]",
+            header: "bg-pink-100 dark:bg-pink-900/30 border-b border-pink-300 dark:border-pink-500/30",
             name: "text-pink-950 dark:text-pink-200"
         },
         abs: {
-            card: "bg-zinc-50 dark:bg-black/40 backdrop-blur-md border border-cyan-300 dark:border-cyan-500/50 shadow-sm dark:shadow-[0_0_15px_rgba(34,211,238,0.15)]",
-            header: "bg-cyan-200 dark:bg-cyan-900/30 border-b border-cyan-300 dark:border-cyan-500/30",
+            card: "bg-white dark:bg-black/40 backdrop-blur-md border border-cyan-300 dark:border-cyan-500/50 shadow-sm dark:shadow-[0_0_15px_rgba(34,211,238,0.15)]",
+            header: "bg-cyan-100 dark:bg-cyan-900/30 border-b border-cyan-300 dark:border-cyan-500/30",
             name: "text-cyan-950 dark:text-cyan-200"
         },
         superset: {
-            card: "bg-gradient-to-r from-orange-50 to-amber-50 dark:from-amber-500/10 dark:to-orange-500/10 border-2 border-orange-300 dark:border-orange-500/50 relative overflow-hidden shadow-md",
+            card: "bg-orange-50 dark:bg-gradient-to-r dark:from-amber-500/10 dark:to-orange-500/10 border-2 border-orange-300 dark:border-orange-500/50 relative overflow-hidden shadow-sm",
             header: "bg-orange-100/50 dark:bg-orange-500/10 border-b-2 border-orange-300 dark:border-orange-500/20",
             name: "text-zinc-900 dark:text-zinc-100"
         },
         waiting: {
-            card: "opacity-60 grayscale-[0.5] border-2 border-dashed border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-900/50",
+            card: "opacity-60 grayscale-[0.5] border-2 border-dashed border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900/50",
             header: "bg-zinc-100 dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-800",
             name: "text-zinc-400 dark:text-zinc-500"
         }

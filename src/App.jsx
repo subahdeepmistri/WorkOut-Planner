@@ -735,7 +735,7 @@ function App() {
         ) : (
           /* Tab: Stats */
           <main className="max-w-[800px] mx-auto p-4 relative pt-10">
-            <StatsView workoutData={workoutData} getPreviousBest={getPreviousBest} />
+            <StatsView workoutData={workoutData} getPreviousBest={getPreviousBest} theme={theme} />
           </main>
         )}
       </div>
