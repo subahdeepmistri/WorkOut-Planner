@@ -223,7 +223,7 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest, theme }) => {
                     <div className="absolute top-0 right-0 p-6 opacity-30 group-hover:scale-110 transition-transform"><Zap className="w-24 h-24 text-white" /></div>
                     <div className="relative z-10 flex flex-col h-full justify-between">
                         <div className="flex items-center gap-2"><div className="p-1.5 rounded-full bg-white/20"><Zap className="w-3.5 h-3.5" /></div><span className="text-xs font-bold uppercase tracking-widest opacity-90">Current Streak</span></div>
-                        <div className="text-4xl font-black tracking-tighter drop-shadow-sm">{history.currentStreak} <span className="text-lg font-bold opacity-80">Days</span></div>
+                        <div className="text-4xl font-black tracking-tighter drop-shadow-sm">{history.currentStreak} <span className="text-lg font-bold opacity-80 tracking-widest">Days</span></div>
                         <div className="text-sm font-medium opacity-95">{history.currentStreak > 3 ? "You are displaying elite consistency." : "Momentum builds one day at a time."}</div>
                     </div>
                 </div>
