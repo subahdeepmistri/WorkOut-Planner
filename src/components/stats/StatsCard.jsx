@@ -131,14 +131,14 @@ export const StatsCard = ({
                         <div className="absolute -top-10 -right-10 w-20 h-20 bg-emerald-400/20 blur-xl rounded-full pointer-events-none"></div>
                     )}
 
-                    <div className="flex items-start gap-2 relative z-10">
-                        <div className={`mt-0.5 p-1 sm:p-1.5 rounded-lg flex-shrink-0 ${isHighConfidence ? "bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400" : "bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400"
+                    <div className="flex flex-col sm:flex-row items-start gap-1 sm:gap-3 relative z-10 w-full">
+                        <div className={`mt-0.5 p-1 sm:p-1.5 rounded-lg flex-shrink-0 inline-flex ${isHighConfidence ? "bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400" : "bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400"
                             }`}>
                             {isHighConfidence ? <Sparkles size={12} className="sm:w-3.5 sm:h-3.5" /> : <Brain size={12} className="sm:w-3.5 sm:h-3.5" />}
                         </div>
 
-                        <div className="flex-1 mr-4">
-                            <p className="text-[10px] sm:text-xs font-semibold text-zinc-700 dark:text-zinc-200 leading-tight sm:leading-relaxed">
+                        <div className="flex-1 w-full sm:w-auto">
+                            <p className="text-[10px] sm:text-xs font-semibold text-zinc-700 dark:text-zinc-200 leading-tight sm:leading-relaxed break-words">
                                 {aiInsight.text}
                             </p>
                             {isHighConfidence && (
