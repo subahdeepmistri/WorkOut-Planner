@@ -9,6 +9,7 @@ export const ExerciseCard = ({ exercise, index, onUpdateSet, onAddSet, onRemoveS
     const isWaiting = pendingSuperset === index;
     const isCardLocked = exercise.isLocked;
     const isDisabled = disabled || isCardLocked;
+    const [isEditingName, setIsEditingName] = useState(false);
 
     // Check if THIS card has the active timer
     const isTimerActive = activeTimer?.isActive && activeTimer?.activeContext === index;
@@ -92,9 +93,32 @@ export const ExerciseCard = ({ exercise, index, onUpdateSet, onAddSet, onRemoveS
                                     Next Up
                                 </span>
                             )}
-                            <h3 className={`text-lg sm:text-xl font-black italic tracking-tight ${theme.name}`}>
-                                {isWaiting ? "???" : exercise.name}
-                            </h3>
+                            {isEditingName && !isWaiting ? (
+                                <input
+                                    autoFocus
+                                    type="text"
+                                    defaultValue={exercise.name}
+                                    onBlur={(e) => {
+                                        setIsEditingName(false);
+                                        if (e.target.value.trim() !== "") {
+                                            onUpdateName(index, e.target.value);
+                                        }
+                                    }}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            e.target.blur();
+                                        }
+                                    }}
+                                    className={`text-lg sm:text-xl font-black italic tracking-tight bg-transparent outline-none border-b-2 border-current w-full min-w-[150px] ${theme.name}`}
+                                />
+                            ) : (
+                                <h3
+                                    onClick={() => !isWaiting && setIsEditingName(true)}
+                                    className={`text-lg sm:text-xl font-black italic tracking-tight cursor-text hover:underline decoration-dashed decoration-2 underline-offset-4 ${theme.name}`}
+                                >
+                                    {isWaiting ? "???" : exercise.name}
+                                </h3>
+                            )}
                         </div>
                         {isWaiting && <p className="text-[10px] sm:text-xs font-medium text-zinc-400 mt-0.5">Complete current exercise to unlock</p>}
 
