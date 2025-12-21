@@ -22,12 +22,12 @@ const DevStatsControl = ({ forceState }) => {
 
     const scenarios = [
         { label: "D0", streak: 0, workouts: 0, desc: "New User", mockDayStats: null },
-        { label: "D1", streak: 1, workouts: 1, desc: "First Workout", mockDayStats: { duration: '45m', strengthVol: 2500, cDist: 2.0, cMin: 15, aRep: 0, hasStrength: true, hasCardio: true, hasCore: false } },
-        { label: "D3", streak: 3, workouts: 3, desc: "Momentum", mockDayStats: { duration: '50m', strengthVol: 3200, cDist: 3.0, cMin: 20, aRep: 50, hasStrength: true, hasCardio: true, hasCore: true } },
-        { label: "D5", streak: 5, workouts: 5, desc: "Consistency", mockDayStats: { duration: '60m', strengthVol: 4500, cDist: 0, cMin: 0, aRep: 100, hasStrength: true, hasCardio: false, hasCore: true } },
-        { label: "D10", streak: 10, workouts: 10, desc: "Habit", mockDayStats: { duration: '65m', strengthVol: 6000, cDist: 5.0, cMin: 30, aRep: 0, hasStrength: true, hasCardio: true, hasCore: false } },
-        { label: "D20", streak: 20, workouts: 20, desc: "Established", mockDayStats: { duration: '75m', strengthVol: 8500, cDist: 4.0, cMin: 25, aRep: 120, hasStrength: true, hasCardio: true, hasCore: true } },
-        { label: "D35", streak: 35, workouts: 35, desc: "Discipline", mockDayStats: { duration: '90m', strengthVol: 12500, cDist: 10.0, cMin: 45, aRep: 200, hasStrength: true, hasCardio: true, hasCore: true } },
+        { label: "D1", streak: 1, workouts: 1, desc: "First Workout" },
+        { label: "D3", streak: 3, workouts: 3, desc: "Momentum" },
+        { label: "D5", streak: 5, workouts: 5, desc: "Consistency" },
+        { label: "D10", streak: 10, workouts: 10, desc: "Habit" },
+        { label: "D20", streak: 20, workouts: 20, desc: "Established" },
+        { label: "D35", streak: 35, workouts: 35, desc: "Discipline" },
     ];
 
     return (
