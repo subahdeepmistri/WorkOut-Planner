@@ -100,9 +100,9 @@ export const ExerciseCard = ({ exercise, index, onUpdateSet, onAddSet, onRemoveS
 
                         {!isWaiting && (
                             <div className="flex items-center gap-2 mt-0.5">
-                                {/* AI Indicator */}
-                                <div className="p-0.5" title="Insights appear after workouts">
-                                    <Brain size={14} className="text-zinc-300 dark:text-zinc-700" />
+                                {/* AI Indicator (Active vs Dormant) */}
+                                <div className="p-0.5" title={previousBest ? `Beat your PB: ${previousBest.weight}kg` : "Insights appear after workouts"}>
+                                    <Brain size={14} className={previousBest ? "text-emerald-500 animate-pulse" : "text-zinc-300 dark:text-zinc-700"} />
                                 </div>
 
                                 {exercise.type === 'cardio' ? (
