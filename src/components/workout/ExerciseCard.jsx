@@ -27,6 +27,14 @@ export const ExerciseCard = ({ exercise, index, onUpdateSet, onAddSet, onRemoveS
 
     const { targetVol, actualVol } = calculateAdherenceData();
 
+    // --- PB / Record Logic ---
+    const currentMaxWeight = exercise.sets.reduce((max, set) => {
+        const weight = parseFloat(set.weight) || 0;
+        return weight > max ? weight : max;
+    }, 0);
+
+    const isNewPB = previousBest && currentMaxWeight > parseFloat(previousBest.weight);
+
 
     // Theme Configuration
     const CARD_THEMES = {
@@ -74,7 +82,7 @@ export const ExerciseCard = ({ exercise, index, onUpdateSet, onAddSet, onRemoveS
                 {/* Left: Drag Handle & Name */}
                 <div className="flex items-center gap-3 w-full sm:w-auto">
                     {!isWaiting && (
-                        <div className="cursor-grab active:cursor-grabbing text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">
+                        <div className="cursor-grab active:cursor-grabbing text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors" onClick={(e) => e.stopPropagation()}>
                             <svg width="10" height="16" viewBox="0 0 6 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" className="opacity-50">
                                 <circle cx="2" cy="2" r="1.5" /><circle cx="2" cy="8" r="1.5" /><circle cx="2" cy="14" r="1.5" /><circle cx="4" cy="2" r="1.5" /><circle cx="4" cy="8" r="1.5" /><circle cx="4" cy="14" r="1.5" />
                             </svg>
@@ -95,6 +103,7 @@ export const ExerciseCard = ({ exercise, index, onUpdateSet, onAddSet, onRemoveS
                             )}
                             {isEditingName && !isWaiting ? (
                                 <input
+                                    onClick={(e) => e.stopPropagation()}
                                     autoFocus
                                     type="text"
                                     defaultValue={exercise.name}
@@ -113,7 +122,10 @@ export const ExerciseCard = ({ exercise, index, onUpdateSet, onAddSet, onRemoveS
                                 />
                             ) : (
                                 <h3
-                                    onClick={() => !isWaiting && setIsEditingName(true)}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (!isWaiting) setIsEditingName(true);
+                                    }}
                                     className={`text-lg sm:text-xl font-black italic tracking-tight cursor-text hover:underline decoration-dashed decoration-2 underline-offset-4 ${theme.name}`}
                                 >
                                     {isWaiting ? "???" : exercise.name}
@@ -125,8 +137,8 @@ export const ExerciseCard = ({ exercise, index, onUpdateSet, onAddSet, onRemoveS
                         {!isWaiting && (
                             <div className="flex items-center gap-2 mt-0.5">
                                 {/* AI Indicator (Active vs Dormant) */}
-                                <div className="p-0.5" title={previousBest ? `Beat your PB: ${previousBest.weight}kg` : "Insights appear after workouts"}>
-                                    <Brain size={14} className={previousBest ? "text-emerald-500 animate-pulse" : "text-zinc-300 dark:text-zinc-700"} />
+                                <div className="p-0.5" title={isNewPB ? `NEW PB! ${currentMaxWeight}kg (Beat ${previousBest.weight}kg)` : (previousBest ? `Beat your PB: ${previousBest.weight}kg` : "Insights appear after workouts")} onClick={(e) => e.stopPropagation()}>
+                                    <Brain size={14} className={isNewPB ? "text-amber-500 animate-pulse drop-shadow-[0_0_8px_rgba(245,158,11,0.8)]" : (previousBest ? "text-emerald-500" : "text-zinc-300 dark:text-zinc-700")} />
                                 </div>
 
                                 {exercise.type === 'cardio' ? (
