@@ -29,7 +29,7 @@ export const HeaderRest = ({
             <button
                 onClick={() => onStart(60)}
                 className={`flex items-center justify-center p-3 rounded-2xl transition-all transform active:scale-95 shadow-md border-2 ${themeBorder} ${themeBg} hover:brightness-110`}
-                title="Start Rest Timer (60s)"
+                title="Start Rest Timer (1 min)"
             >
                 <Timer size={32} className={themeText} strokeWidth={2.5} />
             </button>
