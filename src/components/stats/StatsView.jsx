@@ -31,7 +31,7 @@ const DevStatsControl = ({ forceState }) => {
     ];
 
     return (
-        <div className="fixed bottom-20 right-4 z-50 bg-black/90 backdrop-blur-md p-3 rounded-xl border border-white/10 flex flex-col gap-2 shadow-2xl scale-90 origin-bottom-right opacity-30 hover:opacity-100 transition-opacity">
+        <div className="fixed bottom-28 sm:bottom-20 right-4 z-[60] bg-black/90 backdrop-blur-md p-3 rounded-xl border border-white/10 flex flex-col gap-2 shadow-2xl scale-100 sm:scale-90 origin-bottom-right opacity-100 sm:opacity-30 sm:hover:opacity-100 transition-all">
             <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1">Debug Journey</div>
             <div className="flex gap-1 flex-wrap max-w-[200px]">
                 {scenarios.map(s => (
