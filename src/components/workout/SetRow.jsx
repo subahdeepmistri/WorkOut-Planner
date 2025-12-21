@@ -6,8 +6,8 @@ import { useAiCoach } from '../../hooks/useAiCoach';
 
 export const SetRow = ({ set, index, onChange, onRemove, previousBest, targetReps, isCardio, cardioMode, coreMode, isAbs, disabled, onRest, isFocusMode, onStartTimer, previousSet, isActiveSet, exercise }) => {
     const reps = set.reps || 0;
-    const targetNum = parseTargetReps(targetReps);
-    const target = targetNum || 1;
+    const defaultTarget = parseTargetReps(targetReps) || 0;
+    const rowTarget = set.target !== undefined ? set.target : (defaultTarget || 1);
 
     // Helper to determine bar color
     const getProgressBarColor = (reps, target) => {
@@ -19,7 +19,7 @@ export const SetRow = ({ set, index, onChange, onRemove, previousBest, targetRep
         return { bar: 'bg-purple-500', glow: 'shadow-[0_0_10px_rgba(168,85,247,0.8)]' };
     };
 
-    const { bar: barColor, glow: glowClass } = getProgressBarColor(reps, target);
+    const { bar: barColor, glow: glowClass } = getProgressBarColor(reps, rowTarget);
 
     // Auto-Calculate Pace for Cardio
     useEffect(() => {
@@ -311,8 +311,7 @@ export const SetRow = ({ set, index, onChange, onRemove, previousBest, targetRep
         );
     }
 
-    const defaultTarget = parseTargetReps(targetReps) || 0;
-    const rowTarget = set.target !== undefined ? set.target : defaultTarget;
+
 
     return (
         <div className={`py-2 hover:bg-zinc-50/50 dark:hover:bg-zinc-800/20 transition-all duration-300 rounded-lg ${focusClass}`}>
