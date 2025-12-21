@@ -4,12 +4,13 @@ import { SetRow } from './SetRow';
 import { AdherenceBar } from './AdherenceBar';
 import { RestTimer } from './RestTimer';
 
-export const ExerciseCard = ({ exercise, index, onUpdateSet, onAddSet, onRemoveSet, onLink, previousBest, onRemove, onCardioMode, onCoreMode, pendingSuperset, onUpdateName, disabled, onStartRest, activeTimer, timerControls, onToggleLock, isFocusMode, onStartSetTimer }) => {
+export const ExerciseCard = ({ exercise, index, onUpdateSet, onAddSet, onRemoveSet, onLink, previousBest, onRemove, onCardioMode, onCoreMode, pendingSuperset, onUpdateName, disabled, onStartRest, activeTimer, timerControls, onToggleLock, isFocusMode, onStartSetTimer, dragStart, dragEnter, dragEnd }) => {
     const isSuperset = exercise.supersetId !== null;
     const isWaiting = pendingSuperset === index;
     const isCardLocked = exercise.isLocked;
     const isDisabled = disabled || isCardLocked;
     const [isEditingName, setIsEditingName] = useState(false);
+    const [isDraggable, setIsDraggable] = useState(false);
 
     // Check if THIS card has the active timer
     const isTimerActive = activeTimer?.isActive && activeTimer?.activeContext === index;
@@ -75,14 +76,30 @@ export const ExerciseCard = ({ exercise, index, onUpdateSet, onAddSet, onRemoveS
     const finalHeaderStyle = isTimerActive ? "bg-emerald-950/90 border-emerald-500/50 shadow-[inset_0_0_20px_rgba(16,185,129,0.2)]" : headerStyle;
 
     return (
-        <div id={`exercise-${index}`} className={`relative rounded-3xl transition-all duration-500 ease-out group ${theme.card} ${isFocusMode && isTimerActive ? 'ring-2 ring-offset-2 ring-emerald-500 dark:ring-emerald-400 scale-[1.02] shadow-xl z-10' : ''} ${isFocusMode && !isTimerActive ? 'opacity-40 blur-[1px] scale-95' : ''}`}>
+        <div
+            id={`exercise-${index}`}
+            draggable={isDraggable}
+            onDragStart={(e) => dragStart(e, index)}
+            onDragEnter={(e) => dragEnter(e, index)}
+            onDragEnd={dragEnd}
+            onDragOver={(e) => e.preventDefault()}
+            className={`relative rounded-3xl transition-all duration-500 ease-out group ${theme.card} ${isFocusMode && isTimerActive ? 'ring-2 ring-offset-2 ring-emerald-500 dark:ring-emerald-400 scale-[1.02] shadow-xl z-10' : ''} ${isFocusMode && !isTimerActive ? 'opacity-40 blur-[1px] scale-95' : ''} ${isDraggable ? 'cursor-grab active:cursor-grabbing' : ''}`}
+        >
 
             {/* Header Section */}
             <div className={`flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 gap-3 rounded-t-[23px] transition-colors ${theme.header} cursor-pointer hover:bg-opacity-80`} onClick={() => onToggleLock && onToggleLock()}>
                 {/* Left: Drag Handle & Name */}
                 <div className="flex items-center gap-3 w-full sm:w-auto">
+
                     {!isWaiting && (
-                        <div className="cursor-grab active:cursor-grabbing text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors" onClick={(e) => e.stopPropagation()}>
+                        <div
+                            className="text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors p-2 -m-2 cursor-grab active:cursor-grabbing"
+                            onClick={(e) => e.stopPropagation()}
+                            onMouseEnter={() => setIsDraggable(true)}
+                            onMouseLeave={() => setIsDraggable(false)}
+                            onTouchStart={() => setIsDraggable(true)}
+                            onTouchEnd={() => setIsDraggable(false)}
+                        >
                             <svg width="10" height="16" viewBox="0 0 6 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" className="opacity-50">
                                 <circle cx="2" cy="2" r="1.5" /><circle cx="2" cy="8" r="1.5" /><circle cx="2" cy="14" r="1.5" /><circle cx="4" cy="2" r="1.5" /><circle cx="4" cy="8" r="1.5" /><circle cx="4" cy="14" r="1.5" />
                             </svg>

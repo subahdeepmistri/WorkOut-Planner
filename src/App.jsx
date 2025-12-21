@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight, Calendar, Dumbbell, TrendingUp, Activity, Trash2, CheckCircle, Plus, Home, PlayCircle, Trophy, Code, Timer, Sun, Moon, Zap } from 'lucide-react';
 import MilesSticker from './assets/miles_sticker.gif';
 import GwenSticker from './assets/gwen_sticker.gif';
@@ -35,6 +35,41 @@ function App() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [activeTab, setActiveTab] = useState('workout'); // 'workout' | 'stats'
   const [showCalendar, setShowCalendar] = useState(false);
+
+  // --- Drag & Drop Refs ---
+  const dragItem = useRef(null);
+  const dragOverItem = useRef(null);
+
+  // --- Handlers ---
+  const handleSort = () => {
+    // Duplicate items
+    let _exercises = [...currentLog.exercises];
+
+    // Remove and save the dragged item content
+    const draggedItemContent = _exercises.splice(dragItem.current, 1)[0];
+
+    // Switch the position
+    _exercises.splice(dragOverItem.current, 0, draggedItemContent);
+
+    // Update state
+    setCurrentLog({ ...currentLog, exercises: _exercises });
+
+    // Reset refs
+    dragItem.current = null;
+    dragOverItem.current = null;
+  };
+
+  const onDragStart = (e, index) => {
+    dragItem.current = index;
+  };
+
+  const onDragEnter = (e, index) => {
+    dragOverItem.current = index;
+  };
+
+  const onDragEnd = (e) => {
+    handleSort();
+  };
   const [showAboutModal, setShowAboutModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showDiscardConfirm, setShowDiscardConfirm] = useState(false);
@@ -639,6 +674,9 @@ function App() {
                       onToggleLock={() => toggleExerciseLock(i)}
                       isFocusMode={isFocusMode}
                       onStartSetTimer={(duration, setIndex) => startRest(duration, { type: 'set', exIndex: i, setIndex })}
+                      dragStart={(e) => onDragStart(e, i)}
+                      dragEnter={(e) => onDragEnter(e, i)}
+                      dragEnd={onDragEnd}
                     />
                   ))}
 
