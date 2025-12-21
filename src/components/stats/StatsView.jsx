@@ -91,7 +91,16 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
         return new Date(y, m - 1, d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     };
 
-    // --- Chart Options ---
+    // --- Responsive Check ---
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+    React.useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 768);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    // --- Chart Options (Mobile Optimized) ---
     const commonOptions = {
         responsive: true,
         maintainAspectRatio: false,
@@ -115,17 +124,21 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
                 ticks: { color: '#71717a', font: { size: 10 } }
             }
         },
-        animation: { duration: 1500, easing: 'easeOutQuart' }
+        animation: { duration: isMobile ? 800 : 1500, easing: 'easeOutQuart' }
     };
 
     const doughnutOptions = {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-            legend: { position: 'right', labels: { color: '#a1a1aa', font: { size: 10 }, boxWidth: 10 } }
+            legend: {
+                display: !isMobile, // Hide legend on mobile to save space
+                position: 'right',
+                labels: { color: '#a1a1aa', font: { size: 10 }, boxWidth: 10 }
+            }
         },
         cutout: '70%',
-        animation: { animateScale: true, animateRotate: true, duration: 1500 }
+        animation: { animateScale: true, animateRotate: true, duration: isMobile ? 800 : 1500 }
     };
 
     // --- Derived State for Logic ---
@@ -159,7 +172,7 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
 
     // --- Rendering ---
     return (
-        <div className="p-4 pb-40 space-y-6 animate-in fade-in duration-700 relative">
+        <div className="p-4 pb-40 space-y-4 sm:space-y-6 animate-in fade-in duration-500 relative">
             <DevStatsControl forceState={setForcedState} />
 
             {/* Calendar Modal */}
@@ -173,7 +186,7 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
             )}
 
             {/* Header Section */}
-            <div className="flex flex-row items-center justify-between gap-4 mb-4">
+            <div className="flex flex-row items-center justify-between gap-4 mb-2 sm:mb-4">
                 <div>
                     <h2 className="text-3xl sm:text-4xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-purple-500 to-pink-500 dark:from-red-400 dark:via-purple-400 dark:to-pink-400 drop-shadow-[2px_2px_0px_rgba(0,0,0,0.1)] dark:drop-shadow-[3px_3px_0px_#000000] animate-pulse" style={{ transform: 'skew(-10deg)' }}>
                         DUO-FIT
@@ -190,22 +203,22 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
                     </div>
                 </div>
 
-                {/* Dropdown */}
+                {/* Dropdown - Enhanced Touch Target */}
                 <div className="relative z-50 self-end sm:self-auto">
                     <button
                         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                        className="flex items-center gap-2 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-200 px-4 py-2 rounded-lg text-sm font-bold hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors"
+                        className="flex items-center gap-2 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-200 px-4 py-2.5 sm:py-2 rounded-xl text-sm font-bold hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors active:scale-95 touch-manipulation"
                     >
-                        <Calendar size={14} className="text-emerald-500" />
+                        <Calendar size={16} className="text-emerald-500" />
                         {getDropdownLabel()}
                         <ChevronDown size={14} className={`ml-1 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
                     </button>
 
                     {isDropdownOpen && (
-                        <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-2xl overflow-hidden animate-in slide-in-from-top-2 fade-in duration-200 flex flex-col">
+                        <div className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl overflow-hidden animate-in slide-in-from-top-2 fade-in duration-200 flex flex-col z-[100]">
                             <button
                                 onClick={() => handleSelectDate(new Date())}
-                                className="px-4 py-3 text-left text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors text-zinc-700 dark:text-zinc-300"
+                                className="px-5 py-4 text-left text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors text-zinc-700 dark:text-zinc-300 touch-manipulation"
                             >
                                 Today
                             </button>
@@ -214,25 +227,25 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
                                     const d = new Date(); d.setDate(d.getDate() - 1);
                                     handleSelectDate(d);
                                 }}
-                                className="px-4 py-3 text-left text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors text-zinc-700 dark:text-zinc-300 border-t border-zinc-100 dark:border-zinc-800"
+                                className="px-5 py-4 text-left text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors text-zinc-700 dark:text-zinc-300 border-t border-zinc-100 dark:border-zinc-800 touch-manipulation"
                             >
                                 Yesterday
                             </button>
                             <button
                                 onClick={() => { setIsCalendarOpen(true); setIsDropdownOpen(false); }}
-                                className="px-4 py-3 text-left text-sm font-bold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-colors border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between"
+                                className="px-5 py-4 text-left text-sm font-bold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-colors border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between touch-manipulation"
                             >
-                                Select Date <Calendar size={12} />
+                                Select Date <Calendar size={14} />
                             </button>
                         </div>
                     )}
                 </div>
             </div>
 
-            {/* Daily Stats Grid */}
+            {/* Daily Stats Grid - 2x2 on Mobile */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
                 <StatsCard
-                    title="Workout Time"
+                    title="Time"
                     timeframe={getDropdownLabel()}
                     primaryMetric={{
                         value: dayStats ? dayStats.duration.replace('m', '') : null,
@@ -246,12 +259,12 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
                 />
 
                 <StatsCard
-                    title="Strength Vol"
+                    title="Volume"
                     timeframe={getDropdownLabel()}
                     primaryMetric={{
                         value: dayStats ? dayStats.strengthVol.toLocaleString() : null,
                         unit: 'kg',
-                        label: 'Volume'
+                        label: 'Vol'
                     }}
                     dataState={!dayStats ? 'empty' : dayStats.hasStrength ? 'valid' : 'partial'}
                     trendData={history.datasets.sVol.slice(-5)}
@@ -259,12 +272,12 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
                 />
 
                 <StatsCard
-                    title="Cardio Output"
+                    title="Cardio"
                     timeframe={getDropdownLabel()}
                     primaryMetric={{
                         value: dayStats ? dayStats.cDist.toFixed(1) : null,
                         unit: 'km',
-                        label: 'Distance'
+                        label: 'Dist'
                     }}
                     secondaryMetrics={dayStats ? [{ label: 'Time', value: `${dayStats.cMin}m` }] : []}
                     dataState={!dayStats ? 'empty' : dayStats.hasCardio ? 'valid' : 'partial'}
@@ -273,7 +286,7 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
                 />
 
                 <StatsCard
-                    title="Core Endurance"
+                    title="Core"
                     timeframe={getDropdownLabel()}
                     primaryMetric={{
                         value: dayStats ? dayStats.aRep : null,
@@ -286,8 +299,8 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
             </div>
 
             {/* KPI Cards (Discipline, Streak) */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Day Streak - Strictly per Master Prompt Ranges */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+                {/* Day Streak - Strictly per Master Prompt Ranges - Compact Mobile */}
                 {(() => {
                     let config = {
                         title: "Current Streak",
@@ -377,60 +390,62 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
                     }
 
                     return (
-                        <div className="relative p-6 rounded-3xl bg-gradient-to-br from-zinc-900 to-black text-white overflow-hidden shadow-xl border border-zinc-800">
+                        <div className="relative p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-zinc-900 to-black text-white overflow-hidden shadow-xl border border-zinc-800 flex flex-row items-center justify-between sm:block">
                             <div className={`absolute top-0 right-0 p-8 ${config.opacity} transform translate-x-4 -translate-y-4 transition-opacity`}>
-                                <Zap size={120} />
+                                <Zap size={100} className="sm:w-[120px] sm:h-[120px]" />
                             </div>
 
-                            <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-widest mb-1">{config.title}</h3>
-                            <div className="flex items-baseline gap-2">
-                                <span className={`text-6xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-b ${config.gradient} drop-shadow-lg pr-2 pb-1`}>
-                                    {config.value}
-                                </span>
-                                {config.unit && <span className="text-xl font-bold text-zinc-400">{config.unit}</span>}
+                            <div className="flex-1">
+                                <h3 className="text-xs sm:text-sm font-bold text-zinc-500 uppercase tracking-widest mb-1 sm:mb-2">{config.title}</h3>
+                                <div className="flex items-baseline gap-2">
+                                    <span className={`text-4xl sm:text-6xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-b ${config.gradient} drop-shadow-lg pr-2 pb-1`}>
+                                        {config.value}
+                                    </span>
+                                    {config.unit && <span className="text-sm sm:text-xl font-bold text-zinc-400">{config.unit}</span>}
+                                </div>
+                                <p className="text-[10px] sm:text-xs text-zinc-500 mt-1 sm:mt-2 font-medium">{config.subtext}</p>
                             </div>
-                            <p className="text-xs text-zinc-500 mt-2 font-medium">{config.subtext}</p>
                         </div>
                     );
                 })()}
 
                 {/* Discipline Score (Shown > 3 sessions) */}
                 {activeWorkouts > 3 && (
-                    <div className="relative p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden group">
+                    <div className="relative p-5 sm:p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden group">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl group-hover:bg-purple-500/20 transition-colors"></div>
-                        <h3 className="text-sm font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-1">Discipline Score</h3>
+                        <h3 className="text-xs sm:text-sm font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-1 sm:mb-2">Discipline Score</h3>
                         <div className="flex items-baseline gap-2 relative z-10">
-                            <span className="text-6xl font-black italic tracking-tighter text-zinc-800 dark:text-white">
+                            <span className="text-4xl sm:text-6xl font-black italic tracking-tighter text-zinc-800 dark:text-white">
                                 {history.discipline}%
                             </span>
                         </div>
-                        <p className="text-xs text-emerald-500 font-bold mt-2 flex items-center gap-1">
+                        <p className="text-[10px] sm:text-xs text-emerald-500 font-bold mt-1 sm:mt-2 flex items-center gap-1">
                             <Activity size={12} /> Based on target completion
                         </p>
                     </div>
                 )}
             </div>
 
-
-
-            {/* Monthly Summary (Day 14+ Only) */}
+            {/* Monthly Summary (Day 14+ Only) - Chip Layout */}
             {
                 activeStreak >= 14 && (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 animate-in slide-in-from-bottom-8 duration-700 delay-100">
-                        <div className="md:col-span-3">
-                            <h3 className="text-sm font-bold text-zinc-500 dark:text-zinc-500 uppercase tracking-widest pl-1 mb-2">This Month at a Glance</h3>
+                    <div className="animate-in slide-in-from-bottom-4 duration-500 delay-100">
+                        <div className="mb-2">
+                            <h3 className="text-[10px] sm:text-xs font-bold text-zinc-400 dark:text-zinc-600 uppercase tracking-widest pl-1">Month at a Glance</h3>
                         </div>
-                        <div className="bg-zinc-100 dark:bg-zinc-900/50 p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 flex flex-col justify-center items-center">
-                            <span className="text-3xl font-black text-zinc-800 dark:text-zinc-100">{history.monthlyStats?.sessions || 0}</span>
-                            <span className="text-xs font-bold text-zinc-500 uppercase">Sessions Done</span>
-                        </div>
-                        <div className="bg-zinc-100 dark:bg-zinc-900/50 p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 flex flex-col justify-center items-center">
-                            <span className="text-3xl font-black text-emerald-500">{activeStreak}</span>
-                            <span className="text-xs font-bold text-zinc-500 uppercase">Longest Streak</span>
-                        </div>
-                        <div className="bg-zinc-100 dark:bg-zinc-900/50 p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 flex flex-col justify-center items-center">
-                            <span className="text-2xl font-black text-blue-500">{history.monthlyStats?.topFocus || "-"}</span>
-                            <span className="text-xs font-bold text-zinc-500 uppercase">Primary Focus</span>
+                        <div className="flex flex-row flex-wrap gap-2 sm:grid sm:grid-cols-3">
+                            <div className="bg-zinc-100 dark:bg-zinc-900/50 px-4 py-2 sm:p-4 rounded-xl sm:rounded-2xl border border-zinc-200 dark:border-zinc-800 flex items-center sm:flex-col sm:justify-center gap-2 sm:gap-0">
+                                <span className="text-lg sm:text-3xl font-black text-zinc-800 dark:text-zinc-100">{history.monthlyStats?.sessions || 0}</span>
+                                <span className="text-[9px] sm:text-xs font-bold text-zinc-500 uppercase">Sessions</span>
+                            </div>
+                            <div className="bg-zinc-100 dark:bg-zinc-900/50 px-4 py-2 sm:p-4 rounded-xl sm:rounded-2xl border border-zinc-200 dark:border-zinc-800 flex items-center sm:flex-col sm:justify-center gap-2 sm:gap-0">
+                                <span className="text-lg sm:text-3xl font-black text-emerald-500">{activeStreak}</span>
+                                <span className="text-[9px] sm:text-xs font-bold text-zinc-500 uppercase">Streak</span>
+                            </div>
+                            <div className="bg-zinc-100 dark:bg-zinc-900/50 px-4 py-2 sm:p-4 rounded-xl sm:rounded-2xl border border-zinc-200 dark:border-zinc-800 flex items-center sm:flex-col sm:justify-center gap-2 sm:gap-0 flex-grow sm:flex-grow-0">
+                                <span className="text-lg sm:text-2xl font-black text-blue-500 whitespace-nowrap">{history.monthlyStats?.topFocus || "-"}</span>
+                                <span className="text-[9px] sm:text-xs font-bold text-zinc-500 uppercase">Focus</span>
+                            </div>
                         </div>
                     </div>
                 )
@@ -439,12 +454,12 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
             {/* Charts Section - Visible only if >= 2 workouts */}
             {
                 activeWorkouts >= 2 && (
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-8">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 pb-4">
 
                         {/* Training Split */}
-                        <div className="p-6 rounded-3xl bg-white/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 backdrop-blur-sm">
-                            <h3 className="text-sm font-bold text-zinc-500 uppercase mb-4">Training Split</h3>
-                            <div className="h-64 relative">
+                        <div className="p-4 sm:p-6 rounded-3xl bg-white/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 backdrop-blur-sm">
+                            <h3 className="text-xs sm:text-sm font-bold text-zinc-500 uppercase mb-2 sm:mb-4">Training Split</h3>
+                            <div className="h-48 sm:h-64 relative">
                                 <Doughnut data={{
                                     labels: ['Strength', 'Cardio', 'Core'],
                                     datasets: [{
@@ -458,9 +473,9 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
 
                         {/* Strength Volume Trend */}
                         {history.totalVol >= 0 && (
-                            <div className="p-6 rounded-3xl bg-white/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 backdrop-blur-sm">
-                                <h3 className="text-sm font-bold text-zinc-500 uppercase mb-4">Strength Progress (Trend)</h3>
-                                <div className="h-64">
+                            <div className="p-4 sm:p-6 rounded-3xl bg-white/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 backdrop-blur-sm">
+                                <h3 className="text-xs sm:text-sm font-bold text-zinc-500 uppercase mb-2 sm:mb-4">Strength Progress</h3>
+                                <div className="h-48 sm:h-64">
                                     {/* Logic: If < 2 data points (approx activeWorkouts < 2, but we are inside >=2 block), show summary text instead */}
                                     {activeWorkouts < 2 ? (
                                         <div className="h-full flex flex-col items-center justify-center opacity-50">

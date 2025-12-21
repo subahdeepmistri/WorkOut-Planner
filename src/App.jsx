@@ -42,6 +42,14 @@ function App() {
   const [isMinimized, setIsMinimized] = useState(false);
   const [loadingGif, setLoadingGif] = useState(null); // 'miles' | 'gwen' | null
   const [isFocusMode, setIsFocusMode] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  // Responsive Check
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Force Start on Workout Tab (Fix for persisted browser state)
   useEffect(() => {
@@ -157,9 +165,10 @@ function App() {
 
   return (
     <div className="relative min-h-screen font-sans pb-24 transition-colors duration-300 bg-zinc-50 dark:bg-black">
-      <div className="fixed inset-0 z-[5] pointer-events-none">
+      <div className={`fixed inset-0 z-[5] pointer-events-none transition-opacity duration-500 ${isMobile ? 'opacity-40' : 'opacity-100'}`}>
         <Snowfall
-          snowflakeCount={150}
+          snowflakeCount={isMobile ? 40 : 150} // Significantly reduced for mobile focus
+          radius={isMobile ? [0.5, 1.5] : [0.5, 3.0]} // Smaller particles on mobile
           style={{
             position: 'fixed',
             width: '100vw',
@@ -732,44 +741,44 @@ function App() {
       </div>
 
 
-      {/* Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 w-full bg-white/80 dark:bg-zinc-950/80 backdrop-blur-lg border-t border-zinc-200 dark:border-zinc-800 p-2 z-50">
-        <div className="max-w-[800px] mx-auto flex justify-around items-end relative">
+      {/* Bottom Navigation - Mobile First Optimization */}
+      <div className="fixed bottom-0 left-0 w-full bg-white/90 dark:bg-zinc-950/90 backdrop-blur-xl border-t border-zinc-200 dark:border-zinc-800 pb-safe sm:pb-2 pt-2 sm:pt-3 z-50 transition-all duration-300">
+        <div className="max-w-[800px] mx-auto flex justify-around items-end relative h-[70px] sm:h-auto">
           <button
             onClick={() => setActiveTab('workout')}
-            className={`flex flex-col items-center p-3 rounded-lg transition-colors ${activeTab === 'workout' ? 'text-emerald-600 dark:text-emerald-500' : 'text-zinc-500 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300'}`}
+            className={`flex flex-col items-center justify-center p-3 rounded-2xl w-24 active:scale-95 transition-all outline-none ${activeTab === 'workout' ? 'text-emerald-600 dark:text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10' : 'text-zinc-500 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300'}`}
           >
-            <Dumbbell size={24} />
-            <span className="text-[10px] uppercase font-bold mt-1">Workout</span>
+            <Dumbbell size={isMobile ? 26 : 24} strokeWidth={activeTab === 'workout' ? 2.5 : 2} />
+            <span className={`text-[11px] uppercase font-bold mt-1 tracking-wide ${activeTab === 'workout' ? 'opacity-100' : 'opacity-80'}`}>Workout</span>
           </button>
 
-          {/* Home Button in Bottom Bar */}
+          {/* Home Button */}
           {currentLog && !isMinimized && <button
             onClick={() => setIsMinimized(true)}
-            className="flex flex-col items-center p-3 rounded-lg transition-colors text-zinc-500 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300"
+            className="flex flex-col items-center justify-center p-3 rounded-2xl w-24 active:scale-95 transition-all text-zinc-500 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300 outline-none"
           >
-            <Home size={24} />
-            <span className="text-[10px] uppercase font-bold mt-1">Home</span>
+            <Home size={isMobile ? 26 : 24} />
+            <span className="text-[11px] uppercase font-bold mt-1 tracking-wide opacity-80">Home</span>
           </button>
           }
 
           <button
             onClick={() => setActiveTab('stats')}
-            className={`flex flex-col items-center p-3 rounded-lg transition-colors ${activeTab === 'stats' ? 'text-emerald-600 dark:text-emerald-500' : 'text-zinc-500 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300'}`}
+            className={`flex flex-col items-center justify-center p-3 rounded-2xl w-24 active:scale-95 transition-all outline-none ${activeTab === 'stats' ? 'text-emerald-600 dark:text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10' : 'text-zinc-500 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300'}`}
           >
-            <TrendingUp size={24} />
-            <span className="text-[10px] uppercase font-bold mt-1">Stats</span>
+            <TrendingUp size={isMobile ? 26 : 24} strokeWidth={activeTab === 'stats' ? 2.5 : 2} />
+            <span className={`text-[11px] uppercase font-bold mt-1 tracking-wide ${activeTab === 'stats' ? 'opacity-100' : 'opacity-80'}`}>Stats</span>
           </button>
 
           <button
             onClick={() => setShowAboutModal(true)}
-            className="flex flex-col items-center p-3 rounded-lg transition-colors text-zinc-500 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300"
+            className="flex flex-col items-center justify-center p-3 rounded-2xl w-24 active:scale-95 transition-all text-zinc-500 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300 outline-none"
           >
-            <Code size={24} />
-            <span className="text-[10px] uppercase font-bold mt-1">About</span>
+            <Code size={isMobile ? 26 : 24} />
+            <span className="text-[11px] uppercase font-bold mt-1 tracking-wide opacity-80">About</span>
           </button>
         </div>
-        <div className="absolute bottom-1 right-2 text-[8px] text-zinc-300 dark:text-zinc-700 font-mono opacity-50">v1.1.0</div>
+        <div className="absolute bottom-1 right-2 text-[8px] text-zinc-300 dark:text-zinc-700 font-mono opacity-50 pointer-events-none">v1.1.0-mobile</div>
       </div>
     </div >
   );
