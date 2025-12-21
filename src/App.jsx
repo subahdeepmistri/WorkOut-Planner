@@ -358,7 +358,7 @@ function App() {
                 {/* Right: Big Rest Button */}
                 {currentLog && !isMinimized && (
                   <HeaderRest
-                    isActive={!!isTimerActive && activeContext === null}
+                    isActive={!!isTimerActive}
                     timeLeft={timeLeft || 0}
                     totalDuration={totalDuration || 0}
                     onStart={startRest ? (duration) => startRest(duration, null) : () => { }}

@@ -23,6 +23,11 @@ export const calculateWorkoutStats = (log, getPreviousBest, endTime = Date.now()
     let hasStrength = false;
     let hasCardio = false;
     let hasCore = false;
+    let totalTargetVol = 0;
+    let totalActualVol = 0;
+    let strengthVol = 0;
+    let cardioVol = 0;
+    let absVol = 0;
 
     log.exercises.forEach(ex => {
         if (!ex) return; // Skip null exercises
