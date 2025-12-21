@@ -11,7 +11,7 @@ import { useRestTimer } from './hooks/useRestTimer';
 import { useTheme } from './context/ThemeContext';
 
 // Helpers
-import { calculateWorkoutStats } from './utils/helpers';
+import { calculateSessionStats } from './utils/statsEngine';
 
 // Components
 import { BackgroundController } from './components/Layout/BackgroundController';
@@ -106,7 +106,9 @@ function App() {
     if (!currentLog) return;
     const endTime = Date.now();
     finishSession(endTime);
-    const stats = calculateWorkoutStats(currentLog, getPreviousBest, endTime);
+    // Explicitly inject endTime for immediate calculation (state update is async)
+    const completedLog = { ...currentLog, endTime };
+    const stats = calculateSessionStats(completedLog, getPreviousBest);
     setCompletionStats(stats);
     setShowCompletionModal(true);
   };

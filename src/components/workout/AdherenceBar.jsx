@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const AdherenceBar = ({ targetVolume, actualVolume, isSkipped = false, label = "Adherence", height = "h-2", missedContext }) => {
+export const AdherenceBar = ({ targetVolume, actualVolume, isSkipped = false, label = "Adherence", height = "h-2", missedContext, category }) => {
     // Safety check for division by zero
     const safeTarget = targetVolume || 1;
     const rawPercentage = (actualVolume / safeTarget) * 100;
@@ -12,19 +12,28 @@ export const AdherenceBar = ({ targetVolume, actualVolume, isSkipped = false, la
     const isPartial = rawPercentage > 0 && rawPercentage < 100;
 
     // Adherence 2.0 Logic
+    // Adherence 2.0 Logic (Category Aware)
     let barColor = 'bg-zinc-300 dark:bg-zinc-700'; // Default (0%)
     let shadow = '';
 
+    const colors = {
+        strength: { base: 'bg-indigo-400', success: 'bg-indigo-500', overdrive: 'bg-indigo-600', shadow: 'rgba(99,102,241,0.5)' },
+        cardio: { base: 'bg-pink-400', success: 'bg-pink-500', overdrive: 'bg-pink-600', shadow: 'rgba(236,72,153,0.5)' },
+        default: { base: 'bg-emerald-400', success: 'bg-emerald-500', overdrive: 'bg-purple-500', shadow: 'rgba(16,185,129,0.5)' }
+    };
+
+    const theme = colors[category] || colors.default;
+
     if (isOverdrive) {
-        barColor = 'bg-purple-500';
-        shadow = 'shadow-[0_0_15px_rgba(168,85,247,0.6)]'; // Purple Haze
+        barColor = theme.overdrive;
+        shadow = `shadow-[0_0_15px ${theme.shadow}]`;
     } else if (rawPercentage >= 100) {
-        barColor = 'bg-emerald-500';
-        shadow = 'shadow-[0_0_8px_rgba(16,185,129,0.5)]'; // Perfect
+        barColor = theme.success;
+        shadow = `shadow-[0_0_8px ${theme.shadow}]`;
     } else if (rawPercentage >= 80) {
-        barColor = 'bg-emerald-400'; // High Adherence
+        barColor = theme.base;
     } else if (rawPercentage >= 50) {
-        barColor = 'bg-yellow-400'; // Energized
+        barColor = category === 'strength' ? 'bg-indigo-300' : (category === 'cardio' ? 'bg-pink-300' : 'bg-yellow-400');
     } else if (rawPercentage > 0) {
         barColor = 'bg-zinc-500 dark:bg-zinc-600'; // Started (Neutral)
     } else if (isSkipped) {

@@ -39,7 +39,9 @@ export const useStats = (workoutData, getPreviousBest) => {
         const sVol = [];
         const cMin = [];
         const cDist = [];
+        const cLoad = [];
         const aRep = [];
+        const aHold = [];
 
         // Counters
         let sCount = 0, cCount = 0, aCount = 0;
@@ -59,10 +61,21 @@ export const useStats = (workoutData, getPreviousBest) => {
                 const localDate = new Date(y, m - 1, d); // Construct 00:00 local
                 labels.push(localDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }));
 
-                sVol.push(stats.strengthVol);
+                const sLoad = stats.strengthVol;
+
+                // Cardio Load Calculation:
+                // If cMin (Total Time) exists, use it.
+                // If cDist exist but Time is 0 (user didn't enter time), approximate effort (1km ~ 5min).
+                const calculatedLoad = stats.cMin > 0
+                    ? stats.cMin
+                    : (stats.cDist * 5);
+
+                sVol.push(sLoad);
                 cMin.push(stats.cMin);
                 cDist.push(stats.cDist);
+                cLoad.push(calculatedLoad);
                 aRep.push(stats.aRep);
+                aHold.push(stats.aHold);
 
                 if (stats.hasStrength) sCount++;
                 if (stats.hasCardio) cCount++;
@@ -142,7 +155,7 @@ export const useStats = (workoutData, getPreviousBest) => {
 
         return {
             labels,
-            datasets: { sVol, cMin, cDist, aRep },
+            datasets: { sVol, cMin, cDist, cLoad, aRep, aHold },
             distribution: [sCount, cCount, aCount],
             totalWorkouts: total, // Only valid ones
             currentStreak,

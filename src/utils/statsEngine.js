@@ -84,7 +84,7 @@ const calculateExerciseLoad = (ex, getPreviousBest) => {
 
         if (isCardio(type)) {
             // Cardio: Distance OR Time
-            const val = ex.cardioMode === 'circuit'
+            const val = (ex.cardioMode === 'circuit' || ex.cardioMode === 'duration')
                 ? safeFloat(set.time)
                 : safeFloat(set.distance);
 
@@ -142,7 +142,9 @@ export const calculateSessionStats = (log, getPreviousBest) => {
             cardioVol: 0, // distance + time mixed (deprecated)
 
             // Granular Aggregates
-            cMin: 0, cDist: 0, aRep: 0
+            cMin: 0, cDist: 0, aRep: 0,
+            cCircuitMin: 0, cDistMin: 0,
+            aHold: 0
         };
     }
 
@@ -154,6 +156,7 @@ export const calculateSessionStats = (log, getPreviousBest) => {
     let cMin = 0;
     let cDist = 0;
     let aRep = 0;
+    let aHold = 0;
 
     let hasStrength = false;
     let hasCardio = false;
@@ -180,14 +183,18 @@ export const calculateSessionStats = (log, getPreviousBest) => {
             // (Engine re-loop for strictness)
             ex.sets.forEach(s => {
                 if (s && s.completed) {
-                    if (ex.cardioMode === 'circuit') cMin += safeFloat(s.time);
+                    if (ex.cardioMode === 'circuit' || ex.cardioMode === 'duration') cMin += safeFloat(s.time);
                     else cDist += safeFloat(s.distance);
                 }
             });
         }
         else if (isCore(load.type)) {
             hasCore = true;
-            aRep += load.rawVol;
+            if (ex.coreMode === 'hold') {
+                aHold += load.rawVol;
+            } else {
+                aRep += load.rawVol;
+            }
         }
     });
 
@@ -206,6 +213,63 @@ export const calculateSessionStats = (log, getPreviousBest) => {
         }
     }
 
+    // --- PERFECT CARDIO DATA SCHEMA IMPLEMENTATION ---
+    // Rule 8: todayCardioTime = sum(TIME.totalTimeMin) + sum(DIST.totalTimeMin)
+    // Rule 8: todayDistance = sum(DIST.summary.totalDistanceKm)
+
+    let schemaTimeMin = 0;
+    let schemaCircuitMin = 0; // Pure Time-Mode Time
+    let schemaDistTimeMin = 0; // Time associated with Distance
+    let schemaDistKm = 0;
+
+    // Helper to process a batch of sets for cardio stats
+    const processCardioSets = (sets, mode) => {
+        sets.forEach(s => {
+            if (s && s.completed) {
+                // TIME MODE (Circuit/Duration)
+                if (mode === 'circuit' || mode === 'duration') {
+                    const t = safeFloat(s.time);
+                    schemaTimeMin += t;
+                    schemaCircuitMin += t;
+                }
+                // DIST MODE (Distance)
+                else {
+                    schemaDistKm += safeFloat(s.distance);
+                    // Critical: Add TIME from DIST mode if available (Pace calculation needs it)
+                    if (s.time) {
+                        const t = safeFloat(s.time);
+                        schemaTimeMin += t;
+                        schemaDistTimeMin += t;
+                    }
+                }
+            }
+        });
+    }
+
+    // Check Cardio Exercises again for Schema-Compliant Aggregation
+    log.exercises.forEach(ex => {
+        if (!ex || !isCardio(ex.type)) return;
+
+        // 1. Process Active Sets
+        if (Array.isArray(ex.sets)) {
+            processCardioSets(ex.sets, ex.cardioMode);
+        }
+
+        // 2. Process Backpack (Stored Sets)
+        // This ensures hidden data (e.g. from Time mode while in Dist mode) is retained in stats
+        if (ex.storedSets) {
+            Object.keys(ex.storedSets).forEach(modeKey => {
+                // Skip the current mode to avoid double counting (since ex.sets IS current mode)
+                if (modeKey === ex.cardioMode) return;
+
+                const sets = ex.storedSets[modeKey];
+                if (Array.isArray(sets)) {
+                    processCardioSets(sets, modeKey);
+                }
+            });
+        }
+    });
+
     return {
         score,
         totalVol: strengthVol, // Total "Lifts" volume
@@ -216,8 +280,14 @@ export const calculateSessionStats = (log, getPreviousBest) => {
         hasCore,
 
         strengthVol,
-        cMin,
-        cDist,
-        aRep
+        // cMin: Total Time (Rule 8 compliant) - Used for Graphs/Load
+        cMin: schemaTimeMin,
+        // cDist: Total Distance
+        cDist: schemaDistKm,
+        // Granular Splits for UI Cards
+        cCircuitMin: schemaCircuitMin, // Time from TIME-mode
+        cDistMin: schemaDistTimeMin,   // Time from DIST-mode
+        aRep,
+        aHold
     };
 };

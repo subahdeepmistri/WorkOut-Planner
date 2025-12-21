@@ -147,14 +147,14 @@ export const CompletionModal = ({ isOpen, onClose, score, stats }) => {
                     </div>
 
                     {/* Breakdown Stats - Iconic Row */}
-                    {(stats?.strengthVol > 0 || stats?.cardioVol > 0 || stats?.absVol > 0) && (
+                    {(stats?.strengthVol > 0 || stats?.cDist > 0 || stats?.cMin > 0 || stats?.aRep > 0) && (
                         <div className="grid grid-cols-3 gap-2 w-full mb-8">
                             {/* Strength */}
-                            <div className={`flex flex-col items-center justify-center p-2 rounded-xl border bg-zinc-50 dark:bg-zinc-900/40 relative overflow-hidden group ${stats?.strengthVol > 0 ? 'border-emerald-500/20' : 'border-zinc-200 dark:border-zinc-800 opacity-30'}`}>
-                                {stats?.strengthVol > 0 && <div className="absolute inset-0 bg-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>}
-                                <div className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div className={`flex flex-col items-center justify-center p-2 rounded-xl border bg-zinc-50 dark:bg-zinc-900/40 relative overflow-hidden group ${stats?.strengthVol > 0 ? 'border-indigo-500/20' : 'border-zinc-200 dark:border-zinc-800 opacity-30'}`}>
+                                {stats?.strengthVol > 0 && <div className="absolute inset-0 bg-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>}
+                                <div className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-transparent via-indigo-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
 
-                                <Zap size={14} className={`mb-1 ${stats?.strengthVol > 0 ? 'text-emerald-500 dark:text-emerald-400 fill-emerald-400/20' : 'text-zinc-400 dark:text-zinc-600'}`} />
+                                <Zap size={14} className={`mb-1 ${stats?.strengthVol > 0 ? 'text-indigo-500 dark:text-indigo-400 fill-indigo-400/20' : 'text-zinc-400 dark:text-zinc-600'}`} />
                                 <span className="text-[9px] text-zinc-500 uppercase font-bold tracking-tight mb-0.5">Strength</span>
                                 <span className={`text-xs font-mono font-bold ${stats?.strengthVol > 0 ? 'text-zinc-700 dark:text-zinc-200' : 'text-zinc-400 dark:text-zinc-600'}`}>
                                     {stats?.strengthVol ? (stats.strengthVol / 1000).toFixed(1) + 'k' : '-'}
@@ -162,26 +162,26 @@ export const CompletionModal = ({ isOpen, onClose, score, stats }) => {
                             </div>
 
                             {/* Cardio */}
-                            <div className={`flex flex-col items-center justify-center p-2 rounded-xl border bg-zinc-50 dark:bg-zinc-900/40 relative overflow-hidden group ${stats?.cardioVol > 0 ? 'border-pink-500/20' : 'border-zinc-200 dark:border-zinc-800 opacity-30'}`}>
-                                {stats?.cardioVol > 0 && <div className="absolute inset-0 bg-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>}
+                            <div className={`flex flex-col items-center justify-center p-2 rounded-xl border bg-zinc-50 dark:bg-zinc-900/40 relative overflow-hidden group ${stats?.cDist > 0 || stats?.cMin > 0 ? 'border-pink-500/20' : 'border-zinc-200 dark:border-zinc-800 opacity-30'}`}>
+                                {(stats?.cDist > 0 || stats?.cMin > 0) && <div className="absolute inset-0 bg-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>}
                                 <div className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-transparent via-pink-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
 
-                                <Footprints size={14} className={`mb-1 ${stats?.cardioVol > 0 ? 'text-pink-500 dark:text-pink-400' : 'text-zinc-400 dark:text-zinc-600'}`} />
+                                <Footprints size={14} className={`mb-1 ${stats?.cDist > 0 || stats?.cMin > 0 ? 'text-pink-500 dark:text-pink-400' : 'text-zinc-400 dark:text-zinc-600'}`} />
                                 <span className="text-[9px] text-zinc-500 uppercase font-bold tracking-tight mb-0.5">Cardio</span>
-                                <span className={`text-xs font-mono font-bold ${stats?.cardioVol > 0 ? 'text-zinc-700 dark:text-zinc-200' : 'text-zinc-400 dark:text-zinc-600'}`}>
-                                    {stats?.cardioVol || '-'}
+                                <span className={`text-xs font-mono font-bold ${stats?.cDist > 0 || stats?.cMin > 0 ? 'text-zinc-700 dark:text-zinc-200' : 'text-zinc-400 dark:text-zinc-600'}`}>
+                                    {stats?.cDist > 0 ? stats.cDist + 'km' : (stats?.cMin > 0 ? stats.cMin + 'm' : '-')}
                                 </span>
                             </div>
 
                             {/* Core */}
-                            <div className={`flex flex-col items-center justify-center p-2 rounded-xl border bg-zinc-50 dark:bg-zinc-900/40 relative overflow-hidden group ${stats?.absVol > 0 ? 'border-cyan-500/20' : 'border-zinc-200 dark:border-zinc-800 opacity-30'}`}>
-                                {stats?.absVol > 0 && <div className="absolute inset-0 bg-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>}
-                                <div className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div className={`flex flex-col items-center justify-center p-2 rounded-xl border bg-zinc-50 dark:bg-zinc-900/40 relative overflow-hidden group ${stats?.aRep > 0 ? 'border-emerald-500/20' : 'border-zinc-200 dark:border-zinc-800 opacity-30'}`}>
+                                {stats?.aRep > 0 && <div className="absolute inset-0 bg-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>}
+                                <div className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
 
-                                <Activity size={14} className={`mb-1 ${stats?.absVol > 0 ? 'text-cyan-500 dark:text-cyan-400' : 'text-zinc-400 dark:text-zinc-600'}`} />
+                                <Activity size={14} className={`mb-1 ${stats?.aRep > 0 ? 'text-emerald-500 dark:text-emerald-400' : 'text-zinc-400 dark:text-zinc-600'}`} />
                                 <span className="text-[9px] text-zinc-500 uppercase font-bold tracking-tight mb-0.5">Core</span>
-                                <span className={`text-xs font-mono font-bold ${stats?.absVol > 0 ? 'text-zinc-700 dark:text-zinc-200' : 'text-zinc-400 dark:text-zinc-600'}`}>
-                                    {stats?.absVol || '-'}
+                                <span className={`text-xs font-mono font-bold ${stats?.aRep > 0 ? 'text-zinc-700 dark:text-zinc-200' : 'text-zinc-400 dark:text-zinc-600'}`}>
+                                    {stats?.aRep || '-'}
                                 </span>
                             </div>
                         </div>

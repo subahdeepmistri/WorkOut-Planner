@@ -511,6 +511,7 @@ export const useWorkoutData = (selectedDate) => {
 
     /**
      * Toggles cardio tracking mode between 'distance' (km/min) and 'circuit' (reps/time).
+     * RESETS state to avoid data leakage between modes.
      */
     const updateCardioMode = (exIndex, mode) => {
         if (isLocked) return;
@@ -519,9 +520,40 @@ export const useWorkoutData = (selectedDate) => {
             const expired = day.endTime && (Date.now() - day.endTime > 86400000);
             if (day.isLocked || expired) return prev;
             if (day.exercises[exIndex].isLocked) return prev;
-            day.exercises = day.exercises.map((ex, i) =>
-                i === exIndex ? { ...ex, cardioMode: mode } : ex
-            );
+
+            day.exercises = day.exercises.map((ex, i) => {
+                if (i !== exIndex) return ex;
+                if (ex.cardioMode === mode) return ex; // Guard: No-op if same mode
+
+                // 1. Snapshot current sets into the "Backpack" (storedSets)
+                const currentMode = ex.cardioMode || 'distance'; // default fallback
+                const prevStored = ex.storedSets || {};
+
+                const updatedStored = {
+                    ...prevStored,
+                    [currentMode]: ex.sets // Save active sets to backpack
+                };
+
+                // 2. Prepare new sets: Load from backpack OR generate fresh
+                let newSets = [];
+                if (updatedStored[mode] && updatedStored[mode].length > 0) {
+                    newSets = updatedStored[mode]; // Restore previous session
+                } else {
+                    // Generate fresh if visiting this mode for first time
+                    const defaultSetCount = ex.targetSets || 3;
+                    newSets = Array(defaultSetCount).fill(0).map(() => ({
+                        weight: '', reps: '', completed: false,
+                        distance: '', time: '', pace: '', duration: '', holdTime: ''
+                    }));
+                }
+
+                return {
+                    ...ex,
+                    cardioMode: mode,
+                    sets: newSets,
+                    storedSets: updatedStored // Commit the backpack
+                };
+            });
             return { ...prev, [dateKey]: day };
         });
     };

@@ -3,15 +3,30 @@ import { Copy, Plus, Clock, Move, Sparkles } from 'lucide-react';
 
 export const QuickChips = ({ type, mode, onAdjust, onCopy, canCopy, suggestions = [], onSuggestion, className, subset = null }) => {
     // Styling constants
-    const chipBase = "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wide transition-all active:scale-95 border shadow-sm min-w-max flex-shrink-0";
+    const chipBase = "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wide transition-all active:scale-95 border min-w-max flex-shrink-0";
 
-    // Theme logic
+    /**
+     * DARK MODE COLOR AUDIT:
+     * - Outline only
+     * - Low Saturation
+     * - No Glows
+     * - Text brighter than border
+     */
     const styles = {
-        indigo: `${chipBase} bg-indigo-50 dark:bg-indigo-900/10 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 dark:hover:bg-indigo-900/20`,
-        emerald: `${chipBase} bg-emerald-50 dark:bg-emerald-900/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/20`,
-        amber: `${chipBase} bg-amber-50 dark:bg-amber-900/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800 hover:bg-amber-100 dark:hover:bg-amber-900/20`,
-        zinc: `${chipBase} bg-white dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-700`,
-        ai: `${chipBase} bg-violet-50 dark:bg-violet-900/10 text-violet-600 dark:text-violet-400 border-violet-200 dark:border-violet-800 hover:bg-violet-100 dark:hover:bg-violet-900/20 ring-1 ring-violet-500/20`,
+        // Indigo (Strength) - Muted Outline
+        indigo: `${chipBase} bg-transparent text-indigo-500 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 hover:border-indigo-300 dark:hover:border-indigo-700`,
+
+        // Emerald (Core/Time) - Muted Outline
+        emerald: `${chipBase} bg-transparent text-emerald-500 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 hover:border-emerald-300 dark:hover:border-emerald-700`,
+
+        // Amber (Reps) - Muted Outline
+        amber: `${chipBase} bg-transparent text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800 hover:bg-amber-50 dark:hover:bg-amber-500/10 hover:border-amber-300 dark:hover:border-amber-700`,
+
+        // Zinc (Copy/Neutral) - Muted Outline
+        zinc: `${chipBase} bg-transparent text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-200`,
+
+        // AI (Violet) - Muted Outline
+        ai: `${chipBase} bg-transparent text-violet-500 dark:text-violet-400 border-violet-200 dark:border-violet-800 hover:bg-violet-50 dark:hover:bg-violet-500/10 ring-0`,
     };
 
     const showAi = !subset || subset.includes('ai');
@@ -32,7 +47,7 @@ export const QuickChips = ({ type, mode, onAdjust, onCopy, canCopy, suggestions 
                     className={s.style && styles[s.style] ? styles[s.style] : styles.ai}
                     title="AI Suggestion"
                 >
-                    <Icon size={12} className="mr-0.5" />
+                    <Icon size={12} className="mr-0.5 opacity-80" />
                     {s.label}
                 </button>
             )
@@ -53,7 +68,7 @@ export const QuickChips = ({ type, mode, onAdjust, onCopy, canCopy, suggestions 
                 {renderSuggestions()}
 
                 {showReps && mode !== 'hold' && (
-                    <button onClick={() => onAdjust('reps', 5)} className={styles.amber}>
+                    <button onClick={() => onAdjust('reps', 5)} className={styles.emerald}>
                         +5 Reps
                     </button>
                 )}

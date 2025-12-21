@@ -54,9 +54,9 @@ export const ExerciseCard = ({ exercise, index, onUpdateSet, onAddSet, onRemoveS
             name: "text-emerald-950 dark:text-emerald-200"
         },
         superset: {
-            card: "bg-orange-50 dark:bg-gradient-to-r dark:from-amber-500/10 dark:to-orange-500/10 border-2 border-orange-300 dark:border-orange-500/50 relative overflow-hidden shadow-sm",
-            header: "bg-orange-100/50 dark:bg-orange-500/10 border-b-2 border-orange-300 dark:border-orange-500/20",
-            name: "text-zinc-900 dark:text-zinc-100"
+            card: "bg-orange-50 dark:bg-black/40 backdrop-blur-md border-2 border-orange-300 dark:border-orange-500/50 relative overflow-hidden shadow-sm dark:shadow-[0_0_15px_rgba(249,115,22,0.15)]",
+            header: "bg-orange-100/50 dark:bg-orange-900/20 border-b-2 border-orange-300 dark:border-orange-500/30",
+            name: "text-zinc-900 dark:text-orange-100"
         },
         waiting: {
             card: "opacity-60 grayscale-[0.5] border-2 border-dashed border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900/50",
@@ -142,7 +142,7 @@ export const ExerciseCard = ({ exercise, index, onUpdateSet, onAddSet, onRemoveS
                                 {exercise.type === 'cardio' ? (
                                     <div className="grid grid-cols-2 bg-pink-100 dark:bg-pink-900/40 rounded-full p-0.5 gap-0.5 w-[110px]">
                                         <button onClick={(e) => { e.stopPropagation(); onCardioMode(index, 'distance'); }} className={`py-0.5 rounded-full text-[9px] font-bold uppercase transition-all flex items-center justify-center ${exercise.cardioMode === 'distance' ? 'bg-white dark:bg-pink-500 text-pink-600 dark:text-white shadow-sm' : 'text-pink-400 dark:text-pink-300 hover:bg-white/50'}`}>Dist</button>
-                                        <button onClick={(e) => { e.stopPropagation(); onCardioMode(index, 'duration'); }} className={`py-0.5 rounded-full text-[9px] font-bold uppercase transition-all flex items-center justify-center ${exercise.cardioMode === 'duration' ? 'bg-white dark:bg-pink-500 text-pink-600 dark:text-white shadow-sm' : 'text-pink-400 dark:text-pink-300 hover:bg-white/50'}`}>Time</button>
+                                        <button onClick={(e) => { e.stopPropagation(); onCardioMode(index, 'circuit'); }} className={`py-0.5 rounded-full text-[9px] font-bold uppercase transition-all flex items-center justify-center ${exercise.cardioMode === 'circuit' ? 'bg-white dark:bg-pink-500 text-pink-600 dark:text-white shadow-sm' : 'text-pink-400 dark:text-pink-300 hover:bg-white/50'}`}>Time</button>
                                     </div>
                                 ) : exercise.type === 'abs' ? (
                                     <div className="grid grid-cols-2 bg-emerald-100 dark:bg-emerald-900/40 rounded-full p-0.5 gap-0.5 w-[110px]">
@@ -199,7 +199,13 @@ export const ExerciseCard = ({ exercise, index, onUpdateSet, onAddSet, onRemoveS
             <div className="px-2 py-2 sm:p-3">
                 {/* Sets Momentum Bar */}
                 <div className="mb-4 px-1">
-                    <AdherenceBar targetVolume={targetVol} actualVolume={actualVol} label={`${actualVol} / ${targetVol} Sets Completed`} height="h-2" />
+                    <AdherenceBar
+                        targetVolume={targetVol}
+                        actualVolume={actualVol}
+                        label={`${actualVol} / ${targetVol} Sets Completed`}
+                        height="h-2"
+                        category={exercise.type === 'cardio' ? 'cardio' : (exercise.type === 'abs' ? 'default' : 'strength')}
+                    />
                 </div>
 
                 {/* Header Row */}
@@ -254,7 +260,7 @@ export const ExerciseCard = ({ exercise, index, onUpdateSet, onAddSet, onRemoveS
                             previousBest={previousBest}
                             targetReps={exercise.targetReps}
                             disabled={isDisabled}
-                            onRest={() => onStartRest(30, index)}
+
                             isFocusMode={isFocusMode}
                             onStartTimer={(duration) => onStartSetTimer && onStartSetTimer(duration, j)}
                             previousSet={j > 0 ? exercise.sets[j - 1] : null}

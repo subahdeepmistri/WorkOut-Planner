@@ -227,7 +227,7 @@ export const SetRow = ({ set, index, onChange, onRemove, previousBest, targetRep
                                 </div>
                                 {/* Pace (Read Only) */}
                                 <div className="relative">
-                                    <input type="text" readOnly disabled value={set.pace || ''} placeholder="-" className="w-full bg-zinc-100 dark:bg-zinc-950/30 border-b border-transparent px-1 py-3 text-center font-mono text-zinc-500 dark:text-zinc-500 outline-none text-xs font-bold rounded-t-md" />
+                                    <input type="text" readOnly disabled value={set.pace || ''} placeholder="Pace" className="w-full bg-zinc-100 dark:bg-zinc-950/30 border-b border-transparent px-1 py-3 text-center font-mono text-zinc-500 dark:text-zinc-500 outline-none text-xs font-bold rounded-t-md cursor-not-allowed" />
                                 </div>
                             </div>
                             {/* Chips (Horizontal Scroll) */}
