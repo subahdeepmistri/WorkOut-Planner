@@ -13,42 +13,7 @@ import ErrorBoundary from '../ui/ErrorBoundary';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Title, Tooltip, Legend, Filler);
 
-/**
- * DEBUG CONTROL (Development Only)
- * Allows forcing specific user journey states for verification.
- */
-const DevStatsControl = ({ forceState }) => {
-    // if (process.env.NODE_ENV === 'production') return null; // Enabled for user testing
 
-    const scenarios = [
-        { label: "D0", streak: 0, workouts: 0, desc: "New User", mockDayStats: null },
-        { label: "D1", streak: 1, workouts: 1, desc: "First Workout" },
-        { label: "D3", streak: 3, workouts: 3, desc: "Momentum" },
-        { label: "D5", streak: 5, workouts: 5, desc: "Consistency" },
-        { label: "D10", streak: 10, workouts: 10, desc: "Habit" },
-        { label: "D20", streak: 20, workouts: 20, desc: "Established" },
-        { label: "D35", streak: 35, workouts: 35, desc: "Discipline" },
-    ];
-
-    return (
-        <div className="fixed bottom-28 sm:bottom-20 right-4 z-[60] bg-black/90 backdrop-blur-md p-3 rounded-xl border border-white/10 flex flex-col gap-2 shadow-2xl scale-100 sm:scale-90 origin-bottom-right opacity-100 sm:opacity-30 sm:hover:opacity-100 transition-all">
-            <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1">Debug Journey</div>
-            <div className="flex gap-1 flex-wrap max-w-[200px]">
-                {scenarios.map(s => (
-                    <button
-                        key={s.label}
-                        onClick={() => forceState(s)}
-                        className="px-2 py-1 bg-zinc-800 hover:bg-emerald-900 text-zinc-300 hover:text-emerald-400 text-[10px] rounded border border-zinc-700 transition-colors"
-                        title={s.desc}
-                    >
-                        {s.label}
-                    </button>
-                ))}
-                <button onClick={() => forceState(null)} className="px-2 py-1 bg-red-900/30 text-red-400 text-[10px] rounded border border-red-900/50">Reset</button>
-            </div>
-        </div>
-    );
-};
 
 /**
  * Pure Presentation Component
@@ -67,8 +32,7 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
-    // Debug State: object with { streak, totalWorkouts } or null
-    const [forcedState, setForcedState] = useState(null);
+
 
     // --- Helpers (View Only) ---
     const getTodayStr = () => new Date().toLocaleDateString('en-CA');
@@ -142,11 +106,9 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
     };
 
     // --- Derived State for Logic ---
-    // Use forced state if available, otherwise real history
-    const activeStreak = forcedState ? forcedState.streak : history.currentStreak;
-    const activeWorkouts = forcedState ? forcedState.workouts : history.totalWorkouts;
-    // Use forced mockDayStats if available, otherwise real dayStats
-    const activeDayStats = forcedState && forcedState.mockDayStats !== undefined ? forcedState.mockDayStats : dayStats;
+    const activeStreak = history.currentStreak;
+    const activeWorkouts = history.totalWorkouts;
+    const activeDayStats = dayStats;
 
     // --- AI Insight Generation (Strictly Gated) ---
     const insights = React.useMemo(() => {
@@ -175,7 +137,7 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
     // --- Rendering ---
     return (
         <div className="p-4 pb-40 space-y-4 sm:space-y-6 animate-in fade-in duration-500 relative">
-            <DevStatsControl forceState={setForcedState} />
+
 
             {/* Calendar Modal */}
             {isCalendarOpen && (
