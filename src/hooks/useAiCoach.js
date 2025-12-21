@@ -29,21 +29,6 @@ export const useAiCoach = (exercise, index) => {
 
         if (type === 'cardio') {
             if (cardioMode === 'distance') {
-                // Progressive: +0.25km or +0.5km based on magnitude
-                const prevDist = parseFloat(prevSet.distance) || 0;
-                if (prevDist > 0) {
-                    const inc = prevDist < 2 ? 0.1 : 0.5;
-                    suggestions.push({
-                        id: 'prog_dist',
-                        label: `+${inc} km`,
-                        icon: TrendingUp,
-                        action: 'ADJUST',
-                        field: 'distance',
-                        value: inc,
-                        style: 'emerald'
-                    });
-                }
-
                 // Pace Coach
                 if (prevSet.pace) {
                     suggestions.push({
@@ -61,19 +46,7 @@ export const useAiCoach = (exercise, index) => {
 
             } else {
                 // Circuit / Time
-                const prevTime = parseFloat(prevSet.time) || 0;
-                if (prevTime > 0) {
-                    const inc = prevTime < 5 ? 1 : 2; // +1 min or +2 min
-                    suggestions.push({
-                        id: 'prog_time',
-                        label: `+${inc} min`,
-                        icon: TrendingUp,
-                        action: 'ADJUST',
-                        field: 'time',
-                        value: inc,
-                        style: 'emerald'
-                    });
-                }
+                // No suggestions for now
             }
         }
 
