@@ -14,6 +14,28 @@ import ErrorBoundary from '../ui/ErrorBoundary';
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Title, Tooltip, Legend, Filler);
 
 /**
+ * DEBUG CONTROL (Development Only)
+ * Allows forcing user stages for testing.
+ */
+const DevStatsControl = ({ currentStage, forceStage }) => {
+    if (process.env.NODE_ENV === 'production') return null;
+    return (
+        <div className="fixed bottom-20 right-4 z-50 bg-black/80 backdrop-blur-md p-2 rounded-lg border border-white/10 flex gap-1 shadow-2xl scale-75 origin-bottom-right opacity-50 hover:opacity-100 transition-opacity">
+            {[0, 1, 2, 3, 4, 5].map(stage => (
+                <button
+                    key={stage}
+                    onClick={() => forceStage(stage)}
+                    className={`w-8 h-8 rounded text-xs font-bold ${currentStage === stage ? 'bg-emerald-500 text-white' : 'bg-zinc-800 text-zinc-400'}`}
+                >
+                    S{stage}
+                </button>
+            ))}
+            <button onClick={() => forceStage(null)} className="px-2 bg-red-900/50 text-red-200 text-[10px] rounded">RST</button>
+        </div>
+    );
+};
+
+/**
  * Pure Presentation Component
  */
 const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
@@ -29,6 +51,7 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
     // --- Local UI State ---
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+    const [forcedStage, setForcedStage] = useState(null); // Debug State
 
     // --- Helpers (View Only) ---
     const getTodayStr = () => new Date().toLocaleDateString('en-CA');
@@ -88,9 +111,54 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
         animation: { animateScale: true, animateRotate: true, duration: 1500 }
     };
 
+    // --- AI Insight Generation (Simulated for Stages) ---
+    const insights = React.useMemo(() => {
+        // Debug Override
+        const rawStage = history.userStage;
+        const userStage = forcedStage !== null ? forcedStage : rawStage;
+        const { totalWorkouts } = history;
+
+        // Mock streak for visual verification if stage is forced
+        const currentStreak = forcedStage !== null
+            ? (forcedStage === 0 ? 0 : forcedStage === 1 ? 1 : forcedStage === 2 ? 3 : forcedStage === 3 ? 6 : 14)
+            : history.currentStreak;
+
+        // Default: No insights
+        let result = { strength: null, cardio: null };
+
+        // Stage 2 (Day 3-4): Neutral Observations
+        if (userStage === 2) {
+            result.strength = { text: "Consistency is key. Good job showing up.", confidence: 0.6 };
+        }
+        // Stage 3 (Day 5-7): Observational
+        else if (userStage === 3) {
+            if (currentStreak > 2) {
+                result.strength = { text: "You're building a strong habit pattern.", confidence: 0.65 };
+            }
+            if (history.datasets.cDist.length > 2) {
+                result.cardio = { text: "Cardio volume is tracking steadily.", confidence: 0.6 };
+            }
+        }
+        // Stage 4+ (Day 8+): Deeper Insights
+        else if (userStage >= 4) {
+            result.strength = { text: "Strength volume trending up vs last week.", confidence: 0.75 };
+            result.cardio = { text: "Pace maintenance is improving.", confidence: 0.7 };
+        }
+        // Stage 5 Refection
+        if (userStage >= 5) {
+            result.strength = { text: "You maintain pace better with shorter sessions.", confidence: 0.8 };
+        }
+
+        return result;
+    }, [history, forcedStage]);
+
+    // Derived stage for UI rendering
+    const activeStage = forcedStage !== null ? forcedStage : history.userStage;
+
     // --- Rendering ---
     return (
         <div className="p-4 pb-40 space-y-6 animate-in fade-in duration-700 relative">
+            <DevStatsControl currentStage={activeStage} forceStage={setForcedStage} />
 
             {/* Calendar Modal */}
             {isCalendarOpen && (
@@ -162,7 +230,6 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
                     }}
                     trendData={history.datasets.cMin.slice(-5)}
                     dataState={!dayStats ? 'empty' : (dayStats.hasStrength || dayStats.hasCardio || dayStats.hasCore) ? 'valid' : 'partial'}
-                    aiInsight={{ text: "Consistent effort builds habits.", confidence: 0.6 }}
                 />
 
                 <StatsCard
@@ -175,6 +242,7 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
                     }}
                     dataState={!dayStats ? 'empty' : dayStats.hasStrength ? 'valid' : 'partial'}
                     trendData={history.datasets.sVol.slice(-5)}
+                    aiInsight={insights.strength}
                 />
 
                 <StatsCard
@@ -188,6 +256,7 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
                     secondaryMetrics={dayStats ? [{ label: 'Time', value: `${dayStats.cMin}m` }] : []}
                     dataState={!dayStats ? 'empty' : dayStats.hasCardio ? 'valid' : 'partial'}
                     trendData={history.datasets.cDist.slice(-5)}
+                    aiInsight={insights.cardio}
                 />
 
                 <StatsCard
@@ -206,20 +275,107 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
             {/* KPI Cards (Discipline, Streak) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Day Streak */}
-                <div className="relative p-6 rounded-3xl bg-gradient-to-br from-zinc-900 to-black text-white overflow-hidden shadow-xl border border-zinc-800">
-                    <div className="absolute top-0 right-0 p-8 opacity-10 transform translate-x-4 -translate-y-4">
-                        <Zap size={120} />
-                    </div>
+                {(() => {
 
-                    <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-widest mb-1">Current Streak</h3>
-                    <div className="flex items-baseline gap-2">
-                        <span className="text-6xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-yellow-300 to-yellow-600 drop-shadow-lg pr-2 pb-1">
-                            {history.currentStreak}
-                        </span>
-                        <span className="text-xl font-bold text-zinc-400">Days</span>
-                    </div>
-                    <p className="text-xs text-zinc-500 mt-2 font-medium">Keep the fire burning!</p>
-                </div>
+                    /*
+                                            // Logic moved to "Dashboard Evolution" style
+                                            // Stage 0 (0 workouts): Start Journey
+                                            // Stage 1 (1 workout): 1 Day, Great start
+                                            // Stage 2 (2-4 workouts): Building momentum
+                                            // Stage 3 (5-7 workouts): Full week strong
+                                            // Stage 4 (8+): Standard Streak
+                                        */
+                    const { totalWorkouts } = history;
+                    // Use activeStage for logic
+                    let currentStreak = history.currentStreak;
+                    if (forcedStage !== null) {
+                        currentStreak = (forcedStage === 0 ? 0 : forcedStage === 1 ? 1 : forcedStage === 2 ? 3 : forcedStage === 3 ? 6 : 14);
+                    }
+
+                    let config = {
+                        title: "Current Streak",
+                        value: currentStreak,
+                        unit: "Days",
+                        subtext: "Keep the fire burning!",
+                        gradient: "from-yellow-300 to-yellow-600",
+                        opacity: "opacity-10"
+                    };
+
+                    // STAGE 0
+                    if (activeStage === 0) {
+                        config = {
+                            title: "Start Journey",
+                            value: "START",
+                            unit: "",
+                            subtext: "Log your first workout to begin",
+                            gradient: "from-zinc-400 to-zinc-600",
+                            opacity: "opacity-5"
+                        };
+                    }
+                    // STAGE 1
+                    else if (activeStage === 1) {
+                        config = {
+                            title: "Current Streak",
+                            value: "1",
+                            unit: "Day",
+                            subtext: "Great start — keep going!",
+                            gradient: "from-yellow-400 to-orange-500",
+                            opacity: "opacity-20"
+                        };
+                    }
+                    // STAGE 2
+                    else if (activeStage === 2) {
+                        config = {
+                            title: "Current Streak",
+                            value: String(currentStreak),
+                            unit: "Days",
+                            subtext: "You’re building momentum 💪",
+                            gradient: "from-emerald-400 to-emerald-600",
+                            opacity: "opacity-20"
+                        };
+                    }
+                    // STAGE 3
+                    else if (activeStage === 3 && currentStreak >= 7) {
+                        config = {
+                            title: "Current Streak",
+                            value: String(currentStreak),
+                            unit: "Days",
+                            subtext: "A full week strong 🔥",
+                            gradient: "from-purple-500 to-pink-500",
+                            opacity: "opacity-20"
+                        };
+                    }
+                    else {
+                        // Standard / Broken Logic for higher stages
+                        if (currentStreak === 0) {
+                            config = {
+                                title: "Streak Broken",
+                                value: "--",
+                                unit: "",
+                                subtext: "Time to restart the fire!",
+                                gradient: "from-zinc-500 to-zinc-700",
+                                opacity: "opacity-10"
+                            };
+                        }
+                    }
+
+                    return (
+                        <div className="relative p-6 rounded-3xl bg-gradient-to-br from-zinc-900 to-black text-white overflow-hidden shadow-xl border border-zinc-800">
+                            <div className={`absolute top-0 right-0 p-8 ${config.opacity} transform translate-x-4 -translate-y-4 transition-opacity`}>
+                                <Zap size={120} />
+                            </div>
+
+                            <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-widest mb-1">{config.title}</h3>
+                            <div className="flex items-baseline gap-2">
+                                <span className={`text-6xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-b ${config.gradient} drop-shadow-lg pr-2 pb-1`}>
+                                    {config.value}
+                                </span>
+                                {config.unit && <span className="text-xl font-bold text-zinc-400">{config.unit}</span>}
+                            </div>
+                            <p className="text-xs text-zinc-500 mt-2 font-medium">{config.subtext}</p>
+                        </div>
+                    );
+                })()}
 
                 {/* Discipline Score (Shown > 3 sessions) */}
                 {history.totalWorkouts > 3 && (
@@ -238,61 +394,91 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest }) => {
                 )}
             </div>
 
-            {/* Charts Section - Conditionally Rendered */}
-            {history.totalWorkouts > 0 && (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-8">
 
-                    {/* Training Split */}
-                    <div className="p-6 rounded-3xl bg-white/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 backdrop-blur-sm">
-                        <h3 className="text-sm font-bold text-zinc-500 uppercase mb-4">Training Split</h3>
-                        <div className="h-64 relative">
-                            <Doughnut data={{
-                                labels: ['Strength', 'Cardio', 'Core'],
-                                datasets: [{
-                                    data: history.distribution,
-                                    backgroundColor: ['#ef4444', '#3b82f6', '#10b981'],
-                                    borderWidth: 0
-                                }]
-                            }} options={doughnutOptions} />
+
+            {/* Monthly Summary (Stage 5 Only) */}
+            {
+                activeStage >= 5 && (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 animate-in slide-in-from-bottom-8 duration-700 delay-100">
+                        <div className="md:col-span-3">
+                            <h3 className="text-sm font-bold text-zinc-500 dark:text-zinc-500 uppercase tracking-widest pl-1 mb-2">This Month at a Glance</h3>
+                        </div>
+                        <div className="bg-zinc-100 dark:bg-zinc-900/50 p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 flex flex-col justify-center items-center">
+                            <span className="text-3xl font-black text-zinc-800 dark:text-zinc-100">{history.monthlyStats?.sessions || 0}</span>
+                            <span className="text-xs font-bold text-zinc-500 uppercase">Sessions Done</span>
+                        </div>
+                        <div className="bg-zinc-100 dark:bg-zinc-900/50 p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 flex flex-col justify-center items-center">
+                            <span className="text-3xl font-black text-emerald-500">{history.currentStreak}</span>
+                            <span className="text-xs font-bold text-zinc-500 uppercase">Longest Streak</span>
+                        </div>
+                        <div className="bg-zinc-100 dark:bg-zinc-900/50 p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 flex flex-col justify-center items-center">
+                            <span className="text-2xl font-black text-blue-500">{history.monthlyStats?.topFocus || "-"}</span>
+                            <span className="text-xs font-bold text-zinc-500 uppercase">Primary Focus</span>
                         </div>
                     </div>
+                )
+            }
 
-                    {/* Strength Volume Trend */}
-                    {history.totalVol > 0 && (
+            {/* Charts Section - Conditionally Rendered based on Stage (Unlock at Stage 2+) */}
+            {
+                activeStage >= 2 && (
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-8">
+
+                        {/* Training Split */}
                         <div className="p-6 rounded-3xl bg-white/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 backdrop-blur-sm">
-                            <h3 className="text-sm font-bold text-zinc-500 uppercase mb-4">Strength Progress (Trend)</h3>
-                            <div className="h-64">
-                                <Line data={{
-                                    labels: history.labels,
+                            <h3 className="text-sm font-bold text-zinc-500 uppercase mb-4">Training Split</h3>
+                            <div className="h-64 relative">
+                                <Doughnut data={{
+                                    labels: ['Strength', 'Cardio', 'Core'],
                                     datasets: [{
-                                        data: history.datasets.sVol,
-                                        borderColor: '#ef4444',
-                                        backgroundColor: (context) => {
-                                            const ctx = context.chart.ctx;
-                                            const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-                                            gradient.addColorStop(0, 'rgba(239, 68, 68, 0.5)');
-                                            gradient.addColorStop(1, 'rgba(239, 68, 68, 0)');
-                                            return gradient;
-                                        },
-                                        fill: true,
-                                        tension: 0.4
+                                        data: history.distribution,
+                                        backgroundColor: ['#ef4444', '#3b82f6', '#10b981'],
+                                        borderWidth: 0
                                     }]
-                                }} options={commonOptions} />
+                                }} options={doughnutOptions} />
                             </div>
                         </div>
-                    )}
-                </div>
-            )}
 
-            {/* Empty State Footer */}
-            {history.totalWorkouts === 0 && (
-                <div className="text-center py-12 opacity-50">
-                    <AlertCircle className="mx-auto mb-2 text-zinc-400" size={32} />
-                    <p className="text-zinc-500">No workout history found. Start your journey!</p>
-                </div>
-            )}
+                        {/* Strength Volume Trend */}
+                        {history.totalVol > 0 && (
+                            <div className="p-6 rounded-3xl bg-white/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 backdrop-blur-sm">
+                                <h3 className="text-sm font-bold text-zinc-500 uppercase mb-4">Strength Progress (Trend)</h3>
+                                <div className="h-64">
+                                    <Line data={{
+                                        labels: history.labels,
+                                        datasets: [{
+                                            data: history.datasets.sVol,
+                                            borderColor: '#ef4444',
+                                            backgroundColor: (context) => {
+                                                const ctx = context.chart.ctx;
+                                                const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+                                                gradient.addColorStop(0, 'rgba(239, 68, 68, 0.5)');
+                                                gradient.addColorStop(1, 'rgba(239, 68, 68, 0)');
+                                                return gradient;
+                                            },
+                                            fill: true,
+                                            tension: 0.4
+                                        }]
+                                    }} options={commonOptions} />
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )
+            }
 
-        </div>
+            {/* Empty State Footer CTA (Stage 0 only) */}
+            {
+                activeStage === 0 && (
+                    <div className="flex justify-center py-8">
+                        <button className="px-8 py-3 rounded-full bg-emerald-500 text-white font-bold shadow-lg shadow-emerald-500/30 animate-pulse hover:bg-emerald-400 transition-colors">
+                            Start First Workout →
+                        </button>
+                    </div>
+                )
+            }
+
+        </div >
     );
 };
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link as LinkIcon, Footprints, Timer, Trash2, Plus, Lock, Unlock, Hash } from 'lucide-react';
+import { Link as LinkIcon, Footprints, Timer, Trash2, Plus, Lock, Unlock, Hash, Brain } from 'lucide-react';
 import { SetRow } from './SetRow';
 import { AdherenceBar } from './AdherenceBar';
 import { RestTimer } from './RestTimer';
@@ -30,17 +30,17 @@ export const ExerciseCard = ({ exercise, index, onUpdateSet, onAddSet, onRemoveS
     // Theme Configuration
     const CARD_THEMES = {
         default: {
-            card: "bg-zinc-50 dark:bg-green-900/10 border border-emerald-300 dark:border-green-500/30 shadow-sm dark:shadow-[0_0_15px_rgba(34,197,94,0.1)]",
+            card: "bg-zinc-50 dark:bg-black/40 backdrop-blur-md border border-emerald-300 dark:border-green-500/30 shadow-sm dark:shadow-[0_0_15px_rgba(34,197,94,0.1)]",
             header: "bg-emerald-200 dark:bg-green-900/20 border-b border-emerald-300 dark:border-green-500/20",
             name: "text-emerald-950 dark:text-green-100"
         },
         cardio: {
-            card: "bg-zinc-50 dark:bg-pink-900/20 border border-pink-300 dark:border-pink-500/50 shadow-sm dark:shadow-[0_0_15px_rgba(236,72,153,0.15)]",
+            card: "bg-zinc-50 dark:bg-black/40 backdrop-blur-md border border-pink-300 dark:border-pink-500/50 shadow-sm dark:shadow-[0_0_15px_rgba(236,72,153,0.15)]",
             header: "bg-pink-200 dark:bg-pink-900/30 border-b border-pink-300 dark:border-pink-500/30",
             name: "text-pink-950 dark:text-pink-200"
         },
         abs: {
-            card: "bg-zinc-50 dark:bg-cyan-900/20 border border-cyan-300 dark:border-cyan-500/50 shadow-sm dark:shadow-[0_0_15px_rgba(34,211,238,0.15)]",
+            card: "bg-zinc-50 dark:bg-black/40 backdrop-blur-md border border-cyan-300 dark:border-cyan-500/50 shadow-sm dark:shadow-[0_0_15px_rgba(34,211,238,0.15)]",
             header: "bg-cyan-200 dark:bg-cyan-900/30 border-b border-cyan-300 dark:border-cyan-500/30",
             name: "text-cyan-950 dark:text-cyan-200"
         },
@@ -100,6 +100,11 @@ export const ExerciseCard = ({ exercise, index, onUpdateSet, onAddSet, onRemoveS
 
                         {!isWaiting && (
                             <div className="flex items-center gap-2 mt-0.5">
+                                {/* AI Indicator */}
+                                <div className="p-0.5" title="Insights appear after workouts">
+                                    <Brain size={14} className="text-zinc-300 dark:text-zinc-700" />
+                                </div>
+
                                 {exercise.type === 'cardio' ? (
                                     <div className="grid grid-cols-2 bg-pink-100 dark:bg-pink-900/40 rounded-full p-0.5 gap-0.5 w-[110px]">
                                         <button onClick={(e) => { e.stopPropagation(); onCardioMode(index, 'distance'); }} className={`py-0.5 rounded-full text-[9px] font-bold uppercase transition-all flex items-center justify-center ${exercise.cardioMode === 'distance' ? 'bg-white dark:bg-pink-500 text-pink-600 dark:text-white shadow-sm' : 'text-pink-400 dark:text-pink-300 hover:bg-white/50'}`}>Dist</button>

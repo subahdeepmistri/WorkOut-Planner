@@ -102,14 +102,57 @@ export const useStats = (workoutData, getPreviousBest) => {
         // Global Discipline (Avg Score)
         const discipline = labels.length > 0 ? Math.round(globalScoreSum / labels.length) : 0;
 
+        // User Journey Stage Calculation
+        // Stage 0: 0 workouts (Day 0-1)
+        // Stage 1: 1 workout (Day 1-2)
+        // Stage 2: 2-4 workouts (Day 3-4)
+        // Stage 3: 5-7 workouts (Day 5-7)
+        // Stage 4: 8-14 workouts (Day 8-14)
+        // Stage 5: 15+ workouts (Day 15+)
+        let userStage = 0;
+        const total = labels.length;
+        if (total >= 15) userStage = 5;
+        else if (total >= 8) userStage = 4;
+        else if (total >= 5) userStage = 3;
+        else if (total >= 2) userStage = 2;
+        else if (total === 1) userStage = 1;
+
+        // Monthly Stats Calculation (Current Month)
+        const currentMonth = new Date().getMonth();
+        const currentYear = new Date().getFullYear();
+        let monthSessions = 0;
+        let monthFocus = { Strength: 0, Cardio: 0, Core: 0 };
+
+        // We need to re-scan for monthly specific stats or filter 'dates'
+        // Since 'dates' are sorted strings YYYY-MM-DD
+        dates.forEach(date => {
+            const [y, m, d] = date.split('-').map(Number);
+            const localDate = new Date(y, m - 1, d);
+            if (localDate.getMonth() === currentMonth && localDate.getFullYear() === currentYear) {
+                monthSessions++;
+                const log = workoutData[date];
+                const stats = calculateSessionStats(log, getPreviousBest);
+                if (stats.hasStrength) monthFocus.Strength++;
+                if (stats.hasCardio) monthFocus.Cardio++;
+                if (stats.hasCore) monthFocus.Core++;
+            }
+        });
+
+        const topFocus = Object.entries(monthFocus).reduce((a, b) => a[1] > b[1] ? a : b)[0];
+
         return {
             labels,
             datasets: { sVol, cMin, cDist, aRep },
             distribution: [sCount, cCount, aCount],
-            totalWorkouts: labels.length, // Only valid ones
+            totalWorkouts: total, // Only valid ones
             currentStreak,
             totalVol,
-            discipline
+            discipline,
+            userStage,
+            monthlyStats: {
+                sessions: monthSessions,
+                topFocus: monthFocus[topFocus] > 0 ? topFocus : "Mixed"
+            }
         };
     }, [workoutData, getPreviousBest]);
 

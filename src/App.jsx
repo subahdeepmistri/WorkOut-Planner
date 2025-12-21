@@ -443,7 +443,7 @@ function App() {
             <main className="py-6">
               {!currentLog || isMinimized ? (
                 /* Empty State / Routine Selection */
-                <div className="flex flex-col gap-6 py-10 px-2">
+                <div className="flex flex-col gap-6 py-10 px-6 bg-zinc-50/50 dark:bg-black/40 backdrop-blur-md rounded-3xl mt-4 border border-zinc-200/50 dark:border-white/5">
 
                   {/* Resume Banner - Redesigned (Compact) */}
                   {currentLog && isMinimized && (

@@ -46,8 +46,8 @@ export const StatsCard = ({
     // EMPTY STATE (No data at all)
     if (dataState === 'empty') {
         return (
-            <div className="relative overflow-hidden rounded-3xl bg-white/5 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 p-6 flex flex-col items-center justify-center text-center backdrop-blur-sm min-h-[180px]">
-                <div className="p-3 rounded-full bg-zinc-100 dark:bg-zinc-800/50 mb-3">
+            <div className="relative overflow-hidden rounded-3xl bg-white/5 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 p-6 flex flex-col items-center justify-center text-center backdrop-blur-sm min-h-[180px] animate-in fade-in zoom-in-95 duration-500">
+                <div className="p-3 rounded-full bg-zinc-100 dark:bg-zinc-800/50 mb-3 group-hover:scale-110 transition-transform">
                     <AlertCircle size={20} className="text-zinc-400 dark:text-zinc-600" />
                 </div>
                 <h3 className="text-sm font-bold text-zinc-500 dark:text-zinc-400 mb-1">{title}</h3>
@@ -78,7 +78,7 @@ export const StatsCard = ({
 
     // VALID STATE (Full Render)
     return (
-        <div className="group relative rounded-3xl bg-white/80 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 p-5 sm:p-6 shadow-xl backdrop-blur-xl transition-all hover:shadow-2xl overflow-hidden">
+        <div className="group relative rounded-3xl bg-white/80 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 p-5 sm:p-6 shadow-xl backdrop-blur-xl transition-all hover:shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-700">
 
             {/* Ambient Glow */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-500/10 via-blue-500/5 to-transparent rounded-full blur-[40px] pointer-events-none -z-10 group-hover:opacity-100 transition-opacity opacity-50"></div>
@@ -123,8 +123,8 @@ export const StatsCard = ({
             {/* AI Insight Section */}
             {showAi && (
                 <div className={`mt-5 relative overflow-hidden rounded-xl border p-3 sm:p-3.5 transition-all animate-in slide-in-from-bottom-2 duration-500 ${isHighConfidence
-                        ? "bg-emerald-50/50 dark:bg-emerald-900/10 border-emerald-100 dark:border-emerald-500/20"
-                        : "bg-blue-50/50 dark:bg-blue-900/10 border-blue-100 dark:border-blue-500/20"
+                    ? "bg-emerald-50/50 dark:bg-emerald-900/10 border-emerald-100 dark:border-emerald-500/20"
+                    : "bg-blue-50/50 dark:bg-blue-900/10 border-blue-100 dark:border-blue-500/20"
                     }`}>
                     {/* Background Sparkle for High Confidence */}
                     {isHighConfidence && (
