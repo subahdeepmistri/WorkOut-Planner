@@ -97,25 +97,53 @@ export const useStats = (workoutData, getPreviousBest) => {
         // Streak Calculation
         let currentStreak = 0;
         if (dates.length > 0) {
-            const todayStr = getTodayStr();
-            const yesterday = new Date();
-            yesterday.setDate(yesterday.getDate() - 1);
-            const yesterdayStr = yesterday.toLocaleDateString('en-CA');
+            const parseLocal = (s) => {
+                const [y, m, d] = s.split('-').map(Number);
+                return new Date(y, m - 1, d);
+            };
 
-            const lastDate = dates[dates.length - 1];
+            const lastDateStr = dates[dates.length - 1];
+            const lastDateObj = parseLocal(lastDateStr);
+            const todayObj = new Date();
+            todayObj.setHours(0, 0, 0, 0);
 
-            // Streak only alive if worked out Today OR Yesterday
-            if (lastDate === todayStr || lastDate === yesterdayStr) {
+            const msPerDay = 1000 * 60 * 60 * 24;
+            const daysSinceLast = Math.round((todayObj - lastDateObj) / msPerDay);
+
+            let isAlive = false;
+
+            if (daysSinceLast === 0) isAlive = true; // Today
+            else if (daysSinceLast === 1) isAlive = true; // Yesterday
+            else if (daysSinceLast === 2) {
+                // Check if yesterday was Tuesday (Gym Closed)
+                const yesterday = new Date(todayObj);
+                yesterday.setDate(yesterday.getDate() - 1);
+                if (yesterday.getDay() === 2) isAlive = true;
+            }
+
+            if (isAlive) {
                 currentStreak = 1;
                 // Backwards scan
                 for (let i = dates.length - 2; i >= 0; i--) {
-                    const curr = new Date(dates[i]);
-                    const next = new Date(dates[i + 1]);
-                    const diffTime = Math.abs(next - curr);
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    const curr = parseLocal(dates[i]);
+                    const next = parseLocal(dates[i + 1]);
+                    const diff = Math.round((next - curr) / msPerDay);
 
-                    if (diffDays <= 1) currentStreak++;
-                    else break;
+                    if (diff === 1) {
+                        currentStreak++;
+                    } else if (diff === 2) {
+                        // Check if the gap day was Tuesday
+                        const gapDay = new Date(curr);
+                        gapDay.setDate(gapDay.getDate() + 1);
+
+                        if (gapDay.getDay() === 2) {
+                            currentStreak++; // Bridge the gap
+                        } else {
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
                 }
             }
         }

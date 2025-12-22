@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Calendar, Dumbbell, TrendingUp, Activity, Trash2, CheckCircle, Plus, Home, PlayCircle, Trophy, Code, Timer, Sun, Moon, Zap } from 'lucide-react';
-import MilesSticker from './assets/miles_sticker.gif';
+import { ChevronLeft, ChevronRight, Calendar, Activity, BarChart3, Info, Trash2, CheckCircle, Plus, Home, PlayCircle, Trophy, Timer, Sun, Moon, Zap, Terminal, Heart, Code, Mail, Phone } from 'lucide-react';
+// import MilesSticker from './assets/miles_sticker.gif';
+const MilesSticker = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYm1lZGtsNzduem10bTE5ZXdudTJuenZmOXZ6MHM2NXdiaHV6N2Z3ZSZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/uctvenxww01iIanyvT/giphy.gif";
 import GwenSticker from './assets/gwen_sticker.gif';
 import LoadingSticker from './assets/loading_sticker.gif';
-import LoadRoutineSticker from './assets/load_btn_sticker.gif';
+// import LoadRoutineSticker from './assets/load_btn_sticker.gif';
 
 // Hooks
 import { useWorkoutData, WORKOUT_PLANS } from './hooks/useWorkoutData';
@@ -33,12 +34,11 @@ import Snowfall from 'react-snowfall';
 function App() {
   const { theme, toggleTheme } = useTheme();
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [activeTab, setActiveTab] = useState('workout'); // 'workout' | 'stats'
+  const [activeTab, setActiveTab] = useState('workout'); // 'workout' | 'stats' | 'about'
   const [showCalendar, setShowCalendar] = useState(false);
 
   // --- Handlers ---
   const toggleBuilder = () => setIsBuilderOpen(!isBuilderOpen);
-  const [showAboutModal, setShowAboutModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showDiscardConfirm, setShowDiscardConfirm] = useState(false);
   const [isBuilderOpen, setIsBuilderOpen] = useState(false);
@@ -46,6 +46,8 @@ function App() {
   const [loadingGif, setLoadingGif] = useState(null); // 'miles' | 'gwen' | null
   const [isFocusMode, setIsFocusMode] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isAboutPressed, setIsAboutPressed] = useState(false);
 
   // Responsive Check
   useEffect(() => {
@@ -62,7 +64,17 @@ function App() {
   // Fix: Scroll to top on tab change
   useEffect(() => {
     window.scrollTo(0, 0);
+    window.scrollTo(0, 0);
   }, [activeTab]);
+
+  // Scroll Listener for Header
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
 
 
@@ -223,7 +235,7 @@ function App() {
       )}
 
       {/* --- Modals & Overlays --- */}
-      {showAboutModal && <AboutModal onClose={() => setShowAboutModal(false)} />}
+
 
       {showDeleteConfirm && (
         <DeleteConfirmationModal
@@ -270,8 +282,11 @@ function App() {
         {/* Tab: Workout */}
         {activeTab === 'workout' ? (
           <>
-            {/* Header */}
-            <header className={`sticky top-0 z-40 backdrop-blur-md border-b p-3 px-3 transition-colors duration-500 ${userProfile === 'gwen' ? 'bg-white/80 dark:bg-zinc-950/70 border-pink-500/30' : 'bg-white/80 dark:bg-zinc-950/70 border-zinc-200 dark:border-zinc-800'}`}>
+            {/* Header - Mobile Adaptation: Transparent on local, sticky/glazed on scroll or desktop */}
+            <header className={`sticky top-0 z-40 p-3 px-3 transition-colors duration-500 ${isMobile && activeTab === 'workout' && !isScrolled
+              ? 'bg-transparent border-transparent backdrop-blur-none'
+              : `backdrop-blur-md border-b ${userProfile === 'gwen' ? 'bg-white/80 dark:bg-zinc-950/70 border-pink-500/30' : 'bg-white/80 dark:bg-zinc-950/70 border-zinc-200 dark:border-zinc-800'}`
+              }`}>
 
               {/* Profile Toggle & Branding */}
               <div className="flex flex-nowrap items-center justify-between mb-4 pt-1 gap-2">
@@ -338,41 +353,59 @@ function App() {
                 </div>
               </div>
 
-              {/* Date Nav */}
-              <div className={`flex items-center justify-between sm:justify-start gap-0.5 sm:gap-4 backdrop-blur-md p-0.5 sm:p-2 sm:pl-4 sm:pr-2 rounded-full border-2 transition-colors duration-500 max-w-full shadow-sm ${userProfile === 'gwen' ? 'bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700/50' : 'bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700/50'}`}>
-                <button onClick={() => changeDate(-1)} className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors flex-shrink-0 p-1"><ChevronLeft size={20} /></button>
-                <div className="flex flex-col items-center flex-shrink-0 px-1">
-                  <span className={`text-[9px] uppercase tracking-widest font-bold transition-colors duration-500 hidden sm:block ${userProfile === 'gwen' ? 'text-pink-600 dark:text-pink-400' : 'text-red-600 dark:text-red-500'}`}>Today</span>
-                  <span className="text-sm sm:text-base font-bold text-zinc-900 dark:text-zinc-100 whitespace-nowrap">{selectedDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</span>
+              {/* Date Nav - Command Center Style */}
+              {activeTab === 'workout' ? (
+                <div className="flex items-center gap-3 pl-1">
+                  <button
+                    onClick={() => setShowCalendar(true)}
+                    className={`p-2 rounded-full transition-all flex-shrink-0 ${userProfile === 'gwen' ? 'bg-zinc-100 dark:bg-zinc-800 text-pink-600 dark:text-pink-400 hover:bg-zinc-200 dark:hover:bg-zinc-700' : 'bg-zinc-100 dark:bg-zinc-800 text-red-600 dark:text-red-500 hover:bg-zinc-200 dark:hover:bg-zinc-700'}`}
+                  >
+                    <Calendar size={20} />
+                  </button>
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-bold tracking-widest uppercase text-zinc-400 dark:text-zinc-600">Today</span>
+                    <span className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
+                      {selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
+                    </span>
+                  </div>
+                  {currentLog && !isMinimized && (
+                    <WorkoutTimer startTime={currentLog.startTime} endTime={currentLog.endTime} className="text-xs ml-4 text-zinc-500 font-mono" />
+                  )}
                 </div>
-                <button
-                  onClick={() => changeDate(1)}
-                  disabled={(() => {
-                    const s = new Date(selectedDate); s.setHours(0, 0, 0, 0);
-                    const t = new Date(); t.setHours(0, 0, 0, 0);
-                    return s.getTime() >= t.getTime();
-                  })()}
-                  className={`transition-colors flex-shrink-0 p-1 ${(() => {
-                    const s = new Date(selectedDate); s.setHours(0, 0, 0, 0);
-                    const t = new Date(); t.setHours(0, 0, 0, 0);
-                    return s.getTime() >= t.getTime() ? 'text-zinc-300 dark:text-zinc-700 cursor-not-allowed' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white';
-                  })()}`}
-                >
-                  <ChevronRight size={20} />
-                </button>
-                <div className="w-px h-6 bg-zinc-300 dark:bg-zinc-700 mx-0.5 flex-shrink-0 hidden sm:block"></div>
-                <button onClick={() => setShowCalendar(true)} className={`p-1.5 rounded-full transition-all flex-shrink-0 ${userProfile === 'gwen' ? 'bg-zinc-100 dark:bg-zinc-800 text-pink-600 dark:text-pink-400 hover:bg-zinc-200 dark:hover:bg-zinc-700' : 'bg-zinc-100 dark:bg-zinc-800 text-red-600 dark:text-red-500 hover:bg-zinc-200 dark:hover:bg-zinc-700'}`}><Calendar size={18} /></button>
+              ) : (
+                <div className={`flex items-center justify-between sm:justify-start gap-0.5 sm:gap-4 backdrop-blur-md p-0.5 sm:p-2 sm:pl-4 sm:pr-2 rounded-full border-2 transition-colors duration-500 max-w-full shadow-sm ${userProfile === 'gwen' ? 'bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700/50' : 'bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700/50'}`}>
+                  <button onClick={() => changeDate(-1)} className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors flex-shrink-0 p-1"><ChevronLeft size={20} /></button>
+                  <div className="flex flex-col items-center flex-shrink-0 px-1">
+                    <span className={`text-[9px] uppercase tracking-widest font-bold transition-colors duration-500 hidden sm:block ${userProfile === 'gwen' ? 'text-pink-600 dark:text-pink-400' : 'text-red-600 dark:text-red-500'}`}>Today</span>
+                    <span className="text-sm sm:text-base font-bold text-zinc-900 dark:text-zinc-100 whitespace-nowrap">{selectedDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</span>
+                  </div>
+                  <button
+                    onClick={() => changeDate(1)}
+                    disabled={(() => {
+                      const s = new Date(selectedDate); s.setHours(0, 0, 0, 0);
+                      const t = new Date(); t.setHours(0, 0, 0, 0);
+                      return s.getTime() >= t.getTime();
+                    })()}
+                    className={`transition-colors flex-shrink-0 p-1 ${(() => {
+                      const s = new Date(selectedDate); s.setHours(0, 0, 0, 0);
+                      const t = new Date(); t.setHours(0, 0, 0, 0);
+                      return s.getTime() >= t.getTime() ? 'text-zinc-300 dark:text-zinc-700 cursor-not-allowed' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white';
+                    })()}`}
+                  >
+                    <ChevronRight size={20} />
+                  </button>
+                  <div className="w-px h-6 bg-zinc-300 dark:bg-zinc-700 mx-0.5 flex-shrink-0 hidden sm:block"></div>
+                  <button onClick={() => setShowCalendar(true)} className={`p-1.5 rounded-full transition-all flex-shrink-0 ${userProfile === 'gwen' ? 'bg-zinc-100 dark:bg-zinc-800 text-pink-600 dark:text-pink-400 hover:bg-zinc-200 dark:hover:bg-zinc-700' : 'bg-zinc-100 dark:bg-zinc-800 text-red-600 dark:text-red-500 hover:bg-zinc-200 dark:hover:bg-zinc-700'}`}><Calendar size={18} /></button>
 
-
-
-                {/* Workout Timer in Header */}
-                {currentLog && !isMinimized && (
-                  <>
-                    <div className="w-px h-6 bg-zinc-300 dark:bg-zinc-700 mx-0.5 flex-shrink-0 hidden sm:block"></div>
-                    <WorkoutTimer startTime={currentLog.startTime} endTime={currentLog.endTime} className="text-xs sm:text-sm flex-shrink-0 ml-1" />
-                  </>
-                )}
-              </div>
+                  {/* Workout Timer */}
+                  {currentLog && !isMinimized && (
+                    <>
+                      <div className="w-px h-6 bg-zinc-300 dark:bg-zinc-700 mx-0.5 flex-shrink-0 hidden sm:block"></div>
+                      <WorkoutTimer startTime={currentLog.startTime} endTime={currentLog.endTime} className="text-xs sm:text-sm flex-shrink-0 ml-1" />
+                    </>
+                  )}
+                </div>
+              )}
 
               {/* Stats Toggle (Mobile Friendly) */}
               <div className="flex justify-between items-center mt-4 pt-4 border-t border-zinc-200/50 dark:border-zinc-800/50 min-h-[60px] w-full">
@@ -555,89 +588,106 @@ function App() {
                     isBuilderOpen ? (
                       <RoutineBuilder onSave={handleCustomSave} onCancel={() => setIsBuilderOpen(false)} />
                     ) : (
-                      <div className="relative p-6 sm:p-8 rounded-2xl bg-white/80 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-lg">
 
-                        <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] mb-4 block ml-1">Select Routine</label>
+                      <div className="relative flex flex-col min-h-0 pb-0 sm:block py-4 sm:py-12 px-2 max-w-xl mx-auto gap-6 sm:gap-0">
 
-                        <div className="flex gap-3 mb-6">
-                          <div className="relative flex-grow group">
+                        {/* 1. Routine Focus (Moved to Top) */}
+                        <div className="text-center mt-8 sm:mt-0 relative group">
+                          <div className="inline-flex items-center justify-center gap-2 mb-2 w-full">
                             <select
                               value={activePlanId}
                               onChange={(e) => setActivePlanId(e.target.value)}
-                              className="w-full appearance-none bg-zinc-50 dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-700/50 text-zinc-900 dark:text-white text-lg font-bold py-4 px-6 rounded-xl focus:outline-none focus:border-zinc-400 dark:focus:border-white/20 focus:ring-1 focus:ring-zinc-400 dark:focus:ring-white/20 transition-all shadow-inner"
+                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                             >
-                              <optgroup label="Default Plans" className="bg-white dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400">
-                                {availablePlans.map(plan => (<option key={plan.id} value={plan.id} className="text-zinc-900 dark:text-white bg-white dark:bg-zinc-900">{plan.name}</option>))}
+                              <optgroup label="My Routines">
+                                {savedPlans.map(plan => (
+                                  <option key={plan.id} value={plan.id}>{plan.name}</option>
+                                ))}
                               </optgroup>
-                              {savedPlans.length > 0 && (
-                                <optgroup label="My Custom Routines" className="bg-white dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400">
-                                  {savedPlans.map(plan => (<option key={plan.id} value={plan.id} className="text-zinc-900 dark:text-white bg-white dark:bg-zinc-900">{plan.name}</option>))}
-                                </optgroup>
-                              )}
+                              <optgroup label="Default Routines">
+                                {availablePlans.map(plan => (
+                                  <option key={plan.id} value={plan.id}>{plan.name}</option>
+                                ))}
+                              </optgroup>
                             </select>
-                            <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-600 dark:group-hover:text-white transition-colors">
-                              <ChevronRight size={20} className="rotate-90" />
+                            <h2
+                              className="text-2xl sm:text-6xl font-black italic tracking-tighter text-zinc-900 dark:text-white group-hover:text-zinc-700 dark:group-hover:text-zinc-200 transition-colors leading-tight px-2 break-words"
+                              style={{ textWrap: 'balance' }}
+                            >
+                              {savedPlans.find(p => p.id === activePlanId)?.name || availablePlans.find(p => p.id === activePlanId)?.name || "Select Routine"}
+                            </h2>
+                            <ChevronRight size={20} className="text-zinc-300 dark:text-zinc-700 rotate-90 flex-shrink-0" />
+                          </div>
+                          <p className="text-zinc-400 dark:text-zinc-500 text-xs sm:text-sm font-bold tracking-widest uppercase">
+                            Week A · Day 1
+                          </p>
+                        </div>
+
+                        {/* 2. System Status (Below Routine) */}
+                        <div className="flex justify-center">
+                          {!!currentLog ? (
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                              <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100">Workout in progress</span>
                             </div>
+                          ) : (
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                              <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100">Ready to start</span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Spacer for bottom pinned content */}
+
+
+                        {/* Bottom Action Area */}
+                        <div className="mt-12 w-full z-10">
+                          {/* 3. Primary CTA */}
+                          <div className="mb-4">
+                            <Button
+                              onClick={loadRoutine}
+                              disabled={!!currentLog}
+                              className={`w-full h-14 text-lg font-bold tracking-wide shadow-xl hover:shadow-2xl transition-all duration-300 transform active:scale-[0.98] rounded-lg border-0 ${!!currentLog
+                                ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600 cursor-not-allowed'
+                                : userProfile === 'gwen'
+                                  ? 'bg-zinc-900 dark:bg-pink-600 text-white'
+                                  : 'bg-zinc-900 dark:bg-red-600 text-white'
+                                }`}
+                            >
+                              {!!currentLog ? 'SESSION ACTIVE' : (
+                                <div className="flex items-center justify-center gap-2">
+                                  <span>START SESSION</span>
+                                  <span className="text-xl">→</span>
+                                </div>
+                              )}
+                            </Button>
                           </div>
 
-                          {isCustomSelected && (
+                          {/* 4. Trust Copy */}
+                          {!currentLog && (
+                            <p className="text-center mb-2 text-[10px] font-medium text-zinc-400 dark:text-zinc-600 opacity-80">
+                              Exercises can be changed anytime · Progress is saved automatically
+                            </p>
+                          )}
+
+                          {/* 5. Secondary Action */}
+                          <div className="flex justify-center mt-0">
                             <button
-                              onClick={() => setShowDeleteConfirm(true)}
-                              className="px-5 bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl hover:bg-red-500/20 hover:border-red-500/40 hover:shadow-[0_0_15px_rgba(239,68,68,0.2)] transition-all flex items-center justify-center"
-                              title="Delete this routine"
+                              onClick={() => setIsBuilderOpen(true)}
+                              className="flex items-center gap-2 px-6 py-3 rounded-xl bg-zinc-100 dark:bg-zinc-800 border-2 border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 hover:border-zinc-300 dark:hover:border-zinc-600 transition-all duration-200 shadow-sm hover:shadow-md"
                             >
-                              <Trash2 size={22} />
+                              <Plus size={18} strokeWidth={2.5} />
+                              <span className="text-sm font-bold tracking-wide">Create Custom Routine</span>
                             </button>
-                          )}
+                          </div>
                         </div>
 
-                        <Button
-                          onClick={loadRoutine}
-                          disabled={!!currentLog}
-                          className={`w-full py-4 text-lg font-black italic tracking-wider shadow-xl transition-all duration-300 ${!!currentLog
-                            ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600 cursor-not-allowed border border-zinc-200 dark:border-zinc-700'
-                            : userProfile === 'gwen'
-                              ? 'bg-pink-500/10 dark:bg-pink-500/20 backdrop-blur-md border border-pink-500/50 text-pink-600 dark:text-pink-300 hover:bg-pink-500/20 hover:shadow-[0_0_30px_rgba(236,72,153,0.3)] hover:scale-[1.02]'
-                              : 'bg-red-600/10 dark:bg-red-600/20 backdrop-blur-md border border-red-600/50 text-red-600 dark:text-red-400 hover:bg-red-600/20 hover:shadow-[0_0_30px_rgba(220,38,38,0.3)] hover:scale-[1.02]'
-                            }`}
-                        >
-                          {!!currentLog ? 'SESSION ACTIVE' : (
-                            <div className="flex items-center justify-center gap-6 w-full overflow-hidden">
-                              <img src={LoadRoutineSticker} alt="Decoration" className="h-10 object-contain opacity-60 grayscale-[0.3] scale-90" />
-                              <div className="flex flex-col items-center justify-center -mt-1">
-                                <img src={LoadRoutineSticker} alt="Load Routine" className="h-12 object-contain z-10 drop-shadow-md" />
-                                <span className="text-[10px] font-black uppercase tracking-widest opacity-80 leading-none mt-1">Click</span>
-                              </div>
-                              <img src={LoadRoutineSticker} alt="Decoration" className="h-10 object-contain opacity-60 grayscale-[0.3] scale-90" />
-                            </div>
-                          )}
-                        </Button>
-
-                        <div className="relative flex py-6 items-center">
-                          <div className="flex-grow border-t border-zinc-200 dark:border-zinc-800/50"></div>
-                          <span className="flex-shrink-0 mx-4 text-zinc-400 dark:text-zinc-600 text-[10px] font-bold tracking-[0.2em] uppercase">OR</span>
-                          <div className="flex-grow border-t border-zinc-200 dark:border-zinc-800/50"></div>
-                        </div>
-
-                        <Button
-                          variant="secondary"
-                          onClick={() => setIsBuilderOpen(true)}
-                          className={`w-full py-4 relative group overflow-hidden border border-zinc-200/60 dark:border-white/10 bg-zinc-50/80 dark:bg-zinc-800/20 backdrop-blur-xl ${userProfile === 'gwen' ? 'hover:bg-pink-500/10 hover:border-pink-500/30' : 'hover:bg-red-500/10 hover:border-red-500/30'} transition-all duration-300 shadow-sm`}
-                        >
-                          <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-r ${userProfile === 'gwen' ? 'from-pink-500/5 via-transparent to-cyan-500/5' : 'from-red-500/5 via-transparent to-orange-500/5'}`} />
-                          <div className={`absolute inset-0 border border-dashed opacity-20 group-hover:opacity-40 transition-all ${userProfile === 'gwen' ? 'border-pink-400' : 'border-red-400'} rounded-xl`} />
-
-                          <span className={`relative z-10 flex items-center justify-center gap-2 font-bold tracking-widest text-sm group-hover:tracking-[0.2em] transition-all duration-300 ${userProfile === 'gwen' ? 'text-zinc-600 dark:text-pink-300' : 'text-zinc-600 dark:text-red-300'}`}>
-                            <Plus size={18} />
-                            CREATE CUSTOM
-                          </span>
-                        </Button>
                       </div>
-
                     )
                   )}
                 </div>
-              ) : (
+              ) : (<>
                 /* Active Workout View */
                 <div className="space-y-6">
                   <div className="flex items-center justify-between flex-wrap gap-y-3">
@@ -715,46 +765,47 @@ function App() {
                     </div>
                   </div>
                 </div>
-              )}
-              {/* Sticky Complete Button */}
-              {(() => {
-                let fabExIndex = -1;
-                let fabSetIndex = -1;
-                if (!isLocked && currentLog && currentLog.exercises) {
-                  for (let i = 0; i < currentLog.exercises.length; i++) {
-                    const idx = currentLog.exercises[i].sets.findIndex(s => !s.completed);
-                    if (idx !== -1) {
-                      fabExIndex = i;
-                      fabSetIndex = idx;
-                      break;
+
+                {/* Sticky Complete Button */}
+                {(() => {
+                  let fabExIndex = -1;
+                  let fabSetIndex = -1;
+                  if (!isLocked && currentLog && currentLog.exercises) {
+                    for (let i = 0; i < currentLog.exercises.length; i++) {
+                      const idx = currentLog.exercises[i].sets.findIndex(s => !s.completed);
+                      if (idx !== -1) {
+                        fabExIndex = i;
+                        fabSetIndex = idx;
+                        break;
+                      }
                     }
                   }
-                }
 
-                if (fabExIndex !== -1) {
-                  const ex = currentLog.exercises[fabExIndex];
-                  const setNum = fabSetIndex + 1;
-                  return (
-                    <button
-                      onClick={() => {
-                        handleUpdateSet(fabExIndex, fabSetIndex, 'completed', true);
-                        // Provide haptic feedback via useRestTimer's integrated logic? 
-                        // Or direct call here if not handled by handleUpdateSet. 
-                        // handleTimerComplete handles vibration on *timer* complete. 
-                        // We might want tactile click here.
-                        if (navigator.vibrate) navigator.vibrate(50);
-                      }}
-                      className="fixed bottom-24 right-4 z-50 bg-emerald-500 text-white shadow-[0_4px_20px_rgba(16,185,129,0.5)] w-14 h-14 rounded-full flex items-center justify-center animate-in zoom-in duration-300 active:scale-90 active:bg-emerald-600 transition-all"
-                    >
-                      <CheckCircle size={28} />
-                      <div className="absolute -top-2 -right-2 bg-white dark:bg-zinc-800 text-[10px] font-bold text-zinc-900 dark:text-white px-1.5 py-0.5 rounded-full border border-zinc-200 dark:border-zinc-700 shadow-sm">
-                        #{setNum}
-                      </div>
-                    </button>
-                  )
-                }
-                return null;
-              })()}
+                  if (fabExIndex !== -1) {
+                    const ex = currentLog.exercises[fabExIndex];
+                    const setNum = fabSetIndex + 1;
+                    return (
+                      <button
+                        onClick={() => {
+                          handleUpdateSet(fabExIndex, fabSetIndex, 'completed', true);
+                          // Provide haptic feedback via useRestTimer's integrated logic? 
+                          // Or direct call here if not handled by handleUpdateSet. 
+                          // handleTimerComplete handles vibration on *timer* complete. 
+                          // We might want tactile click here.
+                          if (navigator.vibrate) navigator.vibrate(50);
+                        }}
+                        className="fixed bottom-24 right-4 z-50 bg-emerald-500 text-white shadow-[0_4px_20px_rgba(16,185,129,0.5)] w-14 h-14 rounded-full flex items-center justify-center animate-in zoom-in duration-300 active:scale-90 active:bg-emerald-600 transition-all"
+                      >
+                        <CheckCircle size={28} />
+                        <div className="absolute -top-2 -right-2 bg-white dark:bg-zinc-800 text-[10px] font-bold text-zinc-900 dark:text-white px-1.5 py-0.5 rounded-full border border-zinc-200 dark:border-zinc-700 shadow-sm">
+                          #{setNum}
+                        </div>
+                      </button>
+                    )
+                  }
+                  return null;
+                })()}
+              </>)}
             </main>
 
             <CompletionModal
@@ -764,53 +815,151 @@ function App() {
               stats={completionStats}
             />
           </>
-        ) : (
+        ) : activeTab === 'stats' ? (
           /* Tab: Stats */
           <main className="max-w-[800px] mx-auto p-4 relative pt-10">
             <StatsView workoutData={workoutData} getPreviousBest={getPreviousBest} theme={theme} />
+          </main>
+        ) : (
+          /* Tab: About */
+          <main className="max-w-[800px] mx-auto p-4 relative pt-10 pb-32">
+            <div className="relative w-full max-w-md mx-auto bg-white dark:bg-zinc-950 border-2 border-emerald-500/20 dark:border-emerald-500/50 rounded-[2.5rem] shadow-[0_0_30px_rgba(16,185,129,0.1)] dark:shadow-[0_0_30px_rgba(16,185,129,0.2)] overflow-hidden">
+              {/* Background Effects */}
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 via-cyan-400 to-emerald-500 animate-gradient-x" />
+              <div className="absolute -top-24 -right-24 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+              <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+
+              <div className="p-8 relative z-10">
+                {/* Header */}
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-3 bg-emerald-500/10 rounded-2xl border border-emerald-500/30">
+                    <Terminal size={24} className="text-emerald-400" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-black italic tracking-tighter text-zinc-900 dark:text-white uppercase transform -skew-x-6 pr-4">
+                      Behind The <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-cyan-500 dark:from-emerald-400 dark:to-cyan-400 pr-2">Code</span>
+                    </h2>
+                    <p className="text-xs text-zinc-400 dark:text-zinc-500 font-mono tracking-widest uppercase">Version 1.0.0 // Beta</p>
+                  </div>
+                </div>
+
+                {/* The Story */}
+                <div className="mb-8 space-y-4">
+                  <h3 className="text-sm font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider flex items-center gap-2">
+                    <Heart size={14} className="text-pink-500 fill-pink-500/20" /> The Origin Story
+                  </h3>
+                  <div className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed space-y-3">
+                    <p>
+                      We built <strong>DUO FIT</strong> because we were tired of "gym amnesia."
+                      Forgetting weights, losing track of sets, and guessing our progress became a bottleneck for me and my training partner, <span className="text-pink-400 font-bold">Sexie</span>.
+                    </p>
+                    <p>
+                      This isn't just an app—it's a custom-built tool designed to solve <em>our</em> specific problems: tracking discipline, visualizing gains, and staying consistent together.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Developer Card */}
+                <div className="bg-zinc-50 dark:bg-zinc-900/50 border-2 border-zinc-200 dark:border-zinc-800 rounded-3xl p-5 hover:border-emerald-500/30 transition-colors group">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-12 h-12 rounded-2xl bg-white dark:bg-gradient-to-br dark:from-zinc-800 dark:to-zinc-900 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center shadow-sm dark:shadow-inner">
+                      <Code size={20} className="text-zinc-400 group-hover:text-emerald-500 dark:group-hover:text-emerald-400 transition-colors" />
+                    </div>
+                    <div>
+                      <h4 className="text-zinc-900 dark:text-white font-bold text-lg leading-none">Subhadeep Mistri</h4>
+                      <span className="text-xs text-emerald-600 dark:text-emerald-500 font-mono">Lead Developer & Designer</span>
+                    </div>
+                  </div>
+
+                  {/* Contact Grid */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <a
+                      href="mailto:subhadeepmistri1990@gmail.com"
+                      className="flex items-center justify-center gap-2 p-3 rounded-2xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 hover:border-emerald-500/50 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-all group/btn"
+                    >
+                      <Mail size={16} className="text-zinc-400 group-hover/btn:text-emerald-500 dark:group-hover/btn:text-emerald-400 transition-colors" />
+                      <span className="text-xs font-bold text-zinc-600 dark:text-zinc-300">Email Me</span>
+                    </a>
+                    <a
+                      href="tel:8250518317"
+                      className="flex items-center justify-center gap-2 p-3 rounded-2xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 hover:border-cyan-500/50 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-all group/btn"
+                    >
+                      <Phone size={16} className="text-zinc-400 group-hover/btn:text-cyan-500 dark:group-hover/btn:text-cyan-400 transition-colors" />
+                      <span className="text-xs font-bold text-zinc-600 dark:text-zinc-300">Call Me</span>
+                    </a>
+                  </div>
+                </div>
+
+                {/* Footer Note */}
+                <div className="mt-8 text-center pb-2">
+                  <p className="text-sm font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-widest drop-shadow-sm">
+                    CRAFTED BY <span className="text-pink-500">SEXIE</span> & <span className="text-red-500">SPIDEY</span>
+                  </p>
+                </div>
+              </div>
+            </div>
           </main>
         )}
       </div>
 
 
-      {/* Bottom Navigation - Mobile First Optimization */}
-      <div className="fixed bottom-0 left-0 w-full bg-white/90 dark:bg-zinc-950/90 backdrop-blur-xl border-t border-zinc-200 dark:border-zinc-800 pb-safe sm:pb-2 pt-2 sm:pt-3 z-50 transition-all duration-300">
-        <div className="max-w-[800px] mx-auto flex justify-around items-end relative h-[70px] sm:h-auto">
+      {/* Bottom Navigation - Floating Glassmorphism Design */}
+      <div className="fixed bottom-3 left-1/2 -translate-x-1/2 w-[90%] max-w-[400px] z-50">
+        <div className="flex items-center justify-between gap-1.5 px-3 py-3 rounded-[24px] bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.18)] border border-zinc-200/50 dark:border-zinc-700/50 transition-all duration-300">
+
+          {/* Workout Tab */}
           <button
             onClick={() => setActiveTab('workout')}
-            className={`flex flex-col items-center justify-center p-3 rounded-2xl w-24 active:scale-95 transition-all outline-none ${activeTab === 'workout' ? 'text-emerald-600 dark:text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10' : 'text-zinc-500 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300'}`}
+            className={`relative flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-[16px] transition-all duration-300 ${activeTab === 'workout' ? 'flex-1 bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:hover:text-white'}`}
           >
-            <Dumbbell size={isMobile ? 26 : 24} strokeWidth={activeTab === 'workout' ? 2.5 : 2} />
-            <span className={`text-[11px] uppercase font-bold mt-1 tracking-wide ${activeTab === 'workout' ? 'opacity-100' : 'opacity-80'}`}>Workout</span>
+            <Activity size={20} className={`transition-transform duration-300 ${activeTab === 'workout' ? 'scale-110' : 'scale-100'}`} strokeWidth={activeTab === 'workout' ? 2.5 : 2} />
+            <span className={`text-[10px] font-bold tracking-wide whitespace-nowrap transition-all duration-200 ${activeTab === 'workout' ? 'opacity-100' : 'opacity-70'}`}>
+              Workout
+            </span>
           </button>
 
-          {/* Home Button */}
-          {currentLog && !isMinimized && <button
-            onClick={() => { setIsMinimized(true); setActiveTab('workout'); }}
-            className="flex flex-col items-center justify-center p-3 rounded-2xl w-24 active:scale-95 transition-all text-zinc-500 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300 outline-none"
-          >
-            <Home size={isMobile ? 26 : 24} />
-            <span className="text-[11px] uppercase font-bold mt-1 tracking-wide opacity-80">Home</span>
-          </button>
-          }
+          {/* Home Button (Contextual) */}
+          {currentLog && !isMinimized && (
+            <button
+              onClick={() => { setIsMinimized(true); setActiveTab('workout'); }}
+              className="relative flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-[16px] bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:hover:text-white transition-all duration-300"
+            >
+              <Home size={20} />
+              <span className="text-[10px] font-bold tracking-wide opacity-70">Home</span>
+            </button>
+          )}
 
+          {/* Stats Tab */}
           <button
             onClick={() => setActiveTab('stats')}
-            className={`flex flex-col items-center justify-center p-3 rounded-2xl w-24 active:scale-95 transition-all outline-none ${activeTab === 'stats' ? 'text-emerald-600 dark:text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10' : 'text-zinc-500 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300'}`}
+            className={`relative flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-[16px] transition-all duration-300 ${activeTab === 'stats' ? 'flex-1 bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:hover:text-white'}`}
           >
-            <TrendingUp size={isMobile ? 26 : 24} strokeWidth={activeTab === 'stats' ? 2.5 : 2} />
-            <span className={`text-[11px] uppercase font-bold mt-1 tracking-wide ${activeTab === 'stats' ? 'opacity-100' : 'opacity-80'}`}>Stats</span>
+            <BarChart3 size={20} className={`transition-transform duration-300 ${activeTab === 'stats' ? 'scale-110' : 'scale-100'}`} strokeWidth={activeTab === 'stats' ? 2.5 : 2} />
+            <span className={`text-[10px] font-bold tracking-wide whitespace-nowrap transition-all duration-200 ${activeTab === 'stats' ? 'opacity-100' : 'opacity-70'}`}>
+              Stats
+            </span>
           </button>
 
+          {/* About Tab */}
           <button
-            onClick={() => setShowAboutModal(true)}
-            className="flex flex-col items-center justify-center p-3 rounded-2xl w-24 active:scale-95 transition-all text-zinc-500 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300 outline-none"
+            onClick={() => setActiveTab('about')}
+            onTouchStart={() => setIsAboutPressed(true)}
+            onTouchEnd={() => setIsAboutPressed(false)}
+            onMouseDown={() => setIsAboutPressed(true)}
+            onMouseUp={() => setIsAboutPressed(false)}
+            onMouseLeave={() => setIsAboutPressed(false)}
+            className={`relative flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-[16px] transition-all duration-200 ${isAboutPressed
+                ? 'bg-emerald-500 text-white scale-95 shadow-lg shadow-emerald-500/30'
+                : activeTab === 'about'
+                  ? 'flex-1 bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
+                  : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:hover:text-white'
+              }`}
           >
-            <Code size={isMobile ? 26 : 24} />
-            <span className="text-[11px] uppercase font-bold mt-1 tracking-wide opacity-80">About</span>
+            <Info size={20} className={`transition-transform duration-200 ${isAboutPressed || activeTab === 'about' ? 'scale-110' : 'scale-100'}`} strokeWidth={activeTab === 'about' ? 2.5 : 2} />
+            <span className={`text-[10px] font-bold tracking-wide whitespace-nowrap transition-all duration-200 ${isAboutPressed || activeTab === 'about' ? 'opacity-100' : 'opacity-70'}`}>About</span>
           </button>
+
         </div>
-        <div className="absolute bottom-1 right-2 text-[8px] text-zinc-300 dark:text-zinc-700 font-mono opacity-50 pointer-events-none">v1.1.0-mobile</div>
       </div>
     </div >
   );

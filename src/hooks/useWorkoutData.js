@@ -95,7 +95,7 @@ export const WORKOUT_PLANS = [
         ]
     },
     {
-        id: 'week_b_day_2', name: "Week B:  Day 2 - Legs (Quad) + Abs",
+        id: 'week_b_day_2', name: "Week B:  Day 2 - Legs + Abs",
         exercises: [
             { name: "Barbell Back Squat", targetSets: 4, targetReps: "5-8" },
             { name: "Leg Press (Low Stance)", targetSets: 4, targetReps: "10-12" },
