@@ -648,11 +648,11 @@ function App() {
                             <Button
                               onClick={loadRoutine}
                               disabled={!!currentLog}
-                              className={`w-full h-14 text-lg font-bold tracking-wide shadow-xl hover:shadow-2xl transition-all duration-300 transform active:scale-[0.98] rounded-lg border-0 ${!!currentLog
+                              className={`w-full h-14 text-lg font-black tracking-wide shadow-xl hover:shadow-2xl transition-all duration-300 transform active:scale-[0.98] rounded-lg border-0 ${!!currentLog
                                 ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600 cursor-not-allowed'
                                 : userProfile === 'gwen'
-                                  ? 'bg-zinc-900 dark:bg-pink-600 text-white'
-                                  : 'bg-zinc-900 dark:bg-red-600 text-white'
+                                  ? 'bg-zinc-900 dark:bg-pink-600 !text-white'
+                                  : 'bg-zinc-900 dark:bg-red-600 !text-white'
                                 }`}
                             >
                               {!!currentLog ? 'SESSION ACTIVE' : (
