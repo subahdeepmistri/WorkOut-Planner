@@ -153,8 +153,13 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest, theme }) => {
             {/* ZONE 1: TODAY • Your Progress (Primary Emphasis)                          */}
             {/* ========================================================================= */}
             <SectionHeader
-                title="Today"
-                subtitle="Your Active Progress"
+                title={(() => {
+                    if (selectedDayKey === getTodayStr()) return 'TODAY';
+                    if (selectedDayKey === getYesterdayStr()) return 'YESTERDAY';
+                    const [y, m, d] = selectedDayKey.split('-').map(Number);
+                    return new Date(y, m - 1, d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase();
+                })()}
+                subtitle={selectedDayKey === getTodayStr() ? "Your Active Progress" : "Historical Record"}
                 icon={Activity}
                 type="primary"
                 color="text-indigo-500"
