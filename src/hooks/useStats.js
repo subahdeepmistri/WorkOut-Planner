@@ -46,6 +46,10 @@ export const useStats = (workoutData, getPreviousBest) => {
         // Counters
         let sCount = 0, cCount = 0, aCount = 0;
         let totalVol = 0;
+        let totalCardioMin = 0;
+        let totalCardioDist = 0;
+        let totalCoreReps = 0;
+        let totalCoreHold = 0;
         let globalScoreSum = 0;
 
         dates.forEach(date => {
@@ -82,6 +86,10 @@ export const useStats = (workoutData, getPreviousBest) => {
                 if (stats.hasCore) aCount++;
 
                 totalVol += stats.strengthVol;
+                totalCardioMin += stats.cMin;
+                totalCardioDist += stats.cDist;
+                totalCoreReps += stats.aRep;
+                totalCoreHold += stats.aHold;
                 globalScoreSum += stats.score;
             }
         });
@@ -165,6 +173,13 @@ export const useStats = (workoutData, getPreviousBest) => {
             monthlyStats: {
                 sessions: monthSessions,
                 topFocus: monthFocus[topFocus] > 0 ? topFocus : "Mixed"
+            },
+            lifetimeStats: {
+                strengthVol: totalVol,
+                cardioDist: totalCardioDist,
+                cardioMin: totalCardioMin,
+                coreReps: totalCoreReps,
+                coreHold: totalCoreHold
             }
         };
     }, [workoutData, getPreviousBest]);

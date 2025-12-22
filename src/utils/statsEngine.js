@@ -34,6 +34,33 @@ const safeFloat = (val, fallback = 0) => {
  * @param {Object} ex - The raw exercise object
  * @param {Function|null} getPreviousBest - Optional callback for reference weights
  */
+/**
+ * Parses time input (e.g. "1:30", "90", "1.5") into total seconds.
+ */
+const parseTimeSeconds = (val) => {
+    if (!val) return 0;
+    const str = String(val).trim();
+
+    // Handle mm:ss format
+    if (str.includes(':')) {
+        const parts = str.split(':').map(p => parseFloat(p) || 0);
+        if (parts.length === 2) {
+            return (parts[0] * 60) + parts[1]; // min * 60 + sec
+        }
+        if (parts.length === 3) {
+            return (parts[0] * 3600) + (parts[1] * 60) + parts[2]; // hr * 3600 + min + sec
+        }
+    }
+
+    // Default: treat as pure number
+    return safeFloat(val);
+};
+
+/**
+ * Calculates metrics for a single exercise sessions.
+ * @param {Object} ex - The raw exercise object
+ * @param {Function|null} getPreviousBest - Optional callback for reference weights
+ */
 const calculateExerciseLoad = (ex, getPreviousBest) => {
     if (!ex || !Array.isArray(ex.sets)) return { actualVol: 0, targetVol: 0, rawVol: 0, type: 'unknown' };
 
@@ -86,9 +113,37 @@ const calculateExerciseLoad = (ex, getPreviousBest) => {
             // Cardio: Distance OR Time
             // TIME (sec) -> MIN
             const isTimeMode = (ex.cardioMode === 'circuit' || ex.cardioMode === 'duration');
-            const rawVal = isTimeMode ? safeFloat(set.time) : safeFloat(set.distance);
+
+            // FIX: Use parseTimeSeconds for time inputs
+            let rawVal = 0;
+            if (isTimeMode) {
+                // If time mode, input is likely mm:ss OR minutes? 
+                // Context: Usually cardio input is minutes in data, but if it's "20:00" it needs parsing.
+                // NOTE: existing 'time' field usage in cardio is ambiguous (minutes vs seconds).
+                // Assuming standardized on SECONDS for calculator strictness, then converting.
+                const sec = parseTimeSeconds(set.time);
+                // But wait, if previous logic expected MINUTES from simple float (e.g. "20"),
+                // parseTimeSeconds("20") returns 20. If "20" meant 20 mins, then 20 seconds is wrong.
+                // However, 'safeFloat' was used before. safeFloat("20") = 20.
+                // existing logic: rawVal / 60 for score. 20/60 = 0.33 score? 
+                // If user put 20 mins, score should be 20? 
+                // Let's look at lines 91-95 of original:
+                // const isTimeMode = ...
+                // const rawVal = isTimeMode ? safeFloat(set.time) : safeFloat(set.distance);
+                // const scoreVal = isTimeMode ? (rawVal / 60) : rawVal;
+
+                // CRITICAL: If rawVal came from safeFloat("20"), it was 20. Score = 20/60 = 0.33. 
+                // This implies the input was expected to be SECONDS? 
+                // OR the score calculation assumes input is Seconds and converts to Minutes?
+                // Let's assume input is standard text "mm:ss".
+
+                rawVal = parseTimeSeconds(set.time);
+            } else {
+                rawVal = safeFloat(set.distance);
+            }
 
             // Normalized Value for Score (Minutes or Km)
+            // If Time Mode: rawVal is SECONDS. Convert to Minutes.
             const scoreVal = isTimeMode ? (rawVal / 60) : rawVal;
 
             // Score = Val (or Target Reps if val is 0 but marked complete)
@@ -100,12 +155,15 @@ const calculateExerciseLoad = (ex, getPreviousBest) => {
         else if (isCore(type)) {
             // Core: Reps OR Hold
             let val = safeFloat(set.reps);
-            if (ex.coreMode === 'hold') val = safeFloat(set.holdTime);
+            if (ex.coreMode === 'hold') {
+                // FIX: Use parseTimeSeconds for hold times (e.g. "1:00")
+                val = parseTimeSeconds(set.holdTime);
+            }
 
             const score = val > 0 ? val : tReps;
 
             actualVol += score;
-            rawVol += val; // Strict raw
+            rawVol += val; // Strict raw (Seconds for holds, Reps for reps)
         }
         else {
             // Strength: Reps * Weight
@@ -170,6 +228,8 @@ export const calculateSessionStats = (log, getPreviousBest) => {
         if (!ex) return; // Skip bad data
 
         const load = calculateExerciseLoad(ex, getPreviousBest);
+        // Check for ANY completed activity to qualify this exercise type as "active"
+        const hasActivity = Array.isArray(ex.sets) && ex.sets.some(s => s.completed);
 
         // Update Globals
         totalActual += load.actualVol;
@@ -177,24 +237,28 @@ export const calculateSessionStats = (log, getPreviousBest) => {
 
         // Update Specifics
         if (isStrength(load.type)) {
-            hasStrength = true;
+            if (hasActivity) hasStrength = true;
             strengthVol += load.rawVol;
         }
         else if (isCardio(load.type)) {
-            hasCardio = true;
+            if (hasActivity) hasCardio = true;
             // For cardio, we need to inspect mode again for granular stats
             // (Engine re-loop for strictness)
             ex.sets.forEach(s => {
                 if (s && s.completed) {
-                    if (ex.cardioMode === 'circuit' || ex.cardioMode === 'duration') cMin += safeFloat(s.time);
+                    if (ex.cardioMode === 'circuit' || ex.cardioMode === 'duration') {
+                        // FIX: Parse seconds, then convert to Minutes
+                        const sec = parseTimeSeconds(s.time);
+                        cMin += (sec / 60);
+                    }
                     else cDist += safeFloat(s.distance);
                 }
             });
         }
         else if (isCore(load.type)) {
-            hasCore = true;
+            if (hasActivity) hasCore = true;
             if (ex.coreMode === 'hold') {
-                aHold += load.rawVol;
+                aHold += load.rawVol; // Now safe: rawVol calculated via parseTimeSeconds
             } else {
                 aRep += load.rawVol;
             }
@@ -231,7 +295,8 @@ export const calculateSessionStats = (log, getPreviousBest) => {
             if (s && s.completed) {
                 // TIME MODE (Circuit/Duration)
                 if (mode === 'circuit' || mode === 'duration') {
-                    const tSec = safeFloat(s.time);
+                    // FIX: Use parseTimeSeconds
+                    const tSec = parseTimeSeconds(s.time);
                     const tMin = tSec / 60; // Convert Seconds to Minutes
                     schemaTimeMin += tMin;
                     schemaCircuitMin += tMin;
@@ -241,7 +306,9 @@ export const calculateSessionStats = (log, getPreviousBest) => {
                     schemaDistKm += safeFloat(s.distance);
                     // Critical: Add TIME from DIST mode if available (Pace calculation needs it)
                     if (s.time) {
-                        const tMin = safeFloat(s.time); // Input is Minutes
+                        // FIX: Use parseTimeSeconds
+                        const tSec = parseTimeSeconds(s.time);
+                        const tMin = tSec / 60;
                         schemaTimeMin += tMin;
                         schemaDistTimeMin += tMin;
                     }

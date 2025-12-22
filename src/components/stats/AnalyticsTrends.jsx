@@ -11,7 +11,7 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, T
 /**
  * TrendCard - Coach-Enhanced & Context Aware
  */
-const TrendCard = ({ title, data, labels, color, type = 'line', category, theme }) => {
+const TrendCard = ({ title, data, labels, color, type = 'line', category, theme, displayValue, displayUnit }) => {
     const isDark = theme === 'dark';
     const [isHovered, setIsHovered] = useState(false);
 
@@ -87,7 +87,7 @@ const TrendCard = ({ title, data, labels, color, type = 'line', category, theme 
         },
         elements: {
             point: {
-                radius: (ctx) => ctx.dataIndex === data.length - 1 ? 7 : 0, // Larger "Now" dot
+                radius: (ctx) => ctx.dataIndex === data.length - 1 ? 5 : 0,
                 hitRadius: 30,
                 backgroundColor: color,
                 borderColor: isDark ? '#18181b' : '#fff',
@@ -161,13 +161,15 @@ const TrendCard = ({ title, data, labels, color, type = 'line', category, theme 
                 </div>
 
                 {/* Big Number + Pulse */}
-                <div className="flex items-baseline gap-3 mb-4">
+                <div className="flex items-baseline gap-2 mb-4">
                     <span className="text-3xl font-bold text-zinc-800 dark:text-zinc-100 tracking-tight">
-                        {data[data.length - 1]?.toLocaleString() || '-'}
+                        {displayValue || data[data.length - 1]?.toLocaleString() || '-'}
                     </span>
+                    {displayUnit && <span className="text-xs font-bold text-zinc-400 uppercase">{displayUnit}</span>}
+
                     {/* Subtle Pulse */}
                     {trend.dir === 'up' && (
-                        <span className="relative flex h-2 w-2">
+                        <span className="relative flex h-2 w-2 ml-1">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                         </span>
@@ -184,7 +186,7 @@ const TrendCard = ({ title, data, labels, color, type = 'line', category, theme 
             <div className="mt-2 pt-3 border-t border-zinc-50 dark:border-zinc-800/50">
                 <p className="text-[10px] font-medium text-zinc-400 flex items-center gap-1.5 opacity-70 group-hover:opacity-100 transition-opacity">
                     <Info size={12} className="text-zinc-300 dark:text-zinc-600" />
-                    {trend.sub}
+                    {trend.sub} &bull; <span className="text-zinc-500">Last 7d Trend</span>
                 </p>
             </div>
         </div>
@@ -204,9 +206,9 @@ export const AnalyticsTrends = ({ history, theme }) => {
 
     return (
         <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-zinc-500 px-1 flex items-center gap-2">
-                Performance Trends
-                <span className="text-[10px] bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded text-zinc-400 font-normal">Last 5 Sessions</span>
+            <h3 className="text-sm font-semibold text-zinc-500 px-1 flex items-center gap-2 mt-8">
+                Lifetime Analytics
+                <span className="text-[10px] bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded text-zinc-400 font-normal">All-Time Progress</span>
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
 
@@ -218,6 +220,8 @@ export const AnalyticsTrends = ({ history, theme }) => {
                     color="#6366f1"
                     category="strength"
                     theme={theme}
+                    displayValue={(history.lifetimeStats?.strengthVol / 1000).toFixed(1) + 'k'}
+                    displayUnit="kg"
                 />
 
                 {/* 2. Cardio - Medium Priority */}
@@ -229,6 +233,8 @@ export const AnalyticsTrends = ({ history, theme }) => {
                     type="area"
                     category="cardio"
                     theme={theme}
+                    displayValue={history.lifetimeStats?.cardioDist?.toFixed(1)}
+                    displayUnit="km"
                 />
 
                 {/* 3. Core - Low Priority */}
@@ -239,6 +245,8 @@ export const AnalyticsTrends = ({ history, theme }) => {
                     color="#10b981"
                     category="core"
                     theme={theme}
+                    displayValue={history.lifetimeStats?.coreReps}
+                    displayUnit="reps"
                 />
             </div>
         </div>

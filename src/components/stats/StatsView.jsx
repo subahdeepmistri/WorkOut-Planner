@@ -89,31 +89,63 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest, theme }) => {
             )}
 
             {/* APP HEADER */}
-            <div className="flex flex-row items-center justify-between gap-4 mb-2">
-                <div>
+            <div className="flex flex-col sm:flex-row items-center sm:justify-between gap-4 mb-6 sm:mb-2">
+                <div className="text-center sm:text-left">
                     <h2 className="text-3xl sm:text-4xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-purple-500 to-pink-500 dark:from-red-400 dark:via-purple-400 dark:to-pink-400 drop-shadow-[2px_2px_0px_rgba(0,0,0,0.1)] dark:drop-shadow-[3px_3px_0px_#000000] animate-pulse" style={{ transform: 'skew(-10deg)' }}>
                         DUO-FIT
                     </h2>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-center sm:justify-start gap-2">
                         <p className="text-xs text-zinc-500 font-bold uppercase tracking-[0.2em]">Spidey-Analyze</p>
                     </div>
                 </div>
-                <div className="relative z-50 self-end sm:self-auto">
+                <div className="relative z-50 flex items-center gap-2">
+                    {/* Previous Day Arrow */}
                     <button
-                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                        className="flex items-center gap-2 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-200 px-4 py-2.5 sm:py-2 rounded-xl text-sm font-bold hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors"
+                        onClick={() => {
+                            const d = new Date(selectedDayKey);
+                            d.setDate(d.getDate() - 1);
+                            handleSelectDate(d);
+                        }}
+                        className="p-2 sm:p-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-500 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors"
+                        aria-label="Previous Day"
                     >
-                        <Calendar size={16} className="text-emerald-500" />
-                        {getDropdownLabel()}
-                        <ChevronDown size={14} className={`ml-1 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                        <ChevronDown size={16} className="rotate-90" />
                     </button>
-                    {isDropdownOpen && (
-                        <div className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl overflow-hidden animate-in slide-in-from-top-2 fade-in duration-200 flex flex-col z-[100]">
-                            <button onClick={() => handleSelectDate(new Date())} className="px-5 py-4 text-left text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors text-zinc-700 dark:text-zinc-300">Today</button>
-                            <button onClick={() => { const d = new Date(); d.setDate(d.getDate() - 1); handleSelectDate(d); }} className="px-5 py-4 text-left text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-900 border-t border-zinc-100 dark:border-zinc-800">Yesterday</button>
-                            <button onClick={() => { setIsCalendarOpen(true); setIsDropdownOpen(false); }} className="px-5 py-4 text-left text-sm font-bold text-emerald-600 border-t border-zinc-100 dark:border-zinc-800 flex justify-between">Select Date <Calendar size={14} /></button>
-                        </div>
-                    )}
+
+                    <div className="relative">
+                        <button
+                            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                            className="flex items-center gap-2 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-200 px-4 py-2.5 sm:py-2 rounded-xl text-sm font-bold hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors"
+                        >
+                            <Calendar size={16} className="text-emerald-500" />
+                            {getDropdownLabel()}
+                            <ChevronDown size={14} className={`ml-1 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                        </button>
+                        {isDropdownOpen && (
+                            <div className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl overflow-hidden animate-in slide-in-from-top-2 fade-in duration-200 flex flex-col z-[100]">
+                                <button onClick={() => handleSelectDate(new Date())} className="px-5 py-4 text-left text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors text-zinc-700 dark:text-zinc-300">Today</button>
+                                <button onClick={() => { const d = new Date(); d.setDate(d.getDate() - 1); handleSelectDate(d); }} className="px-5 py-4 text-left text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-900 border-t border-zinc-100 dark:border-zinc-800">Yesterday</button>
+                                <button onClick={() => { setIsCalendarOpen(true); setIsDropdownOpen(false); }} className="px-5 py-4 text-left text-sm font-bold text-emerald-600 border-t border-zinc-100 dark:border-zinc-800 flex justify-between">Select Date <Calendar size={14} /></button>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Next Day Arrow */}
+                    <button
+                        onClick={() => {
+                            const d = new Date(selectedDayKey);
+                            d.setDate(d.getDate() + 1);
+                            handleSelectDate(d);
+                        }}
+                        disabled={selectedDayKey === getTodayStr()}
+                        className={`p-2 sm:p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 transition-colors ${selectedDayKey === getTodayStr()
+                            ? 'bg-transparent text-zinc-300 dark:text-zinc-800 cursor-not-allowed'
+                            : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-500 hover:bg-zinc-200 dark:hover:bg-zinc-800'
+                            }`}
+                        aria-label="Next Day"
+                    >
+                        <ChevronDown size={16} className="-rotate-90" />
+                    </button>
                 </div>
             </div>
 
@@ -181,13 +213,15 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest, theme }) => {
             {/* ========================================================================= */}
             {/* ZONE 2: RECENT TRENDS (Muted, Analytical)                                 */}
             {/* ========================================================================= */}
-            <SectionHeader
-                title="Recent Trends"
-                subtitle="Last 5 Sessions Analysis"
-                icon={TrendingUp}
-                iconColor="text-pink-500"
-                color="text-pink-500"
-            />
+            <div className="mt-16">
+                <SectionHeader
+                    title="Recent Trends"
+                    subtitle="Last 5 Sessions Analysis"
+                    icon={TrendingUp}
+                    iconColor="text-pink-500"
+                    color="text-pink-500"
+                />
+            </div>
 
             <div className="space-y-4">
                 {/* Training Style (Muted Container) */}
@@ -209,12 +243,19 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest, theme }) => {
             {/* ========================================================================= */}
             {/* ZONE 3: CONSISTENCY & HABITS (Warm, Motivational)                         */}
             {/* ========================================================================= */}
-            <SectionHeader
-                title="Consistency & Habits"
-                subtitle="Long-Term Discipline"
-                icon={Award}
-                color="text-amber-500"
-            />
+            {/* ========================================================================= */}
+            {/* ZONE 3: CONSISTENCY & HABITS (Warm, Motivational)                         */}
+            {/* ========================================================================= */}
+            <div className="mt-12">
+                <SectionHeader
+                    title="Consistency & Habits"
+                    subtitle="Long-Term Discipline"
+                    icon={Award}
+                    color="text-amber-500"
+                />
+            </div>
+
+
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 mb-8">
                 {/* Streak Card - Warm Emphasis */}
