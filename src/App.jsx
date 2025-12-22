@@ -823,79 +823,85 @@ function App() {
         ) : (
           /* Tab: About */
           <main className="max-w-[800px] mx-auto p-4 relative pt-10 pb-32">
-            <div className="relative w-full max-w-md mx-auto bg-white dark:bg-zinc-950 border-2 border-emerald-500/20 dark:border-emerald-500/50 rounded-[2.5rem] shadow-[0_0_30px_rgba(16,185,129,0.1)] dark:shadow-[0_0_30px_rgba(16,185,129,0.2)] overflow-hidden">
-              {/* Background Effects */}
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 via-cyan-400 to-emerald-500 animate-gradient-x" />
-              <div className="absolute -top-24 -right-24 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-              <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+            {/* Refactored Modern UI Container */}
+            <div className="relative w-full max-w-md mx-auto">
 
-              <div className="p-8 relative z-10">
-                {/* Header */}
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="p-3 bg-emerald-500/10 rounded-2xl border border-emerald-500/30">
-                    <Terminal size={24} className="text-emerald-400" />
+              {/* Main Content Card */}
+              <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[32px] shadow-sm overflow-hidden">
+
+                {/* 1. Header Section */}
+                <div className="p-8 pb-6 text-center border-b border-zinc-100 dark:border-zinc-800/50">
+                  <div className="inline-flex items-center justify-center w-12 h-12 mb-4 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white">
+                    <Activity size={24} strokeWidth={2.5} />
                   </div>
-                  <div>
-                    <h2 className="text-2xl font-black italic tracking-tighter text-zinc-900 dark:text-white uppercase transform -skew-x-6 pr-4">
-                      Behind The <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-cyan-500 dark:from-emerald-400 dark:to-cyan-400 pr-2">Code</span>
-                    </h2>
-                    <p className="text-xs text-zinc-400 dark:text-zinc-500 font-mono tracking-widest uppercase">Version 1.0.0 // Beta</p>
-                  </div>
+                  <h1 className="text-4xl sm:text-5xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-pink-500 to-red-500 uppercase transform -skew-x-6 drop-shadow-lg mb-2">
+                    DUO-FIT
+                  </h1>
+                  <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
+                    Training System v1.0 <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 uppercase tracking-wide ml-2">Beta</span>
+                  </p>
                 </div>
 
-                {/* The Story */}
-                <div className="mb-8 space-y-4">
-                  <h3 className="text-sm font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider flex items-center gap-2">
-                    <Heart size={14} className="text-pink-500 fill-pink-500/20" /> The Origin Story
-                  </h3>
-                  <div className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed space-y-3">
-                    <p>
-                      We built <strong>DUO FIT</strong> because we were tired of "gym amnesia."
-                      Forgetting weights, losing track of sets, and guessing our progress became a bottleneck for me and my training partner, <span className="text-pink-400 font-bold">Sexie</span>.
-                    </p>
-                    <p>
-                      This isn't just an app—it's a custom-built tool designed to solve <em>our</em> specific problems: tracking discipline, visualizing gains, and staying consistent together.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Developer Card */}
-                <div className="bg-zinc-50 dark:bg-zinc-900/50 border-2 border-zinc-200 dark:border-zinc-800 rounded-3xl p-5 hover:border-emerald-500/30 transition-colors group">
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="w-12 h-12 rounded-2xl bg-white dark:bg-gradient-to-br dark:from-zinc-800 dark:to-zinc-900 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center shadow-sm dark:shadow-inner">
-                      <Code size={20} className="text-zinc-400 group-hover:text-emerald-500 dark:group-hover:text-emerald-400 transition-colors" />
+                {/* 2. Story Section */}
+                <div className="p-8 space-y-8">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2 text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                      <Terminal size={16} className="text-emerald-500" />
+                      <h3>Behind the Code</h3>
                     </div>
-                    <div>
-                      <h4 className="text-zinc-900 dark:text-white font-bold text-lg leading-none">Subhadeep Mistri</h4>
-                      <span className="text-xs text-emerald-600 dark:text-emerald-500 font-mono">Lead Developer & Designer</span>
+                    {/* Restored Origin Story Header with Heart Icon */}
+                    <div className="flex items-center gap-2 text-sm font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider mt-6 mb-2">
+                      <Heart size={14} className="text-pink-500 fill-pink-500/20" />
+                      <h3>The Origin Story</h3>
+                    </div>
+                    <div className="prose prose-sm dark:prose-invert text-zinc-600 dark:text-zinc-400 leading-relaxed text-[15px]">
+                      <p>
+                        We built <strong className="text-zinc-900 dark:text-zinc-200">DUO-FIT</strong> to solve "gym amnesia." Forgetting weights and losing track of progress was our bottleneck.
+                      </p>
+                      <p className="mt-3">
+                        This isn't just an app—it's a tool for discipline, designed by <span className="font-medium text-zinc-900 dark:text-zinc-200">Subhadeep Mistri</span> to help us stay consistent.
+                      </p>
                     </div>
                   </div>
 
-                  {/* Contact Grid */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <a
-                      href="mailto:subhadeepmistri1990@gmail.com"
-                      className="flex items-center justify-center gap-2 p-3 rounded-2xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 hover:border-emerald-500/50 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-all group/btn"
-                    >
-                      <Mail size={16} className="text-zinc-400 group-hover/btn:text-emerald-500 dark:group-hover/btn:text-emerald-400 transition-colors" />
-                      <span className="text-xs font-bold text-zinc-600 dark:text-zinc-300">Email Me</span>
-                    </a>
-                    <a
-                      href="tel:8250518317"
-                      className="flex items-center justify-center gap-2 p-3 rounded-2xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 hover:border-cyan-500/50 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-all group/btn"
-                    >
-                      <Phone size={16} className="text-zinc-400 group-hover/btn:text-cyan-500 dark:group-hover/btn:text-cyan-400 transition-colors" />
-                      <span className="text-xs font-bold text-zinc-600 dark:text-zinc-300">Call Me</span>
-                    </a>
+                  {/* 3. Developer Profile */}
+                  <div className="p-5 rounded-2xl bg-zinc-50 dark:bg-zinc-800/30 border border-zinc-100 dark:border-zinc-800">
+                    <div className="flex items-center gap-4 mb-5">
+                      <div className="w-10 h-10 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center shrink-0">
+                        <Code size={18} className="text-zinc-600 dark:text-zinc-300" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-zinc-900 dark:text-white leading-tight">Subhadeep Mistri</h4>
+                        <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Lead Developer & Designer</span>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <a
+                        href="mailto:subhadeepmistri1990@gmail.com"
+                        className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors text-sm font-semibold"
+                      >
+                        <Mail size={14} strokeWidth={2.5} />
+                        Email
+                      </a>
+                      <a
+                        href="tel:8250518317"
+                        className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors text-sm font-semibold"
+                      >
+                        <Phone size={14} strokeWidth={2.5} />
+                        Call
+                      </a>
+                    </div>
                   </div>
                 </div>
 
-                {/* Footer Note */}
-                <div className="mt-8 text-center pb-2">
-                  <p className="text-sm font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-widest drop-shadow-sm">
+                {/* 4. Footer Credits - Restored Colors */}
+                <div className="px-8 pb-8 pt-0 text-center">
+                  <p className="text-xs font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-widest drop-shadow-sm">
                     CRAFTED BY <span className="text-pink-500">SEXIE</span> & <span className="text-red-500">SPIDEY</span>
                   </p>
                 </div>
+
               </div>
             </div>
           </main>
@@ -949,10 +955,10 @@ function App() {
             onMouseUp={() => setIsAboutPressed(false)}
             onMouseLeave={() => setIsAboutPressed(false)}
             className={`relative flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-[16px] transition-all duration-200 ${isAboutPressed
-                ? 'bg-emerald-500 text-white scale-95 shadow-lg shadow-emerald-500/30'
-                : activeTab === 'about'
-                  ? 'flex-1 bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
-                  : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:hover:text-white'
+              ? 'bg-emerald-500 text-white scale-95 shadow-lg shadow-emerald-500/30'
+              : activeTab === 'about'
+                ? 'flex-1 bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
+                : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:hover:text-white'
               }`}
           >
             <Info size={20} className={`transition-transform duration-200 ${isAboutPressed || activeTab === 'about' ? 'scale-110' : 'scale-100'}`} strokeWidth={activeTab === 'about' ? 2.5 : 2} />
