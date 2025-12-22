@@ -5,7 +5,7 @@ import { AdherenceBar } from './AdherenceBar';
 
 
 
-export const ExerciseCard = ({ exercise, index, onUpdateSet, onAddSet, onRemoveSet, onLink, previousBest, onRemove, onCardioMode, onCoreMode, pendingSuperset, onUpdateName, disabled, onStartRest, activeTimer, timerControls, onToggleLock, isFocusMode, onStartSetTimer }) => {
+export const ExerciseCard = ({ exercise, index, onUpdateSet, onAddSet, onRemoveSet, onLink, previousBest, onRemove, onCardioMode, onCoreMode, pendingSuperset, onUpdateName, disabled, onStartRest, activeTimer, timerControls, onToggleLock, isFocusMode, onStartSetTimer, isActiveExercise }) => {
     const isSuperset = exercise.supersetId !== null;
     const isWaiting = pendingSuperset === index;
     const isCardLocked = exercise.isLocked;
@@ -13,10 +13,12 @@ export const ExerciseCard = ({ exercise, index, onUpdateSet, onAddSet, onRemoveS
     const [isEditingName, setIsEditingName] = useState(false);
     // Check if THIS card has the active timer
     const isTimerActive = activeTimer?.isActive && activeTimer?.activeContext === index;
+    const isGlobalTimerActive = activeTimer?.isActive;
     const { timeLeft } = activeTimer || {};
     const { onAdd, onStop } = timerControls || {};
 
-    // ... (rest of hook logic remains same below)
+    // Focus Logic: Focus if timer is HERE, or if NO timer is active and this is the active exercise
+    const isFocused = isFocusMode && (isTimerActive || (!isGlobalTimerActive && isActiveExercise));
 
     // --- Adherence Calculation (V2: Sets Momentum) ---
     const calculateAdherenceData = () => {
@@ -104,16 +106,13 @@ export const ExerciseCard = ({ exercise, index, onUpdateSet, onAddSet, onRemoveS
     return (
         <div
             id={`exercise-${index}`}
-            className={`relative rounded-3xl transition-all duration-500 ease-out group ${theme.card} ${isFocusMode && isTimerActive ? 'ring-2 ring-offset-2 ring-emerald-500 dark:ring-emerald-400 scale-[1.02] shadow-xl z-10' : ''} ${isFocusMode && !isTimerActive ? 'opacity-40 blur-[1px] scale-95' : ''}`}
+            className={`relative rounded-3xl transition-all duration-500 ease-out group ${theme.card} ${isFocused ? 'ring-2 ring-offset-2 ring-emerald-500 dark:ring-emerald-400 scale-[1.02] shadow-xl z-10' : ''} ${isFocusMode && !isFocused ? 'opacity-40 blur-[1px] scale-95 pointer-events-none grayscale-[0.5]' : ''}`}
         >
 
             {/* Header Section */}
             <div className={`flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 gap-3 rounded-t-[23px] transition-colors ${theme.header} cursor-pointer hover:bg-opacity-80`} onClick={() => onToggleLock && onToggleLock()}>
                 {/* Left: Drag Handle & Name */}
                 <div className="flex items-center gap-3 w-full sm:w-auto">
-
-
-
                     <div className="flex flex-col">
                         <div className="flex items-center gap-2">
                             {isSuperset && (

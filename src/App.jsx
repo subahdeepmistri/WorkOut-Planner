@@ -645,30 +645,34 @@ function App() {
                   </div>
 
 
-                  {currentLog.exercises && currentLog.exercises.map((exercise, i) => (
-                    <ExerciseCard
-                      key={i}
-                      exercise={exercise}
-                      index={i}
-                      onUpdateSet={handleUpdateSet}
-                      onAddSet={addSet}
-                      onRemoveSet={removeSet}
-                      onLink={handleLinkAction}
-                      previousBest={getPreviousBest ? getPreviousBest(exercise.name) : null}
-                      onRemove={removeExercise}
-                      onCardioMode={updateCardioMode}
-                      onCoreMode={updateCoreMode}
-                      onUpdateName={updateExerciseName}
-                      pendingSuperset={pendingSuperset}
-                      disabled={isLocked}
-                      onStartRest={startRest}
-                      activeTimer={{ isActive: isTimerActive, timeLeft, activeContext }}
-                      timerControls={{ onAdd: addTime, onStop: stopRest }}
-                      onToggleLock={() => toggleExerciseLock(i)}
-                      isFocusMode={isFocusMode}
-                      onStartSetTimer={(duration, setIndex) => startRest(duration, { type: 'set', exIndex: i, setIndex })}
-                    />
-                  ))}
+                  {currentLog.exercises && (() => {
+                    const activeExerciseIndex = currentLog.exercises.findIndex(ex => ex.sets.some(s => !s.completed));
+                    return currentLog.exercises.map((exercise, i) => (
+                      <ExerciseCard
+                        key={i}
+                        exercise={exercise}
+                        index={i}
+                        isActiveExercise={i === (activeExerciseIndex === -1 ? currentLog.exercises.length - 1 : activeExerciseIndex)} // Default to last if all complete
+                        onUpdateSet={handleUpdateSet}
+                        onAddSet={addSet}
+                        onRemoveSet={removeSet}
+                        onLink={handleLinkAction}
+                        previousBest={getPreviousBest ? getPreviousBest(exercise.name) : null}
+                        onRemove={removeExercise}
+                        onCardioMode={updateCardioMode}
+                        onCoreMode={updateCoreMode}
+                        onUpdateName={updateExerciseName}
+                        pendingSuperset={pendingSuperset}
+                        disabled={isLocked}
+                        onStartRest={startRest}
+                        activeTimer={{ isActive: isTimerActive, timeLeft, activeContext }}
+                        timerControls={{ onAdd: addTime, onStop: stopRest }}
+                        onToggleLock={() => toggleExerciseLock(i)}
+                        isFocusMode={isFocusMode}
+                        onStartSetTimer={(duration, setIndex) => startRest(duration, { type: 'set', exIndex: i, setIndex })}
+                      />
+                    ))
+                  })()}
 
                   <div className="mt-8 space-y-4">
                     {!isLocked && !isFocusMode && (
