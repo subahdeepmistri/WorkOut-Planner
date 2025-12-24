@@ -22,6 +22,8 @@ import { CalendarModal } from './components/ui/CalendarModal';
 import { AboutModal } from './components/ui/AboutModal';
 import { ExerciseCard } from './components/workout/ExerciseCard';
 import { RoutineBuilder } from './components/workout/RoutineBuilder';
+import { CreateRoutineWizard } from './components/workout/CreateRoutineWizard';
+import { useCustomRoutines } from './hooks/useCustomRoutines';
 import { StatsView } from './components/stats/StatsView';
 import { AdherenceBar } from './components/workout/AdherenceBar';
 import { CompletionModal } from './components/ui/CompletionModal';
@@ -187,10 +189,60 @@ function App() {
     }, 2300);
   };
 
+  // Custom routines hook for AI-generated routines
+  const customRoutines = useCustomRoutines();
+
   const handleCustomSave = (newPlan) => {
-    saveCustomRoutine(newPlan);
-    setIsBuilderOpen(false);
-    setActivePlanId(newPlan.id);
+    // Handle both legacy RoutineBuilder format and new CreateRoutineWizard format
+    if (newPlan.exercises && newPlan.exercises.length > 0 && newPlan.isAIGenerated) {
+      // New AI-generated routine format - save to customRoutines
+      const result = customRoutines.saveRoutine(newPlan);
+      if (result.success) {
+        // Combine main exercises with finishers for legacy format
+        const allExercises = [
+          // Main strength exercises
+          ...newPlan.exercises.map(ex => ({
+            name: ex.name,
+            targetSets: ex.sets,
+            targetReps: ex.reps,
+            type: ex.primaryMuscle === 'cardio' ? 'cardio'
+              : ex.primaryMuscle === 'core' ? 'abs'
+                : 'strength',
+            restSeconds: ex.rest
+          })),
+          // Finishers (cardio/core) - add them if they exist
+          ...(newPlan.finishers || []).map(finisher => ({
+            name: finisher.name,
+            targetSets: finisher.sets || 3,
+            targetReps: finisher.reps || '12-15',
+            type: finisher.type === 'cardio' ? 'cardio' : 'abs',
+            restSeconds: 60
+          }))
+        ];
+
+        const legacyPlan = {
+          id: result.data.id,
+          name: newPlan.routineName,
+          exercises: allExercises
+        };
+        saveCustomRoutine(legacyPlan);
+        setIsBuilderOpen(false);
+        setActivePlanId(result.data.id);
+      }
+    } else {
+      // Legacy RoutineBuilder format
+      saveCustomRoutine(newPlan);
+      setIsBuilderOpen(false);
+      setActivePlanId(newPlan.id);
+    }
+  };
+
+  const handleStartNow = (newPlan) => {
+    handleCustomSave(newPlan);
+    // Start the workout immediately after saving
+    if (!currentLog) {
+      initializeDailyLog(newPlan.id);
+    }
   };
 
   const confirmDelete = () => {
@@ -586,7 +638,25 @@ function App() {
                   ) : (
                     /* --- Normal Routine Selector --- */
                     isBuilderOpen ? (
-                      <RoutineBuilder onSave={handleCustomSave} onCancel={() => setIsBuilderOpen(false)} />
+                      <CreateRoutineWizard
+                        onSave={handleCustomSave}
+                        onCancel={() => setIsBuilderOpen(false)}
+                        onStartNow={handleStartNow}
+                        onManualCreate={() => {
+                          // Close wizard and let user create routine with manual exercise addition
+                          // The main app already has +Strength, +Cardio, +Abs buttons
+                          const emptyPlan = {
+                            id: `custom_${Date.now()}`,
+                            name: 'New Routine',
+                            exercises: []
+                          };
+                          saveCustomRoutine(emptyPlan);
+                          setIsBuilderOpen(false);
+                          setActivePlanId(emptyPlan.id);
+                          // Initialize daily log so user can add exercises
+                          initializeDailyLog(emptyPlan.id);
+                        }}
+                      />
                     ) : (
 
                       <div className="relative flex flex-col min-h-0 pb-0 sm:block py-4 sm:py-12 px-2 max-w-xl mx-auto gap-6 sm:gap-0">
@@ -671,8 +741,8 @@ function App() {
                             </p>
                           )}
 
-                          {/* 5. Secondary Action */}
-                          <div className="flex justify-center mt-0">
+                          {/* 5. Secondary Actions */}
+                          <div className="flex justify-center gap-3 mt-0">
                             <button
                               onClick={() => setIsBuilderOpen(true)}
                               className="flex items-center gap-2 px-6 py-3 rounded-xl bg-zinc-100 dark:bg-zinc-800 border-2 border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 hover:border-zinc-300 dark:hover:border-zinc-600 transition-all duration-200 shadow-sm hover:shadow-md"
@@ -680,6 +750,23 @@ function App() {
                               <Plus size={18} strokeWidth={2.5} />
                               <span className="text-sm font-bold tracking-wide">Create Custom Routine</span>
                             </button>
+
+                            {/* Delete button - only show for custom routines */}
+                            {savedPlans.some(p => p.id === activePlanId) && (
+                              <button
+                                onClick={() => setShowDeleteConfirm(true)}
+                                disabled={!!currentLog}
+                                className={`flex items-center justify-center w-12 h-12 rounded-xl border-2 transition-all duration-200 ${!!currentLog
+                                  ? 'bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-400 cursor-not-allowed'
+                                  : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 hover:border-red-300 dark:hover:border-red-700'
+                                  }`}
+                                title="Delete this routine"
+                              >
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                              </button>
+                            )}
                           </div>
                         </div>
 
@@ -688,7 +775,6 @@ function App() {
                   )}
                 </div>
               ) : (<>
-                /* Active Workout View */
                 <div className="space-y-6">
                   <div className="flex items-center justify-between flex-wrap gap-y-3">
                     <h2 className="text-xl font-bold text-zinc-900 dark:text-white tracking-tight drop-shadow-md">{currentLog.templateName}</h2>
