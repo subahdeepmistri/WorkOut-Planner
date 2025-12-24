@@ -3,7 +3,7 @@ import { ExerciseFactory } from './factory';
 export const DEFAULT_TEMPLATES = [
     {
         id: 'a1-chest-tri',
-        name: 'Week A - Day 1: Chest & Triceps',
+        name: 'Chest & Triceps',
         exercises: [
             { name: 'Incline DB Press', sets: 4, reps: 8, weight: 0 },
             { name: 'Barbell Bench Press', sets: 5, reps: 5, weight: 0 },

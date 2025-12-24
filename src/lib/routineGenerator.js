@@ -49,25 +49,73 @@ export function generateRoutine(config) {
     // Get level constraints
     const levelConstraints = { ...EXPERIENCE_LEVELS[level].constraints };
 
-    // BRUTAL LEG DAY: Dedicated leg day gets extra exercises and volume
+    // ═══════════════════════════════════════════════════════════════════════════
+    // EXERCISE COUNT RULES - Based on workout type
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    // Detect workout type
     const isLegDay = primaryGroups.length === 1 && primaryGroups[0] === 'legs';
-    if (isLegDay || isBrutal) {
-        // Leg day gets MORE exercises to hit quads, hamstrings, glutes, and calves
-        levelConstraints.maxExercisesPerMuscle = level === 'beginner' ? 5 : (level === 'moderate' ? 6 : 7);
-        levelConstraints.maxTotalSets = Math.min(levelConstraints.maxTotalSets + 8, 35);
+    const isPushPullLeg = ['push', 'pull'].includes(movementPattern) || isLegDay;
+    const isFullBody = primaryGroups.length >= 4;
+    const isSingleMuscle = primaryGroups.length === 1;
+    const isDoubleMuscle = primaryGroups.length === 2;
+
+    // Set target exercise counts
+    let minExercises, targetExercises;
+
+    if (isFullBody) {
+        // Full Body: 10 exercises (2 per body part × 5 body parts)
+        minExercises = 10;
+        targetExercises = 10;
+        levelConstraints.maxExercisesPerMuscle = 2; // 2 exercises per muscle group
+        // For Full Body, compress sets to fit more exercises
+        levelConstraints.compressedSets = true;
+        levelConstraints.maxSetsPerExercise = 3; // Limit sets to fit 10 exercises
+        levelConstraints.maxTotalSets = 35; // 10 exercises × 3-4 sets = 30-40 sets
+    } else if (isPushPullLeg) {
+        // Push Day / Pull Day / Leg Day: 6-8 exercises
+        minExercises = 6;
+        targetExercises = 8;
+        levelConstraints.maxExercisesPerMuscle = level === 'beginner' ? 4 : 5;
+    } else if (isSingleMuscle) {
+        // Custom single body part: 6 exercises
+        minExercises = 6;
+        targetExercises = 6;
+        levelConstraints.maxExercisesPerMuscle = 6; // All 6 exercises go to one muscle
+    } else if (isDoubleMuscle) {
+        // Custom 2 body parts: 8 exercises (4 each)
+        minExercises = 8;
+        targetExercises = 8;
+        levelConstraints.maxExercisesPerMuscle = 4; // 4 exercises per muscle
+    } else {
+        // Custom 3+ body parts: 8 exercises distributed
+        minExercises = 6;
+        targetExercises = 8;
+        levelConstraints.maxExercisesPerMuscle = Math.ceil(8 / primaryGroups.length);
     }
 
-    // FULL BODY MODE: When 4+ muscle groups, reduce exercises per muscle to fit all groups
-    const isFullBody = primaryGroups.length >= 4;
-    if (isFullBody) {
-        // For full body: 1-2 exercises per muscle group (typically 6-10 total exercises)
-        levelConstraints.maxExercisesPerMuscle = primaryGroups.length >= 5 ? 1 : 2;
-        // Increase time budget slightly for full body workouts
-        levelConstraints.maxTotalSets = Math.min(levelConstraints.maxTotalSets + 5, 30);
+    // Store in constraints for selectExercises
+    levelConstraints.minExercises = minExercises;
+    levelConstraints.targetExercises = targetExercises;
+    levelConstraints.isFullBody = isFullBody;
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // BRUTAL LEG DAY - Extra volume and intensity
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    if (isLegDay || isBrutal) {
+        // Leg day is ALWAYS brutal - more sets, more volume
+        targetExercises = 8; // Push to 8 exercises for legs
+        levelConstraints.targetExercises = 8;
+        levelConstraints.maxExercisesPerMuscle = level === 'beginner' ? 6 : 8;
+        levelConstraints.maxTotalSets = Math.min(levelConstraints.maxTotalSets + 10, 40);
+        // Prioritize compound leg movements for brutality
     }
 
     // Calculate available time budget
     let availableTime = timeLimit;
+    // Full Body gets significantly more time to fit 10 exercises
+    if (isFullBody) availableTime += 30;
     // Leg day gets extra time
     if (isLegDay) availableTime += 10;
     if (hasCardioGroup) availableTime -= (level === 'beginner' ? 12 : 10);
@@ -219,6 +267,10 @@ function selectExercises(priorityQueue, constraints, availableTime, level, isFul
     const muscleExerciseCount = {}; // Track exercises per muscle
     const muscleSetCount = {}; // Track sets per muscle
 
+    // Use target exercises from constraints, default to 8
+    const targetExercises = constraints.targetExercises || 8;
+    const minExercises = constraints.minExercises || 6;
+
     for (const item of priorityQueue) {
         const { exercise, muscleGroup } = item;
 
@@ -238,6 +290,11 @@ function selectExercises(priorityQueue, constraints, availableTime, level, isFul
         let sets = typeConfig?.defaultSets?.[level] || 3;
         const reps = typeConfig?.defaultReps?.[level] || '10-12';
         const restSeconds = TIME_CONSTANTS.REST_TIMES[exercise.type]?.[level] || 90;
+
+        // For Full Body workouts, compress sets to fit more exercises
+        if (constraints.compressedSets && constraints.maxSetsPerExercise) {
+            sets = Math.min(sets, constraints.maxSetsPerExercise);
+        }
 
         // Calculate time cost
         let timeCost = calculateExerciseTime({ ...exercise, sets }, level);
@@ -263,8 +320,8 @@ function selectExercises(priorityQueue, constraints, availableTime, level, isFul
             muscleExerciseCount[muscleGroup] = currentExerciseCount + 1;
             muscleSetCount[muscleGroup] = (muscleSetCount[muscleGroup] || 0) + sets;
 
-        } else if (timeRemaining > 5) {
-            // Try with reduced sets
+        } else if (timeRemaining > 5 && selected.length < minExercises) {
+            // Try with reduced sets if we haven't hit minimum exercises
             while (sets > 2 && timeCost > timeRemaining) {
                 sets--;
                 timeCost = calculateExerciseTime({ ...exercise, sets }, level);
@@ -291,11 +348,11 @@ function selectExercises(priorityQueue, constraints, availableTime, level, isFul
             }
         }
 
-        // Stop if no time or sets remaining
-        if (timeRemaining <= 0 || setsRemaining <= 0) break;
+        // Stop if we've reached target exercises
+        if (selected.length >= targetExercises) break;
 
-        // Minimum exercises check
-        if (selected.length >= 10) break; // Cap at 10 exercises
+        // Stop if no time or sets remaining (but only after hitting minimum)
+        if ((timeRemaining <= 0 || setsRemaining <= 0) && selected.length >= minExercises) break;
     }
 
     return selected;

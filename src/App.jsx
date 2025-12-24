@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Calendar, Activity, BarChart3, Info, Trash2, CheckCircle, Plus, Home, PlayCircle, Trophy, Timer, Sun, Moon, Zap, Terminal, Heart, Code, Mail, Phone } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronDown, Calendar, Activity, BarChart3, Info, Trash2, CheckCircle, Plus, Home, PlayCircle, Trophy, Timer, Sun, Moon, Zap, Terminal, Heart, Code, Mail, Phone } from 'lucide-react';
 // import MilesSticker from './assets/miles_sticker.gif';
 const MilesSticker = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYm1lZGtsNzduem10bTE5ZXdudTJuenZmOXZ6MHM2NXdiaHV6N2Z3ZSZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/uctvenxww01iIanyvT/giphy.gif";
 import GwenSticker from './assets/gwen_sticker.gif';
@@ -258,10 +258,18 @@ function App() {
   const customRoutines = useCustomRoutines();
 
   const handleCustomSave = (newPlan) => {
+    console.log('[handleCustomSave] called with:', {
+      hasExercises: newPlan.exercises?.length > 0,
+      isAIGenerated: newPlan.isAIGenerated,
+      routineName: newPlan.routineName
+    });
+
     // Handle both legacy RoutineBuilder format and new CreateRoutineWizard format
     if (newPlan.exercises && newPlan.exercises.length > 0 && newPlan.isAIGenerated) {
       // New AI-generated routine format - save to customRoutines
       const result = customRoutines.saveRoutine(newPlan);
+      console.log('[handleCustomSave] saveRoutine result:', result);
+
       if (result.success) {
         // Combine main exercises with finishers for legacy format
         const allExercises = [
@@ -293,20 +301,33 @@ function App() {
         saveCustomRoutine(legacyPlan);
         setIsBuilderOpen(false);
         setActivePlanId(result.data.id);
+
+        // Return the saved ID and legacyPlan for immediate use (since setState is async)
+        return { savedId: result.data.id, legacyPlan };
+      } else {
+        // Save failed - still close the wizard
+        console.error('[handleCustomSave] Save failed:', result.error);
+        setIsBuilderOpen(false);
+        return null;
       }
     } else {
       // Legacy RoutineBuilder format
       saveCustomRoutine(newPlan);
       setIsBuilderOpen(false);
       setActivePlanId(newPlan.id);
+      return { savedId: newPlan.id, legacyPlan: newPlan };
     }
   };
 
   const handleStartNow = (newPlan) => {
-    handleCustomSave(newPlan);
-    // Start the workout immediately after saving
-    if (!currentLog) {
-      initializeDailyLog(newPlan.id);
+    // Save the routine and get the actual saved ID + template data
+    const result = handleCustomSave(newPlan);
+    console.log('[handleStartNow] Result:', result);
+
+    // Start the workout immediately using the saved ID and template directly
+    // Passing template directly fixes race condition where savedPlans hasn't updated yet
+    if (!currentLog && result?.savedId && result?.legacyPlan) {
+      initializeDailyLog(result.savedId, result.legacyPlan);
     }
   };
 
@@ -743,7 +764,7 @@ function App() {
                     </div>
                   )}
 
-                  <div className="text-center space-y-3 mb-4 pt-4">
+                  <div className="text-center space-y-1 mb-0">
                     <div className="mx-auto w-28 h-28 flex items-center justify-center mb-2 animate-float hover:scale-110 transition-transform duration-300">
                       <img
                         src={userProfile === 'gwen' ? GwenSticker : MilesSticker}
@@ -807,15 +828,16 @@ function App() {
                       />
                     ) : (
 
-                      <div className="relative flex flex-col min-h-0 pb-0 sm:block py-4 sm:py-12 px-2 max-w-xl mx-auto gap-6 sm:gap-0">
+                      <div className="relative flex flex-col min-h-0 pb-0 sm:block px-2 max-w-xl mx-auto">
 
                         {/* 1. Routine Focus (Moved to Top) */}
-                        <div className="text-center mt-8 sm:mt-0 relative group">
-                          <div className="inline-flex items-center justify-center gap-2 mb-2 w-full">
+                        <div className="text-center relative group">
+                          <div className="inline-flex items-center justify-center gap-2">
                             <select
                               value={activePlanId}
                               onChange={(e) => setActivePlanId(e.target.value)}
-                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                              disabled={!!currentLog}
+                              className={`absolute inset-0 w-full h-full opacity-0 z-10 ${currentLog ? 'cursor-not-allowed' : 'cursor-pointer'}`}
                             >
                               <optgroup label="My Routines">
                                 {savedPlans.map(plan => (
@@ -829,20 +851,16 @@ function App() {
                               </optgroup>
                             </select>
                             <h2
-                              className="text-2xl sm:text-6xl font-black italic tracking-tighter text-zinc-900 dark:text-white group-hover:text-zinc-700 dark:group-hover:text-zinc-200 transition-colors leading-tight px-2 break-words"
-                              style={{ textWrap: 'balance' }}
+                              className="text-2xl sm:text-4xl font-black italic tracking-tighter text-zinc-900 dark:text-white group-hover:text-zinc-700 dark:group-hover:text-zinc-200 transition-colors leading-tight"
                             >
                               {savedPlans.find(p => p.id === activePlanId)?.name || availablePlans.find(p => p.id === activePlanId)?.name || "Select Routine"}
                             </h2>
-                            <ChevronRight size={20} className="text-zinc-300 dark:text-zinc-700 rotate-90 flex-shrink-0" />
+                            <ChevronDown size={24} className="text-zinc-400 dark:text-zinc-500 flex-shrink-0 group-hover:text-emerald-500 transition-colors" />
                           </div>
-                          <p className="text-zinc-400 dark:text-zinc-500 text-xs sm:text-sm font-bold tracking-widest uppercase">
-                            Week A · Day 1
-                          </p>
                         </div>
 
-                        {/* 2. System Status (Below Routine) */}
-                        <div className="flex justify-center">
+                        {/* System Status (Below Routine) */}
+                        <div className="flex justify-center mt-2">
                           {!!currentLog ? (
                             <div className="flex items-center gap-2">
                               <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -889,33 +907,35 @@ function App() {
                             </p>
                           )}
 
-                          {/* 5. Secondary Actions */}
-                          <div className="flex justify-center gap-3 mt-0">
-                            <button
-                              onClick={() => setIsBuilderOpen(true)}
-                              className="flex items-center gap-2 px-6 py-3 rounded-xl bg-zinc-100 dark:bg-zinc-800 border-2 border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 hover:border-zinc-300 dark:hover:border-zinc-600 transition-all duration-200 shadow-sm hover:shadow-md"
-                            >
-                              <Plus size={18} strokeWidth={2.5} />
-                              <span className="text-sm font-bold tracking-wide">Create Custom Routine</span>
-                            </button>
-
-                            {/* Delete button - only show for custom routines */}
-                            {savedPlans.some(p => p.id === activePlanId) && (
+                          {/* 5. Secondary Actions - Only show when no workout in progress */}
+                          {!currentLog && (
+                            <div className="flex justify-center gap-3 mt-0">
                               <button
-                                onClick={() => setShowDeleteConfirm(true)}
-                                disabled={!!currentLog}
-                                className={`flex items-center justify-center w-12 h-12 rounded-xl border-2 transition-all duration-200 ${!!currentLog
-                                  ? 'bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-400 cursor-not-allowed'
-                                  : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 hover:border-red-300 dark:hover:border-red-700'
-                                  }`}
-                                title="Delete this routine"
+                                onClick={() => setIsBuilderOpen(true)}
+                                className="flex items-center gap-2 px-6 py-3 rounded-xl bg-zinc-100 dark:bg-zinc-800 border-2 border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 hover:border-zinc-300 dark:hover:border-zinc-600 transition-all duration-200 shadow-sm hover:shadow-md"
                               >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
+                                <Plus size={18} strokeWidth={2.5} />
+                                <span className="text-sm font-bold tracking-wide">Create Custom Routine</span>
                               </button>
-                            )}
-                          </div>
+
+                              {/* Delete button - only show for custom routines */}
+                              {savedPlans.some(p => p.id === activePlanId) && (
+                                <button
+                                  onClick={() => setShowDeleteConfirm(true)}
+                                  disabled={!!currentLog}
+                                  className={`flex items-center justify-center w-12 h-12 rounded-xl border-2 transition-all duration-200 ${!!currentLog
+                                    ? 'bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-400 cursor-not-allowed'
+                                    : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 hover:border-red-300 dark:hover:border-red-700'
+                                    }`}
+                                  title="Delete this routine"
+                                >
+                                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                  </svg>
+                                </button>
+                              )}
+                            </div>
+                          )}
                         </div>
 
                       </div>

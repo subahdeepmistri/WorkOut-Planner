@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 // Default Workout Plans Data - Updated with Antagonist Alpha Protocol
 export const WORKOUT_PLANS = [
     {
-        id: 'week_a_day_1', name: "Week A: Day 1 - Chest + Abs",
+        id: 'week_a_day_1', name: "Chest + Abs",
         exercises: [
             { name: "Barbell Bench Press", targetSets: 5, targetReps: "5" },
             { name: "Incline DB Press", targetSets: 4, targetReps: "8-10" },
@@ -17,7 +17,7 @@ export const WORKOUT_PLANS = [
         ]
     },
     {
-        id: 'week_a_day_2', name: "Week A: Day 2 - Back + HIIT",
+        id: 'week_a_day_2', name: "Back + HIIT",
         exercises: [
             { name: "Deadlift", targetSets: 4, targetReps: "5" },
             { name: "Weighted Pull-Ups", targetSets: 4, targetReps: "6-8" },
@@ -30,7 +30,7 @@ export const WORKOUT_PLANS = [
         ]
     },
     {
-        id: 'week_a_day_3', name: "Week A: Day 3 - Legs",
+        id: 'week_a_day_3', name: "Legs",
         exercises: [
             { name: "Barbell Back Squat", targetSets: 5, targetReps: "5" },
             { name: "Bulgarian Split Squat", targetSets: 3, targetReps: "8-10" },
@@ -43,7 +43,7 @@ export const WORKOUT_PLANS = [
         ]
     },
     {
-        id: 'week_a_day_4', name: "Week A: Day 4 - Shoulders",
+        id: 'week_a_day_4', name: "Shoulders",
         exercises: [
             { name: "Overhead Press", targetSets: 5, targetReps: "5" },
             { name: "Seated DB Press", targetSets: 4, targetReps: "8-10" },
@@ -56,7 +56,7 @@ export const WORKOUT_PLANS = [
         ]
     },
     {
-        id: 'week_a_day_5', name: "Week A: Day 5 - Arms",
+        id: 'week_a_day_5', name: "Arms",
         exercises: [
             { name: "Barbell Curl", targetSets: 4, targetReps: "8-10" },
             { name: "Close-Grip Bench Press", targetSets: 4, targetReps: "8-10" },
@@ -71,7 +71,7 @@ export const WORKOUT_PLANS = [
         ]
     },
     {
-        id: 'week_a_day_6', name: "Week A: Day 6 - Full Body",
+        id: 'week_a_day_6', name: "Full Body",
         exercises: [
             { name: "Front Squat", targetSets: 4, targetReps: "6-8" },
             { name: "Pull-Ups", targetSets: 3, targetReps: "Failure" },
@@ -83,7 +83,7 @@ export const WORKOUT_PLANS = [
         ]
     },
     {
-        id: 'week_b_day_1', name: "Week B:  Day 1 - Chest & Back",
+        id: 'week_b_day_1', name: "Chest & Back",
         exercises: [
             { name: "Incline Barbell Bench Press", targetSets: 4, targetReps: "5-7" },
             { name: "Weighted Wide Pull-Ups", targetSets: 4, targetReps: "5-7" },
@@ -95,7 +95,7 @@ export const WORKOUT_PLANS = [
         ]
     },
     {
-        id: 'week_b_day_2', name: "Week B:  Day 2 - Legs + Abs",
+        id: 'week_b_day_2', name: "Legs + Abs",
         exercises: [
             { name: "Barbell Back Squat", targetSets: 4, targetReps: "5-8" },
             { name: "Leg Press (Low Stance)", targetSets: 4, targetReps: "10-12" },
@@ -107,7 +107,7 @@ export const WORKOUT_PLANS = [
         ]
     },
     {
-        id: 'week_b_day_3', name: "Week B:  Day 3 - Shoulders & Arms",
+        id: 'week_b_day_3', name: "Shoulders & Arms",
         exercises: [
             { name: "Standing Military Press", targetSets: 4, targetReps: "6-8" },
             { name: "Close Grip Bench Press", targetSets: 3, targetReps: "6-8" },
@@ -119,7 +119,7 @@ export const WORKOUT_PLANS = [
         ]
     },
     {
-        id: 'week_b_day_4', name: "Week B:  Day 4 - Chest & Back ",
+        id: 'week_b_day_4', name: "Chest & Back (Volume)",
         exercises: [
             { name: "Incline DB Press (30°)", targetSets: 4, targetReps: "10-12" },
             { name: "Chest Supported Row", targetSets: 4, targetReps: "10-12" },
@@ -131,7 +131,7 @@ export const WORKOUT_PLANS = [
         ]
     },
     {
-        id: 'week_b_day_5', name: "Week B:  Day 5 - Legs ",
+        id: 'week_b_day_5', name: "Legs (Heavy)",
         exercises: [
             { name: "Romanian Deadlift (RDL)", targetSets: 4, targetReps: "8-10" },
             { name: "Hip Thrusts", targetSets: 4, targetReps: "10-12" },
@@ -142,7 +142,7 @@ export const WORKOUT_PLANS = [
         ]
     },
     {
-        id: 'week_b_day_6', name: "Week B:  Day 6 - Arms & Pump",
+        id: 'week_b_day_6', name: "Arms & Pump",
         exercises: [
             { name: "Cable Lateral Raises", targetSets: 4, targetReps: "15-20" },
             { name: "Face Pulls", targetSets: 4, targetReps: "15-20" },
@@ -159,7 +159,7 @@ export const WORKOUT_PLANS = [
 const HER_WORKOUT_PLANS = [
     // --- WEEK A ---
     {
-        id: 'gwen_week_a_day_1', name: "Week A: Day 1 - Chest & Abs",
+        id: 'gwen_week_a_day_1', name: "Chest & Abs",
         exercises: [
             { name: "Barbell Bench Press", targetSets: 4, targetReps: "5-6" },
             { name: "Incline Dumbbell Press", targetSets: 4, targetReps: "8-10" },
@@ -172,7 +172,7 @@ const HER_WORKOUT_PLANS = [
         ]
     },
     {
-        id: 'gwen_week_a_day_2', name: "Week A: Day 2 - Back (Posterior)",
+        id: 'gwen_week_a_day_2', name: "Back (Posterior)",
         exercises: [
             { name: "Conventional Deadlift", targetSets: 4, targetReps: "3-5" },
             { name: "Wide Grip Pull-Ups", targetSets: 4, targetReps: "6-8" },
@@ -185,7 +185,7 @@ const HER_WORKOUT_PLANS = [
         ]
     },
     {
-        id: 'gwen_week_a_day_3', name: "Week A: Day 3 - Legs (Glute/Quad)",
+        id: 'gwen_week_a_day_3', name: "Legs (Glute/Quad)",
         exercises: [
             { name: "Barbell Hip Thrust", targetSets: 4, targetReps: "8-10" },
             { name: "Heel-Elevated Goblet Squat", targetSets: 4, targetReps: "10-12" },
@@ -200,7 +200,7 @@ const HER_WORKOUT_PLANS = [
         ]
     },
     {
-        id: 'gwen_week_a_day_4', name: "Week A: Day 4 - Shoulders & Core",
+        id: 'gwen_week_a_day_4', name: "Shoulders & Core",
         exercises: [
             { name: "Seated DB Overhead Press", targetSets: 4, targetReps: "8-10" },
             { name: "Egyptian Cable Lateral Raise", targetSets: 4, targetReps: "12-15" },
@@ -212,7 +212,7 @@ const HER_WORKOUT_PLANS = [
         ]
     },
     {
-        id: 'gwen_week_a_day_5', name: "Week A: Day 5 - Arms (Supersets)",
+        id: 'gwen_week_a_day_5', name: "Arms (Supersets)",
         exercises: [
             { name: "Close Grip Bench Press", targetSets: 4, targetReps: "6-8" },
             { name: "Skull Crushers", targetSets: 3, targetReps: "10-12" },
@@ -227,7 +227,7 @@ const HER_WORKOUT_PLANS = [
         ]
     },
     {
-        id: 'gwen_week_a_day_6', name: "Week A: Day 6 - Full Body Cond.",
+        id: 'gwen_week_a_day_6', name: "Full Body Conditioning",
         exercises: [
             { name: "Clean and Press", targetSets: 4, targetReps: "8" },
             { name: "Kettlebell/DB Swings", targetSets: 4, targetReps: "20" },
@@ -240,7 +240,7 @@ const HER_WORKOUT_PLANS = [
     },
     // --- WEEK B ---
     {
-        id: 'gwen_week_b_day_1', name: "Week B: Day 1 - Chest, Tris, Abs",
+        id: 'gwen_week_b_day_1', name: "Chest, Tris & Abs",
         exercises: [
             { name: "Barbell Bench Press", targetSets: 4, targetReps: "5-6" },
             { name: "Incline Dumbbell Press", targetSets: 4, targetReps: "8-10" },
@@ -253,7 +253,7 @@ const HER_WORKOUT_PLANS = [
         ]
     },
     {
-        id: 'gwen_week_b_day_2', name: "Week B: Day 2 - Back & Rear Delts",
+        id: 'gwen_week_b_day_2', name: "Back & Rear Delts",
         exercises: [
             { name: "Conventional Deadlift", targetSets: 4, targetReps: "3-5" },
             { name: "Pull-Ups (or Assisted)", targetSets: 4, targetReps: "6-8" },
@@ -265,7 +265,7 @@ const HER_WORKOUT_PLANS = [
         ]
     },
     {
-        id: 'gwen_week_b_day_3', name: "Week B: Day 3 - Legs A (Heavy)",
+        id: 'gwen_week_b_day_3', name: "Legs Heavy",
         exercises: [
             { name: "Barbell Back Squat", targetSets: 4, targetReps: "5-8" },
             { name: "Hip Thrusts", targetSets: 4, targetReps: "8-10" },
@@ -278,7 +278,7 @@ const HER_WORKOUT_PLANS = [
         ]
     },
     {
-        id: 'gwen_week_b_day_4', name: "Week B: Day 4 - Shoulders & Calves",
+        id: 'gwen_week_b_day_4', name: "Shoulders & Calves",
         exercises: [
             { name: "Overhead Press (Barbell)", targetSets: 4, targetReps: "6-8" },
             { name: "Seated DB Press", targetSets: 3, targetReps: "8-10" },
@@ -290,7 +290,7 @@ const HER_WORKOUT_PLANS = [
         ]
     },
     {
-        id: 'gwen_week_b_day_5', name: "Week B: Day 5 - Arms & Abs",
+        id: 'gwen_week_b_day_5', name: "Arms & Abs",
         exercises: [
             { name: "Close Grip Bench (A1)", targetSets: 3, targetReps: "8-10" },
             { name: "Barbell Curls (A2)", targetSets: 3, targetReps: "8-10" },
@@ -303,7 +303,7 @@ const HER_WORKOUT_PLANS = [
         ]
     },
     {
-        id: 'gwen_week_b_day_6', name: "Week B: Day 6 - Legs B (High Int.)",
+        id: 'gwen_week_b_day_6', name: "Legs (High Intensity)",
         exercises: [
             { name: "Sumo Goblet Squat", targetSets: 4, targetReps: "12-15" },
             { name: "Reverse Lunges", targetSets: 3, targetReps: "10/side" },
@@ -439,17 +439,23 @@ export const useWorkoutData = (selectedDate) => {
      * Initializes a new workout log for the selected date based on the active plan.
      * For custom/empty routines, starts with empty exercises (no fallback to defaults).
      */
-    const initializeDailyLog = (overridePlanId = null) => {
+    const initializeDailyLog = (overridePlanId = null, templateOverride = null) => {
         if (isHoliday) return; // STRICT BLOCK: Cannot start workout on holiday
 
         const planIdToUse = overridePlanId || activePlanId;
 
-        // First check custom/saved plans, then default plans
-        let template = savedPlans.find(p => p.id === planIdToUse) || availablePlans.find(p => p.id === planIdToUse);
+        // Use templateOverride if provided (fixes race condition when starting immediately after save)
+        // Otherwise look up in savedPlans/availablePlans
+        let template = templateOverride;
+
+        if (!template) {
+            // First check custom/saved plans, then default plans
+            template = savedPlans.find(p => p.id === planIdToUse) || availablePlans.find(p => p.id === planIdToUse);
+        }
 
         // If no template found and planIdToUse starts with 'custom_', it's a new empty routine
         // In this case, create an empty workout (no fallback to defaults!)
-        const isCustomRoutine = planIdToUse.startsWith('custom_');
+        const isCustomRoutine = planIdToUse?.startsWith('custom_');
 
         if (!template) {
             if (isCustomRoutine) {

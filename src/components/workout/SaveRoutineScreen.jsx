@@ -65,21 +65,23 @@ export function SaveRoutineScreen({ routine, onSave, onStartNow, onCancel }) {
                         onChange={(e) => setRoutineName(e.target.value)}
                         maxLength={50}
                         className={`
-              w-full bg-zinc-900/80 rounded-xl px-4 py-4
-              text-white text-lg font-semibold
-              border-2 transition-all duration-200
-              focus:outline-none focus:ring-0
-              ${isValidName
+                            w-full bg-zinc-900/80 rounded-xl 
+                            px-3 py-3.5 pr-10 sm:px-4 sm:py-4 sm:pr-12
+                            text-white text-sm sm:text-base font-semibold
+                            border-2 transition-all duration-200
+                            focus:outline-none focus:ring-0
+                            truncate
+                            ${isValidName
                                 ? 'border-zinc-700 focus:border-emerald-500'
                                 : 'border-red-500/50 focus:border-red-500'
                             }
-            `}
+                        `}
                         placeholder="Enter routine name..."
                     />
 
                     {/* Edit icon */}
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500">
-                        <PenLine size={18} />
+                    <div className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none">
+                        <PenLine size={16} className="sm:w-[18px] sm:h-[18px]" />
                     </div>
                 </div>
 
