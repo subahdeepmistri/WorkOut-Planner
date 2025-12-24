@@ -6,6 +6,41 @@
 
 import React from 'react';
 import { MUSCLE_GROUPS, EXPERIENCE_LEVELS, MOVEMENT_PATTERNS, EXERCISE_PREFERENCES } from '../../lib/fitnessConstants';
+import {
+    Sparkles, Rocket, Footprints, Dumbbell, ArrowDownLeft, Triangle, Sword,
+    Heart, Target, Trophy, Scale, ArrowUpRight, ArrowLeftRight
+} from 'lucide-react';
+
+// Icon mapping for muscle groups
+const MUSCLE_ICON_MAP = {
+    legs: { Icon: Footprints, color: 'text-violet-400' },
+    chest: { Icon: Dumbbell, color: 'text-blue-400' },
+    back: { Icon: ArrowDownLeft, color: 'text-emerald-400' },
+    shoulders: { Icon: Triangle, color: 'text-amber-400' },
+    arms: { Icon: Sword, color: 'text-red-400' }
+};
+
+// Icon mapping for preferences  
+const PREF_ICON_MAP = {
+    compound: { Icon: Trophy, color: 'text-blue-400' },
+    balanced: { Icon: Scale, color: 'text-emerald-400' },
+    isolation: { Icon: Target, color: 'text-violet-400' }
+};
+
+// Pattern icon mapping
+const PATTERN_ICON_MAP = {
+    push: { Icon: ArrowUpRight, color: 'text-blue-400' },
+    pull: { Icon: ArrowDownLeft, color: 'text-emerald-400' },
+    mixed: { Icon: ArrowLeftRight, color: 'text-violet-400' }
+};
+
+// Helper component for muscle icons in config
+const ConfigMuscleIcon = ({ muscleId }) => {
+    const iconData = MUSCLE_ICON_MAP[muscleId];
+    if (!iconData) return null;
+    const { Icon, color } = iconData;
+    return <Icon size={18} className={color} strokeWidth={2.5} />;
+};
 
 export function GenerateScreen({ config, isGenerating, onGenerate, onEdit }) {
     const { muscleGroups, movementPattern, level, preference, includeCardio, includeCore } = config;
@@ -15,6 +50,8 @@ export function GenerateScreen({ config, isGenerating, onGenerate, onEdit }) {
     const patternName = MOVEMENT_PATTERNS[movementPattern]?.name || movementPattern;
     const levelData = EXPERIENCE_LEVELS[level];
     const prefName = EXERCISE_PREFERENCES[preference]?.name || preference;
+    const prefIcon = PREF_ICON_MAP[preference];
+    const patternIcon = PATTERN_ICON_MAP[movementPattern];
 
     // Loading State
     if (isGenerating) {
@@ -30,7 +67,7 @@ export function GenerateScreen({ config, isGenerating, onGenerate, onEdit }) {
                     <div className="absolute inset-0 w-28 h-28 rounded-full border-3 border-emerald-500/20 border-t-emerald-500 animate-spin" style={{ animationDuration: '1.5s' }} />
                     {/* Icon container */}
                     <div className="relative w-28 h-28 rounded-full bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 flex items-center justify-center">
-                        <span className="text-5xl animate-bounce" style={{ animationDuration: '2s' }}>🤖</span>
+                        <Sparkles size={48} className="text-emerald-400 animate-pulse" strokeWidth={2} />
                     </div>
                 </div>
 
@@ -72,7 +109,7 @@ export function GenerateScreen({ config, isGenerating, onGenerate, onEdit }) {
             {/* Header */}
             <div className="text-center">
                 <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-emerald-500/20 mb-3">
-                    <span className="text-3xl">🤖</span>
+                    <Sparkles size={28} className="text-emerald-400" strokeWidth={2} />
                 </div>
                 <h3 className="text-xl font-bold text-white mb-1">
                     Ready to Generate
@@ -94,7 +131,7 @@ export function GenerateScreen({ config, isGenerating, onGenerate, onEdit }) {
                         <span className="text-zinc-400 text-sm">Muscle Groups</span>
                         <div className="flex items-center gap-2">
                             {primaryMuscles.map(m => (
-                                <span key={m} className="text-xl">{MUSCLE_GROUPS[m]?.icon}</span>
+                                <ConfigMuscleIcon key={m} muscleId={m} />
                             ))}
                             <span className="text-white font-medium">{muscleNames}</span>
                         </div>
@@ -103,10 +140,10 @@ export function GenerateScreen({ config, isGenerating, onGenerate, onEdit }) {
                     {/* Pattern */}
                     <div className="flex items-center justify-between py-2 border-b border-zinc-700/50">
                         <span className="text-zinc-400 text-sm">Pattern</span>
-                        <span className={`font-medium ${movementPattern === 'push' ? 'text-blue-400' :
-                                movementPattern === 'pull' ? 'text-emerald-400' : 'text-violet-400'
+                        <span className={`font-medium flex items-center gap-2 ${movementPattern === 'push' ? 'text-blue-400' :
+                            movementPattern === 'pull' ? 'text-emerald-400' : 'text-violet-400'
                             }`}>
-                            {MOVEMENT_PATTERNS[movementPattern]?.icon} {patternName}
+                            {patternIcon && <patternIcon.Icon size={16} />} {patternName}
                         </span>
                     </div>
 
@@ -119,15 +156,15 @@ export function GenerateScreen({ config, isGenerating, onGenerate, onEdit }) {
                                     <div
                                         key={dot}
                                         className={`w-2 h-2 rounded-full ${dot <= levelData?.dots
-                                                ? level === 'beginner' ? 'bg-emerald-500' :
-                                                    level === 'moderate' ? 'bg-amber-500' : 'bg-red-500'
-                                                : 'bg-zinc-700'
+                                            ? level === 'beginner' ? 'bg-emerald-500' :
+                                                level === 'moderate' ? 'bg-amber-500' : 'bg-red-500'
+                                            : 'bg-zinc-700'
                                             }`}
                                     />
                                 ))}
                             </div>
                             <span className={`font-medium ${level === 'beginner' ? 'text-emerald-400' :
-                                    level === 'moderate' ? 'text-amber-400' : 'text-red-400'
+                                level === 'moderate' ? 'text-amber-400' : 'text-red-400'
                                 }`}>
                                 {levelData?.name}
                             </span>
@@ -137,8 +174,8 @@ export function GenerateScreen({ config, isGenerating, onGenerate, onEdit }) {
                     {/* Preference */}
                     <div className="flex items-center justify-between py-2 border-b border-zinc-700/50">
                         <span className="text-zinc-400 text-sm">Style</span>
-                        <span className="text-white font-medium">
-                            {EXERCISE_PREFERENCES[preference]?.icon} {prefName}
+                        <span className="text-white font-medium flex items-center gap-2">
+                            {prefIcon && <prefIcon.Icon size={16} className={prefIcon.color} />} {prefName}
                         </span>
                     </div>
 
@@ -147,8 +184,16 @@ export function GenerateScreen({ config, isGenerating, onGenerate, onEdit }) {
                         <div className="flex items-center justify-between py-2 border-b border-zinc-700/50">
                             <span className="text-zinc-400 text-sm">Finishers</span>
                             <div className="flex gap-3">
-                                {includeCardio && <span className="text-pink-400 font-medium">❤️‍🔥 Cardio</span>}
-                                {includeCore && <span className="text-cyan-400 font-medium">🎯 Core</span>}
+                                {includeCardio && (
+                                    <span className="text-pink-400 font-medium flex items-center gap-1.5">
+                                        <Heart size={14} /> Cardio
+                                    </span>
+                                )}
+                                {includeCore && (
+                                    <span className="text-cyan-400 font-medium flex items-center gap-1.5">
+                                        <Target size={14} /> Core
+                                    </span>
+                                )}
                             </div>
                         </div>
                     )}
@@ -175,7 +220,7 @@ export function GenerateScreen({ config, isGenerating, onGenerate, onEdit }) {
                 {/* Shine effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 
                        translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                <span className="relative text-2xl">🚀</span>
+                <Rocket size={22} className="relative" strokeWidth={2.5} />
                 <span className="relative">Generate My Routine</span>
             </button>
 

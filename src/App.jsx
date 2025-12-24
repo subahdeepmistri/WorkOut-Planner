@@ -30,6 +30,7 @@ import { CompletionModal } from './components/ui/CompletionModal';
 import { WorkoutTimer } from './components/workout/WorkoutTimer';
 import { RestTimer } from './components/workout/RestTimer';
 import { HeaderRest } from './components/workout/HeaderRest';
+import { WarmupCooldownCard } from './components/workout/WarmupCooldownCard';
 
 import Snowfall from 'react-snowfall';
 
@@ -50,6 +51,33 @@ function App() {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isAboutPressed, setIsAboutPressed] = useState(false);
+
+  // Warmup/Cooldown completion tracking (persisted per date)
+  const [warmupCompleted, setWarmupCompleted] = useState(() => {
+    const stored = localStorage.getItem(`warmup_${selectedDate.toDateString()}`);
+    return stored ? JSON.parse(stored) : [];
+  });
+  const [cooldownCompleted, setCooldownCompleted] = useState(() => {
+    const stored = localStorage.getItem(`cooldown_${selectedDate.toDateString()}`);
+    return stored ? JSON.parse(stored) : [];
+  });
+
+  // Persist warmup/cooldown completion to localStorage
+  useEffect(() => {
+    localStorage.setItem(`warmup_${selectedDate.toDateString()}`, JSON.stringify(warmupCompleted));
+  }, [warmupCompleted, selectedDate]);
+
+  useEffect(() => {
+    localStorage.setItem(`cooldown_${selectedDate.toDateString()}`, JSON.stringify(cooldownCompleted));
+  }, [cooldownCompleted, selectedDate]);
+
+  // Reset completion arrays when date changes
+  useEffect(() => {
+    const storedWarmup = localStorage.getItem(`warmup_${selectedDate.toDateString()}`);
+    const storedCooldown = localStorage.getItem(`cooldown_${selectedDate.toDateString()}`);
+    setWarmupCompleted(storedWarmup ? JSON.parse(storedWarmup) : []);
+    setCooldownCompleted(storedCooldown ? JSON.parse(storedCooldown) : []);
+  }, [selectedDate]);
 
   // Responsive Check
   useEffect(() => {
@@ -158,6 +186,43 @@ function App() {
 
   // Helper State
   const isCustomSelected = savedPlans.some(p => p.id === activePlanId);
+
+  // Default warmup/cooldown data for workouts
+  const defaultWarmup = {
+    duration: 10,
+    exercises: [
+      { name: 'Light Cardio (Jump Rope / Jog)', duration: '3 min' },
+      { name: 'Arm Circles & Shoulder Rolls', duration: '1 min' },
+      { name: 'Dynamic Stretching', duration: '3 min' },
+      { name: 'Foam Rolling (Optional)', duration: '3 min' }
+    ]
+  };
+
+  const defaultCooldown = {
+    duration: 8,
+    exercises: [
+      { name: 'Light Walking / Cool Down', duration: '2 min' },
+      { name: 'Static Stretching - Upper Body', duration: '3 min' },
+      { name: 'Static Stretching - Lower Body', duration: '3 min' }
+    ]
+  };
+
+  // Toggle warmup/cooldown exercise completion
+  const toggleWarmupComplete = (index) => {
+    setWarmupCompleted(prev => {
+      const newCompleted = [...prev];
+      newCompleted[index] = !newCompleted[index];
+      return newCompleted;
+    });
+  };
+
+  const toggleCooldownComplete = (index) => {
+    setCooldownCompleted(prev => {
+      const newCompleted = [...prev];
+      newCompleted[index] = !newCompleted[index];
+      return newCompleted;
+    });
+  };
 
   // Handlers
   const changeDate = (days) => {
@@ -863,6 +928,14 @@ function App() {
                     <h2 className="text-xl font-bold text-zinc-900 dark:text-white tracking-tight drop-shadow-md">{currentLog.templateName}</h2>
                   </div>
 
+                  {/* Warmup Section */}
+                  <WarmupCooldownCard
+                    type="warmup"
+                    data={defaultWarmup}
+                    completed={warmupCompleted}
+                    onToggleComplete={toggleWarmupComplete}
+                    disabled={isLocked}
+                  />
 
                   {currentLog.exercises && (() => {
                     const activeExerciseIndex = currentLog.exercises.findIndex(ex => ex.sets.some(s => !s.completed));
@@ -892,6 +965,15 @@ function App() {
                       />
                     ))
                   })()}
+
+                  {/* Cooldown Section */}
+                  <WarmupCooldownCard
+                    type="cooldown"
+                    data={defaultCooldown}
+                    completed={cooldownCompleted}
+                    onToggleComplete={toggleCooldownComplete}
+                    disabled={isLocked}
+                  />
 
                   <div className="mt-8 space-y-4">
                     {!isLocked && !isFocusMode && (

@@ -80,9 +80,13 @@ export function WizardHeader({ currentStep, totalSteps, title, onClose, onStepCl
                                         {/* Icon below dot */}
                                         <span className={`
                       text-sm transition-all duration-200
-                      ${isCurrent ? 'opacity-100' : 'opacity-60'}
+                      ${isCurrent ? 'opacity-100 text-emerald-400' : 'opacity-60 text-zinc-500'}
                     `}>
-                                            {stepData?.icon}
+                                            {stepData?.Icon ? (
+                                                <stepData.Icon size={16} strokeWidth={2.5} />
+                                            ) : (
+                                                stepData?.icon
+                                            )}
                                         </span>
                                     </button>
 

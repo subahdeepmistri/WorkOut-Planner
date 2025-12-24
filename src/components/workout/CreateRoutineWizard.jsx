@@ -17,15 +17,23 @@ import { SaveRoutineScreen } from './SaveRoutineScreen';
 import { WizardHeader } from './WizardHeader';
 import { generateRoutine, regenerateMainWorkout, regenerateCoreSection, regenerateCardioSection } from '../../lib/routineGenerator';
 import { MUSCLE_GROUPS } from '../../lib/fitnessConstants';
+import {
+    Dumbbell,
+    BarChart3,
+    Target,
+    Sparkles,
+    Eye,
+    Save
+} from 'lucide-react';
 
-// Updated wizard steps (6 steps, removed Movement Pattern)
+// Updated wizard steps with modern icons
 const WIZARD_STEPS_CONFIG = [
-    { id: 'focus', name: 'Focus', title: 'Choose Your Focus', icon: '💪' },
-    { id: 'level', name: 'Level', title: 'Experience Level', icon: '📊' },
-    { id: 'preference', name: 'Style', title: 'Exercise Style', icon: '🎯' },
-    { id: 'generate', name: 'Generate', title: 'Generate Routine', icon: '🤖' },
-    { id: 'preview', name: 'Preview', title: 'Routine Preview', icon: '👀' },
-    { id: 'save', name: 'Save', title: 'Save Routine', icon: '💾' }
+    { id: 'focus', name: 'Focus', title: 'Choose Your Focus', Icon: Dumbbell },
+    { id: 'level', name: 'Level', title: 'Experience Level', Icon: BarChart3 },
+    { id: 'preference', name: 'Style', title: 'Exercise Style', Icon: Target },
+    { id: 'generate', name: 'Generate', title: 'Generate Routine', Icon: Sparkles },
+    { id: 'preview', name: 'Preview', title: 'Routine Preview', Icon: Eye },
+    { id: 'save', name: 'Save', title: 'Save Routine', Icon: Save }
 ];
 
 export function CreateRoutineWizard({ onSave, onCancel, onStartNow, onManualCreate }) {

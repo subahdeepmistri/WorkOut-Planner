@@ -6,6 +6,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { MUSCLE_GROUPS } from '../../lib/fitnessConstants';
+import { Save, PenLine, Clock, BarChart3, Dumbbell, FolderPlus, Play, Layers } from 'lucide-react';
 
 export function SaveRoutineScreen({ routine, onSave, onStartNow, onCancel }) {
     const [routineName, setRoutineName] = useState(routine?.routineName || 'My Custom Routine');
@@ -41,7 +42,7 @@ export function SaveRoutineScreen({ routine, onSave, onStartNow, onCancel }) {
             {/* Header */}
             <div className="text-center">
                 <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-emerald-500/20 mb-3">
-                    <span className="text-3xl">💾</span>
+                    <Save size={28} className="text-emerald-400" strokeWidth={2} />
                 </div>
                 <h3 className="text-xl font-bold text-white mb-1">
                     Save Your Routine
@@ -77,8 +78,8 @@ export function SaveRoutineScreen({ routine, onSave, onStartNow, onCancel }) {
                     />
 
                     {/* Edit icon */}
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 text-xl">
-                        ✏️
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500">
+                        <PenLine size={18} />
                     </div>
                 </div>
 
@@ -103,8 +104,8 @@ export function SaveRoutineScreen({ routine, onSave, onStartNow, onCancel }) {
                 <div className="grid grid-cols-2 gap-3">
                     {/* Muscles */}
                     <div className="bg-zinc-800/60 rounded-xl p-4 text-center">
-                        <div className="text-2xl mb-2">
-                            {routine.muscleGroups.slice(0, 2).map(m => MUSCLE_GROUPS[m]?.icon).join('')}
+                        <div className="text-2xl mb-2 flex justify-center">
+                            <Layers size={24} className="text-emerald-400" />
                         </div>
                         <div className="text-zinc-500 text-[10px] uppercase tracking-wider font-semibold mb-1">
                             Muscle Groups
@@ -116,7 +117,9 @@ export function SaveRoutineScreen({ routine, onSave, onStartNow, onCancel }) {
 
                     {/* Duration */}
                     <div className="bg-zinc-800/60 rounded-xl p-4 text-center">
-                        <div className="text-2xl mb-2">⏱️</div>
+                        <div className="text-2xl mb-2 flex justify-center">
+                            <Clock size={24} className="text-emerald-400" />
+                        </div>
                         <div className="text-zinc-500 text-[10px] uppercase tracking-wider font-semibold mb-1">
                             Duration
                         </div>
@@ -127,7 +130,9 @@ export function SaveRoutineScreen({ routine, onSave, onStartNow, onCancel }) {
 
                     {/* Sets */}
                     <div className="bg-zinc-800/60 rounded-xl p-4 text-center">
-                        <div className="text-2xl mb-2">📊</div>
+                        <div className="text-2xl mb-2 flex justify-center">
+                            <BarChart3 size={24} className="text-emerald-400" />
+                        </div>
                         <div className="text-zinc-500 text-[10px] uppercase tracking-wider font-semibold mb-1">
                             Total Sets
                         </div>
@@ -138,7 +143,9 @@ export function SaveRoutineScreen({ routine, onSave, onStartNow, onCancel }) {
 
                     {/* Exercises */}
                     <div className="bg-zinc-800/60 rounded-xl p-4 text-center">
-                        <div className="text-2xl mb-2">🏋️</div>
+                        <div className="text-2xl mb-2 flex justify-center">
+                            <Dumbbell size={24} className="text-emerald-400" />
+                        </div>
                         <div className="text-zinc-500 text-[10px] uppercase tracking-wider font-semibold mb-1">
                             Exercises
                         </div>
@@ -172,7 +179,7 @@ export function SaveRoutineScreen({ routine, onSave, onStartNow, onCancel }) {
                         </>
                     ) : (
                         <>
-                            <span className="text-xl">💾</span>
+                            <FolderPlus size={20} />
                             <span>Save to My Routines</span>
                         </>
                     )}
@@ -192,7 +199,7 @@ export function SaveRoutineScreen({ routine, onSave, onStartNow, onCancel }) {
                         }
           `}
                 >
-                    <span className="text-lg">▶️</span>
+                    <Play size={18} />
                     Start This Workout Now
                 </button>
 

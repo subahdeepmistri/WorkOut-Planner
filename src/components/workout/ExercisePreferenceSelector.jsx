@@ -6,6 +6,22 @@
 
 import React from 'react';
 import { EXERCISE_PREFERENCES } from '../../lib/fitnessConstants';
+import { Trophy, Scale, Target } from 'lucide-react';
+
+// Icon mapping for preferences - replaces emoji with lucide icons
+const PREF_ICON_MAP = {
+    compound: { Icon: Trophy, color: 'text-blue-400' },
+    balanced: { Icon: Scale, color: 'text-emerald-400' },
+    isolation: { Icon: Target, color: 'text-violet-400' }
+};
+
+// Helper component to render preference icons
+const PrefIcon = ({ prefId, isSelected, size = 24, className = "" }) => {
+    const iconData = PREF_ICON_MAP[prefId];
+    if (!iconData) return null;
+    const { Icon, color } = iconData;
+    return <Icon size={size} className={`${color} ${className}`} strokeWidth={2.5} />;
+};
 
 const prefConfig = {
     compound: {
@@ -68,9 +84,9 @@ export function ExercisePreferenceSelector({ selected, onChange }) {
                                 <div className="flex-1">
                                     {/* Preference header */}
                                     <div className="flex items-center gap-3 mb-2">
-                                        <span className={`text-2xl ${isSelected ? 'scale-110' : ''} transition-transform`}>
-                                            {pref.icon}
-                                        </span>
+                                        <div className={`${isSelected ? 'scale-110' : ''} transition-transform`}>
+                                            <PrefIcon prefId={pref.id} size={24} />
+                                        </div>
                                         <span className={`text-lg font-semibold ${isSelected ? config.text : 'text-white'}`}>
                                             {pref.name}
                                         </span>

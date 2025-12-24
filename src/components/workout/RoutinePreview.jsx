@@ -6,7 +6,26 @@
 
 import React, { useState } from 'react';
 import { MUSCLE_GROUPS, EXPERIENCE_LEVELS } from '../../lib/fitnessConstants';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, Clock, BarChart3, Dumbbell, Flame, Snowflake, Heart, Target, Footprints, Triangle, Sword, ArrowDownLeft } from 'lucide-react';
+
+// Icon mapping for muscle groups - replaces emoji with lucide icons
+const MUSCLE_ICON_MAP = {
+    legs: { Icon: Footprints, color: 'text-violet-400' },
+    chest: { Icon: Dumbbell, color: 'text-blue-400' },
+    back: { Icon: ArrowDownLeft, color: 'text-emerald-400' },
+    shoulders: { Icon: Triangle, color: 'text-amber-400' },
+    arms: { Icon: Sword, color: 'text-red-400' },
+    cardio: { Icon: Heart, color: 'text-pink-400' },
+    core: { Icon: Target, color: 'text-cyan-400' }
+};
+
+// Helper component to render muscle icons
+const MuscleIcon = ({ muscleId, size = 20, className = "" }) => {
+    const iconData = MUSCLE_ICON_MAP[muscleId];
+    if (!iconData) return null;
+    const { Icon, color } = iconData;
+    return <Icon size={size} className={`${color} ${className}`} strokeWidth={2.5} />;
+};
 
 export function RoutinePreview({
     routine,
@@ -47,15 +66,15 @@ export function RoutinePreview({
                     {/* Stats row */}
                     <div className="flex flex-wrap gap-4 text-sm mb-3">
                         <div className="flex items-center gap-1.5 text-zinc-300">
-                            <span className="text-base">⏱️</span>
+                            <Clock size={16} className="text-emerald-400" />
                             <span className="font-medium">{routine.totalTime} min</span>
                         </div>
                         <div className="flex items-center gap-1.5 text-zinc-300">
-                            <span className="text-base">📊</span>
+                            <BarChart3 size={16} className="text-emerald-400" />
                             <span className="font-medium">{routine.totalSets} sets</span>
                         </div>
                         <div className="flex items-center gap-1.5 text-zinc-300">
-                            <span className="text-base">🏋️</span>
+                            <Dumbbell size={16} className="text-emerald-400" />
                             <span className="font-medium">{routine.totalExercises} exercises</span>
                         </div>
                     </div>
@@ -63,7 +82,7 @@ export function RoutinePreview({
                     {/* Muscle icons and level */}
                     <div className="flex items-center gap-2">
                         {routine.muscleGroups.map(m => (
-                            <span key={m} className="text-xl">{MUSCLE_GROUPS[m]?.icon}</span>
+                            <MuscleIcon key={m} muscleId={m} size={20} />
                         ))}
                         <span className={`text-sm font-semibold ${levelColor}`}>
                             {levelData?.name}
@@ -81,7 +100,7 @@ export function RoutinePreview({
                     >
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center">
-                                <span className="text-xl">🔥</span>
+                                <Flame size={22} className="text-amber-400" strokeWidth={2.5} />
                             </div>
                             <div className="text-left">
                                 <span className="font-semibold text-white">Warm-up</span>
@@ -194,7 +213,7 @@ export function RoutinePreview({
                             <div className="space-y-3">
                                 <div className="flex items-center justify-between px-1">
                                     <h4 className="text-cyan-400 text-xs uppercase tracking-wider font-semibold flex items-center gap-2">
-                                        <span>🎯</span> Core Finisher
+                                        <Target size={14} /> Core Finisher
                                     </h4>
                                     {onRegenerateCore && (
                                         <button
@@ -219,7 +238,7 @@ export function RoutinePreview({
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-3">
                                                 <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-cyan-500/20">
-                                                    <span className="text-xl">🎯</span>
+                                                    <Target size={22} className="text-cyan-400" strokeWidth={2.5} />
                                                 </div>
                                                 <span className="font-semibold text-white">{finisher.name}</span>
                                             </div>
@@ -237,7 +256,7 @@ export function RoutinePreview({
                             <div className="space-y-3">
                                 <div className="flex items-center justify-between px-1">
                                     <h4 className="text-pink-400 text-xs uppercase tracking-wider font-semibold flex items-center gap-2">
-                                        <span>❤️‍🔥</span> Cardio Finisher
+                                        <Heart size={14} /> Cardio Finisher
                                     </h4>
                                     {onRegenerateCardio && (
                                         <button
@@ -262,7 +281,7 @@ export function RoutinePreview({
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-3">
                                                 <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-pink-500/20">
-                                                    <span className="text-xl">❤️‍🔥</span>
+                                                    <Heart size={22} className="text-pink-400" strokeWidth={2.5} />
                                                 </div>
                                                 <span className="font-semibold text-white">{finisher.name}</span>
                                             </div>
@@ -287,7 +306,7 @@ export function RoutinePreview({
                     >
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
-                                <span className="text-xl">❄️</span>
+                                <Snowflake size={22} className="text-blue-400" strokeWidth={2.5} />
                             </div>
                             <div className="text-left">
                                 <span className="font-semibold text-white">Cool-down</span>

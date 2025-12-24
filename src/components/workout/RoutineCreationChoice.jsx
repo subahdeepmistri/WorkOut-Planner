@@ -5,6 +5,7 @@
  */
 
 import React from 'react';
+import { Dumbbell, Sparkles, PenLine } from 'lucide-react';
 
 export function RoutineCreationChoice({ onChooseAI, onChooseManual, onCancel }) {
     return (
@@ -12,7 +13,7 @@ export function RoutineCreationChoice({ onChooseAI, onChooseManual, onCancel }) 
             {/* Header with gradient text */}
             <div className="text-center mb-10">
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 mb-4">
-                    <span className="text-4xl">💪</span>
+                    <Dumbbell size={32} className="text-emerald-400" strokeWidth={2.5} />
                 </div>
                 <h3 className="text-2xl font-bold text-white mb-2">
                     Build Your Routine
@@ -44,7 +45,7 @@ export function RoutineCreationChoice({ onChooseAI, onChooseManual, onCancel }) 
                             bg-gradient-to-br from-emerald-500/30 to-emerald-600/20
                             flex items-center justify-center
                             group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
-                                <span className="text-3xl">🤖</span>
+                                <Sparkles size={28} className="text-emerald-300" strokeWidth={2} />
                             </div>
 
                             <div className="flex-1 text-left">
@@ -95,7 +96,7 @@ export function RoutineCreationChoice({ onChooseAI, onChooseManual, onCancel }) 
                             <div className="flex-shrink-0 w-14 h-14 rounded-xl bg-zinc-700/50
                             flex items-center justify-center
                             group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
-                                <span className="text-3xl">✏️</span>
+                                <PenLine size={28} className="text-zinc-300" strokeWidth={2} />
                             </div>
 
                             <div className="flex-1 text-left">

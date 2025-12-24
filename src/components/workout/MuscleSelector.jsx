@@ -7,6 +7,26 @@
 
 import React, { useState } from 'react';
 import { MUSCLE_GROUPS } from '../../lib/fitnessConstants';
+import { ArrowUpRight, ArrowDownLeft, Flame, Zap, Footprints, Dumbbell, Triangle, Sword, Heart, Target } from 'lucide-react';
+
+// Icon mapping for muscle groups - replaces emoji with lucide icons
+const MUSCLE_ICON_MAP = {
+    legs: { Icon: Footprints, color: 'text-violet-400' },
+    chest: { Icon: Dumbbell, color: 'text-blue-400' },
+    back: { Icon: ArrowDownLeft, color: 'text-emerald-400' },
+    shoulders: { Icon: Triangle, color: 'text-amber-400' },
+    arms: { Icon: Sword, color: 'text-red-400' },
+    cardio: { Icon: Heart, color: 'text-pink-400' },
+    core: { Icon: Target, color: 'text-cyan-400' }
+};
+
+// Helper component to render muscle icons
+const MuscleIcon = ({ muscleId, size = 28, className = "" }) => {
+    const iconData = MUSCLE_ICON_MAP[muscleId];
+    if (!iconData) return null;
+    const { Icon, color } = iconData;
+    return <Icon size={size} className={`${color} ${className}`} strokeWidth={2.5} />;
+};
 
 // Color mapping for gradient backgrounds
 const colorStyles = {
@@ -25,7 +45,8 @@ export const workoutFormats = {
     push: {
         id: 'push',
         name: 'Push Day',
-        icon: '💪',
+        Icon: ArrowUpRight,
+        iconColor: 'text-blue-400',
         description: 'Chest, Shoulders & Triceps',
         // Include arms - generator filters by pattern to get triceps exercises
         presetMuscles: ['chest', 'shoulders', 'arms'],
@@ -38,7 +59,8 @@ export const workoutFormats = {
     pull: {
         id: 'pull',
         name: 'Pull Day',
-        icon: '🏋️',
+        Icon: ArrowDownLeft,
+        iconColor: 'text-emerald-400',
         description: 'Back, Biceps & Rear Delts',
         // Include shoulders (rear delts have pull pattern) + arms for biceps
         presetMuscles: ['back', 'shoulders', 'arms'],
@@ -51,7 +73,8 @@ export const workoutFormats = {
     legs: {
         id: 'legs',
         name: 'Leg Day',
-        icon: '🔥',
+        Icon: Flame,
+        iconColor: 'text-amber-400',
         description: 'Quads, Hamstrings, Glutes & Calves',
         presetMuscles: ['legs'],
         pattern: 'mixed',
@@ -64,7 +87,8 @@ export const workoutFormats = {
     fullbody: {
         id: 'fullbody',
         name: 'Full Body',
-        icon: '⚡',
+        Icon: Zap,
+        iconColor: 'text-violet-400',
         description: 'All muscle groups combined',
         presetMuscles: ['chest', 'back', 'legs', 'shoulders', 'arms'],
         pattern: 'mixed',
@@ -226,7 +250,11 @@ export function MuscleSelector({
                                     <div className="flex items-center gap-4">
                                         <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${isSelected ? format.bg + '/30' : 'bg-zinc-700/50'
                                             }`}>
-                                            <span className="text-2xl">{format.icon}</span>
+                                            {format.Icon ? (
+                                                <format.Icon size={24} className={format.iconColor} strokeWidth={2.5} />
+                                            ) : (
+                                                <span className="text-2xl">{format.icon}</span>
+                                            )}
                                         </div>
                                         <div>
                                             <div className={`font-semibold text-lg ${isSelected ? format.text : 'text-white'}`}>
@@ -302,9 +330,9 @@ export function MuscleSelector({
                                             </svg>
                                         </div>
                                     )}
-                                    <span className={`text-3xl ${isSelected ? 'scale-110' : ''} transition-transform`}>
-                                        {muscle.icon}
-                                    </span>
+                                    <div className={`${isSelected ? 'scale-110' : ''} transition-transform`}>
+                                        <MuscleIcon muscleId={muscle.id} size={32} />
+                                    </div>
                                     <span className={`text-xs font-semibold uppercase tracking-wide ${isSelected ? colors.text : 'text-zinc-300'}`}>
                                         {muscle.name}
                                     </span>
@@ -333,7 +361,7 @@ export function MuscleSelector({
                             }
             `}
                     >
-                        <span className="text-lg">❤️‍🔥</span>
+                        <Heart size={18} className="text-pink-400" />
                         <span className="text-sm font-medium">Cardio</span>
                         {includeCardio && (
                             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -353,7 +381,7 @@ export function MuscleSelector({
                             }
             `}
                     >
-                        <span className="text-lg">🎯</span>
+                        <Target size={18} className="text-cyan-400" />
                         <span className="text-sm font-medium">Core</span>
                         {includeCore && (
                             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
