@@ -15,7 +15,7 @@ import { GenerateScreen } from './GenerateScreen';
 import { RoutinePreview } from './RoutinePreview';
 import { SaveRoutineScreen } from './SaveRoutineScreen';
 import { WizardHeader } from './WizardHeader';
-import { generateRoutine } from '../../lib/routineGenerator';
+import { generateRoutine, regenerateMainWorkout, regenerateCoreSection, regenerateCardioSection } from '../../lib/routineGenerator';
 import { MUSCLE_GROUPS } from '../../lib/fitnessConstants';
 
 // Updated wizard steps (6 steps, removed Movement Pattern)
@@ -170,6 +170,55 @@ export function CreateRoutineWizard({ onSave, onCancel, onStartNow, onManualCrea
     }, []);
 
     // ─────────────────────────────────────────────────────────────────────────
+    // SECTION REGENERATION HANDLERS
+    // ─────────────────────────────────────────────────────────────────────────
+
+    const handleRegenerateMain = useCallback(() => {
+        if (!generatedRoutine) return;
+
+        const newExercises = regenerateMainWorkout(generatedRoutine);
+        const newTotalSets = newExercises.reduce((sum, ex) => sum + ex.sets, 0);
+
+        setGeneratedRoutine(prev => ({
+            ...prev,
+            exercises: newExercises,
+            totalSets: newTotalSets,
+            totalExercises: newExercises.length
+        }));
+    }, [generatedRoutine]);
+
+    const handleRegenerateCore = useCallback(() => {
+        if (!generatedRoutine) return;
+
+        const newCoreFinishers = regenerateCoreSection(generatedRoutine.level);
+
+        // Replace only core finishers, keep cardio
+        const cardioFinishers = generatedRoutine.finishers?.filter(f => f.type === 'cardio') || [];
+
+        setGeneratedRoutine(prev => ({
+            ...prev,
+            finishers: [...newCoreFinishers, ...cardioFinishers]
+        }));
+    }, [generatedRoutine]);
+
+    const handleRegenerateCardio = useCallback(() => {
+        if (!generatedRoutine) return;
+
+        const newCardioFinisher = regenerateCardioSection(
+            generatedRoutine.muscleGroups,
+            generatedRoutine.level
+        );
+
+        // Replace only cardio finisher, keep core
+        const coreFinishers = generatedRoutine.finishers?.filter(f => f.type === 'abs' || f.type === 'core') || [];
+
+        setGeneratedRoutine(prev => ({
+            ...prev,
+            finishers: [...coreFinishers, newCardioFinisher]
+        }));
+    }, [generatedRoutine]);
+
+    // ─────────────────────────────────────────────────────────────────────────
     // SAVE ROUTINE
     // ─────────────────────────────────────────────────────────────────────────
 
@@ -253,6 +302,9 @@ export function CreateRoutineWizard({ onSave, onCancel, onStartNow, onManualCrea
                         routine={generatedRoutine}
                         onRegenerate={handleRegenerate}
                         onContinue={() => setCurrentStep(6)}
+                        onRegenerateMain={handleRegenerateMain}
+                        onRegenerateCore={handleRegenerateCore}
+                        onRegenerateCardio={handleRegenerateCardio}
                     />
                 );
             case 6:

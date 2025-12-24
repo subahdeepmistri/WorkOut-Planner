@@ -6,10 +6,19 @@
 
 import React, { useState } from 'react';
 import { MUSCLE_GROUPS, EXPERIENCE_LEVELS } from '../../lib/fitnessConstants';
+import { RefreshCw } from 'lucide-react';
 
-export function RoutinePreview({ routine, onRegenerate, onContinue }) {
+export function RoutinePreview({
+    routine,
+    onRegenerate,
+    onContinue,
+    onRegenerateMain,
+    onRegenerateCore,
+    onRegenerateCardio
+}) {
     const [showWarmup, setShowWarmup] = useState(false);
     const [showCooldown, setShowCooldown] = useState(false);
+    const [regeneratingSection, setRegeneratingSection] = useState(null); // 'main' | 'core' | 'cardio'
 
     if (!routine) {
         return (
@@ -102,9 +111,25 @@ export function RoutinePreview({ routine, onRegenerate, onContinue }) {
 
             {/* Main Exercises */}
             <div className="space-y-3">
-                <h4 className="text-zinc-500 text-xs uppercase tracking-wider font-semibold px-1">
-                    Main Workout
-                </h4>
+                <div className="flex items-center justify-between px-1">
+                    <h4 className="text-zinc-500 text-xs uppercase tracking-wider font-semibold">
+                        Main Workout
+                    </h4>
+                    {onRegenerateMain && (
+                        <button
+                            onClick={async () => {
+                                setRegeneratingSection('main');
+                                await onRegenerateMain();
+                                setRegeneratingSection(null);
+                            }}
+                            disabled={regeneratingSection === 'main'}
+                            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wide bg-zinc-700/50 text-zinc-400 hover:bg-zinc-700 hover:text-white transition-all active:scale-95 disabled:opacity-50"
+                        >
+                            <RefreshCw size={12} className={regeneratingSection === 'main' ? 'animate-spin' : ''} />
+                            Shuffle
+                        </button>
+                    )}
+                </div>
 
                 {routine.exercises.map((exercise, index) => (
                     <div
@@ -157,41 +182,101 @@ export function RoutinePreview({ routine, onRegenerate, onContinue }) {
                 ))}
             </div>
 
-            {/* Finishers */}
-            {routine.finishers && routine.finishers.length > 0 && (
-                <div className="space-y-3">
-                    <h4 className="text-zinc-500 text-xs uppercase tracking-wider font-semibold px-1">
-                        Finishers
-                    </h4>
+            {/* Finishers - Separated by type */}
+            {routine.finishers && routine.finishers.length > 0 && (() => {
+                const coreFinishers = routine.finishers.filter(f => f.type === 'abs' || f.type === 'core');
+                const cardioFinishers = routine.finishers.filter(f => f.type === 'cardio');
 
-                    {routine.finishers.map((finisher, index) => (
-                        <div
-                            key={index}
-                            className={`
-                rounded-2xl p-4 border
-                ${finisher.type === 'cardio'
-                                    ? 'bg-gradient-to-r from-pink-500/10 to-pink-600/5 border-pink-500/30'
-                                    : 'bg-gradient-to-r from-cyan-500/10 to-cyan-600/5 border-cyan-500/30'
-                                }
-              `}
-                        >
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${finisher.type === 'cardio' ? 'bg-pink-500/20' : 'bg-cyan-500/20'
-                                        }`}>
-                                        <span className="text-xl">{finisher.type === 'cardio' ? '❤️‍🔥' : '🎯'}</span>
-                                    </div>
-                                    <span className="font-semibold text-white">{finisher.name}</span>
+                return (
+                    <div className="space-y-4">
+                        {/* Core/Abs Section */}
+                        {coreFinishers.length > 0 && (
+                            <div className="space-y-3">
+                                <div className="flex items-center justify-between px-1">
+                                    <h4 className="text-cyan-400 text-xs uppercase tracking-wider font-semibold flex items-center gap-2">
+                                        <span>🎯</span> Core Finisher
+                                    </h4>
+                                    {onRegenerateCore && (
+                                        <button
+                                            onClick={async () => {
+                                                setRegeneratingSection('core');
+                                                await onRegenerateCore();
+                                                setRegeneratingSection(null);
+                                            }}
+                                            disabled={regeneratingSection === 'core'}
+                                            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wide bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30 hover:text-cyan-300 transition-all active:scale-95 disabled:opacity-50"
+                                        >
+                                            <RefreshCw size={12} className={regeneratingSection === 'core' ? 'animate-spin' : ''} />
+                                            Shuffle
+                                        </button>
+                                    )}
                                 </div>
-                                <span className={`text-sm font-medium ${finisher.type === 'cardio' ? 'text-pink-400' : 'text-cyan-400'
-                                    }`}>
-                                    {finisher.sets} × {finisher.reps}
-                                </span>
+                                {coreFinishers.map((finisher, index) => (
+                                    <div
+                                        key={`core-${index}`}
+                                        className="rounded-2xl p-4 border bg-gradient-to-r from-cyan-500/10 to-cyan-600/5 border-cyan-500/30"
+                                    >
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-cyan-500/20">
+                                                    <span className="text-xl">🎯</span>
+                                                </div>
+                                                <span className="font-semibold text-white">{finisher.name}</span>
+                                            </div>
+                                            <span className="text-sm font-medium text-cyan-400">
+                                                {finisher.sets} × {finisher.reps}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
-                        </div>
-                    ))}
-                </div>
-            )}
+                        )}
+
+                        {/* Cardio Section */}
+                        {cardioFinishers.length > 0 && (
+                            <div className="space-y-3">
+                                <div className="flex items-center justify-between px-1">
+                                    <h4 className="text-pink-400 text-xs uppercase tracking-wider font-semibold flex items-center gap-2">
+                                        <span>❤️‍🔥</span> Cardio Finisher
+                                    </h4>
+                                    {onRegenerateCardio && (
+                                        <button
+                                            onClick={async () => {
+                                                setRegeneratingSection('cardio');
+                                                await onRegenerateCardio();
+                                                setRegeneratingSection(null);
+                                            }}
+                                            disabled={regeneratingSection === 'cardio'}
+                                            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wide bg-pink-500/20 text-pink-400 hover:bg-pink-500/30 hover:text-pink-300 transition-all active:scale-95 disabled:opacity-50"
+                                        >
+                                            <RefreshCw size={12} className={regeneratingSection === 'cardio' ? 'animate-spin' : ''} />
+                                            Shuffle
+                                        </button>
+                                    )}
+                                </div>
+                                {cardioFinishers.map((finisher, index) => (
+                                    <div
+                                        key={`cardio-${index}`}
+                                        className="rounded-2xl p-4 border bg-gradient-to-r from-pink-500/10 to-pink-600/5 border-pink-500/30"
+                                    >
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-pink-500/20">
+                                                    <span className="text-xl">❤️‍🔥</span>
+                                                </div>
+                                                <span className="font-semibold text-white">{finisher.name}</span>
+                                            </div>
+                                            <span className="text-sm font-medium text-pink-400">
+                                                {finisher.sets} × {finisher.reps}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                );
+            })()}
 
             {/* Cool-down Section */}
             {routine.cooldown && (
@@ -228,7 +313,8 @@ export function RoutinePreview({ routine, onRegenerate, onContinue }) {
                         </div>
                     )}
                 </div>
-            )}
+            )
+            }
 
             {/* Fixed Bottom Actions */}
             <div className="fixed bottom-0 left-0 right-0 bg-zinc-900/95 backdrop-blur-xl border-t border-zinc-800 p-4 z-50">
@@ -257,7 +343,7 @@ export function RoutinePreview({ routine, onRegenerate, onContinue }) {
                     </button>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
 

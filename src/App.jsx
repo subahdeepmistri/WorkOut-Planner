@@ -407,56 +407,139 @@ function App() {
 
               {/* Date Nav - Command Center Style */}
               {activeTab === 'workout' ? (
-                <div className="flex items-center gap-3 pl-1">
-                  <button
-                    onClick={() => setShowCalendar(true)}
-                    className={`p-2 rounded-full transition-all flex-shrink-0 ${userProfile === 'gwen' ? 'bg-zinc-100 dark:bg-zinc-800 text-pink-600 dark:text-pink-400 hover:bg-zinc-200 dark:hover:bg-zinc-700' : 'bg-zinc-100 dark:bg-zinc-800 text-red-600 dark:text-red-500 hover:bg-zinc-200 dark:hover:bg-zinc-700'}`}
-                  >
-                    <Calendar size={20} />
-                  </button>
-                  <div className="flex flex-col">
-                    <span className="text-[10px] font-bold tracking-widest uppercase text-zinc-400 dark:text-zinc-600">Today</span>
-                    <span className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
-                      {selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
-                    </span>
-                  </div>
-                  {currentLog && !isMinimized && (
-                    <WorkoutTimer startTime={currentLog.startTime} endTime={currentLog.endTime} className="text-xs ml-4 text-zinc-500 font-mono" />
-                  )}
-                </div>
-              ) : (
-                <div className={`flex items-center justify-between sm:justify-start gap-0.5 sm:gap-4 backdrop-blur-md p-0.5 sm:p-2 sm:pl-4 sm:pr-2 rounded-full border-2 transition-colors duration-500 max-w-full shadow-sm ${userProfile === 'gwen' ? 'bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700/50' : 'bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700/50'}`}>
-                  <button onClick={() => changeDate(-1)} className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors flex-shrink-0 p-1"><ChevronLeft size={20} /></button>
-                  <div className="flex flex-col items-center flex-shrink-0 px-1">
-                    <span className={`text-[9px] uppercase tracking-widest font-bold transition-colors duration-500 hidden sm:block ${userProfile === 'gwen' ? 'text-pink-600 dark:text-pink-400' : 'text-red-600 dark:text-red-500'}`}>Today</span>
-                    <span className="text-sm sm:text-base font-bold text-zinc-900 dark:text-zinc-100 whitespace-nowrap">{selectedDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</span>
-                  </div>
-                  <button
-                    onClick={() => changeDate(1)}
-                    disabled={(() => {
-                      const s = new Date(selectedDate); s.setHours(0, 0, 0, 0);
-                      const t = new Date(); t.setHours(0, 0, 0, 0);
-                      return s.getTime() >= t.getTime();
-                    })()}
-                    className={`transition-colors flex-shrink-0 p-1 ${(() => {
-                      const s = new Date(selectedDate); s.setHours(0, 0, 0, 0);
-                      const t = new Date(); t.setHours(0, 0, 0, 0);
-                      return s.getTime() >= t.getTime() ? 'text-zinc-300 dark:text-zinc-700 cursor-not-allowed' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white';
-                    })()}`}
-                  >
-                    <ChevronRight size={20} />
-                  </button>
-                  <div className="w-px h-6 bg-zinc-300 dark:bg-zinc-700 mx-0.5 flex-shrink-0 hidden sm:block"></div>
-                  <button onClick={() => setShowCalendar(true)} className={`p-1.5 rounded-full transition-all flex-shrink-0 ${userProfile === 'gwen' ? 'bg-zinc-100 dark:bg-zinc-800 text-pink-600 dark:text-pink-400 hover:bg-zinc-200 dark:hover:bg-zinc-700' : 'bg-zinc-100 dark:bg-zinc-800 text-red-600 dark:text-red-500 hover:bg-zinc-200 dark:hover:bg-zinc-700'}`}><Calendar size={18} /></button>
+                <>
+                  <div className="flex items-center justify-center gap-2">
+                    {/* Left Arrow - Circular */}
+                    <button
+                      onClick={() => changeDate(-1)}
+                      className="w-10 h-10 flex items-center justify-center rounded-full bg-zinc-200 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-300 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:hover:text-white transition-all active:scale-95"
+                    >
+                      <ChevronLeft size={20} />
+                    </button>
 
-                  {/* Workout Timer */}
-                  {currentLog && !isMinimized && (
-                    <>
-                      <div className="w-px h-6 bg-zinc-300 dark:bg-zinc-700 mx-0.5 flex-shrink-0 hidden sm:block"></div>
-                      <WorkoutTimer startTime={currentLog.startTime} endTime={currentLog.endTime} className="text-xs sm:text-sm flex-shrink-0 ml-1" />
-                    </>
-                  )}
-                </div>
+                    {/* Center Pill - Calendar + Today + Dropdown */}
+                    <button
+                      onClick={() => setShowCalendar(true)}
+                      className={`flex items-center gap-2 px-4 py-2.5 rounded-full border-2 transition-all ${userProfile === 'gwen'
+                        ? 'bg-zinc-100 dark:bg-zinc-800 border-zinc-300 dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-600'
+                        : 'bg-zinc-100 dark:bg-zinc-800 border-zinc-300 dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-600'
+                        }`}
+                    >
+                      <Calendar size={18} className={userProfile === 'gwen' ? 'text-pink-500 dark:text-pink-400' : 'text-emerald-500 dark:text-emerald-400'} />
+                      <span className="font-bold text-zinc-900 dark:text-white">
+                        {(() => {
+                          const today = new Date();
+                          const s = new Date(selectedDate);
+                          today.setHours(0, 0, 0, 0);
+                          s.setHours(0, 0, 0, 0);
+                          const diff = Math.floor((today.getTime() - s.getTime()) / 86400000);
+                          if (diff === 0) return 'Today';
+                          if (diff === 1) return 'Yesterday';
+                          return selectedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                        })()}
+                      </span>
+                      <ChevronRight size={16} className="text-zinc-400 dark:text-zinc-500 rotate-90" />
+                    </button>
+
+                    {/* Right Arrow - Circular */}
+                    <button
+                      onClick={() => changeDate(1)}
+                      disabled={(() => {
+                        const s = new Date(selectedDate); s.setHours(0, 0, 0, 0);
+                        const t = new Date(); t.setHours(0, 0, 0, 0);
+                        return s.getTime() >= t.getTime();
+                      })()}
+                      className={`w-10 h-10 flex items-center justify-center rounded-full transition-all active:scale-95 ${(() => {
+                        const s = new Date(selectedDate); s.setHours(0, 0, 0, 0);
+                        const t = new Date(); t.setHours(0, 0, 0, 0);
+                        return s.getTime() >= t.getTime()
+                          ? 'bg-zinc-100 dark:bg-zinc-800/50 text-zinc-300 dark:text-zinc-700 cursor-not-allowed'
+                          : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-300 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:hover:text-white';
+                      })()}`}
+                    >
+                      <ChevronRight size={20} />
+                    </button>
+
+                    {/* Workout Timer */}
+                    {currentLog && !isMinimized && (
+                      <>
+                        <div className="w-px h-6 bg-zinc-300 dark:bg-zinc-700 mx-1 hidden sm:block" />
+                        <WorkoutTimer startTime={currentLog.startTime} endTime={currentLog.endTime} className="text-xs sm:text-sm" />
+                      </>
+                    )}
+                  </div>
+                  {/* Full Date Display Below Navigation */}
+                  <p className="text-center text-xs font-semibold text-zinc-500 dark:text-zinc-400 mt-2">
+                    {selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
+                  </p>
+                </>
+              ) : (
+                <>
+                  <div className="flex items-center justify-center gap-2">
+                    {/* Left Arrow - Circular */}
+                    <button
+                      onClick={() => changeDate(-1)}
+                      className="w-10 h-10 flex items-center justify-center rounded-full bg-zinc-200 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-300 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:hover:text-white transition-all active:scale-95"
+                    >
+                      <ChevronLeft size={20} />
+                    </button>
+
+                    {/* Center Pill - Calendar + Today + Dropdown */}
+                    <button
+                      onClick={() => setShowCalendar(true)}
+                      className={`flex items-center gap-2 px-4 py-2.5 rounded-full border-2 transition-all ${userProfile === 'gwen'
+                        ? 'bg-zinc-100 dark:bg-zinc-800 border-zinc-300 dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-600'
+                        : 'bg-zinc-100 dark:bg-zinc-800 border-zinc-300 dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-600'
+                        }`}
+                    >
+                      <Calendar size={18} className={userProfile === 'gwen' ? 'text-pink-500 dark:text-pink-400' : 'text-emerald-500 dark:text-emerald-400'} />
+                      <span className="font-bold text-zinc-900 dark:text-white">
+                        {(() => {
+                          const today = new Date();
+                          const s = new Date(selectedDate);
+                          today.setHours(0, 0, 0, 0);
+                          s.setHours(0, 0, 0, 0);
+                          const diff = Math.floor((today.getTime() - s.getTime()) / 86400000);
+                          if (diff === 0) return 'Today';
+                          if (diff === 1) return 'Yesterday';
+                          return selectedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                        })()}
+                      </span>
+                      <ChevronRight size={16} className="text-zinc-400 dark:text-zinc-500 rotate-90" />
+                    </button>
+
+                    {/* Right Arrow - Circular */}
+                    <button
+                      onClick={() => changeDate(1)}
+                      disabled={(() => {
+                        const s = new Date(selectedDate); s.setHours(0, 0, 0, 0);
+                        const t = new Date(); t.setHours(0, 0, 0, 0);
+                        return s.getTime() >= t.getTime();
+                      })()}
+                      className={`w-10 h-10 flex items-center justify-center rounded-full transition-all active:scale-95 ${(() => {
+                        const s = new Date(selectedDate); s.setHours(0, 0, 0, 0);
+                        const t = new Date(); t.setHours(0, 0, 0, 0);
+                        return s.getTime() >= t.getTime()
+                          ? 'bg-zinc-100 dark:bg-zinc-800/50 text-zinc-300 dark:text-zinc-700 cursor-not-allowed'
+                          : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-300 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:hover:text-white';
+                      })()}`}
+                    >
+                      <ChevronRight size={20} />
+                    </button>
+
+                    {/* Workout Timer */}
+                    {currentLog && !isMinimized && (
+                      <>
+                        <div className="w-px h-6 bg-zinc-300 dark:bg-zinc-700 mx-1 hidden sm:block" />
+                        <WorkoutTimer startTime={currentLog.startTime} endTime={currentLog.endTime} className="text-xs sm:text-sm" />
+                      </>
+                    )}
+                  </div>
+                  {/* Full Date Display Below Navigation */}
+                  <p className="text-center text-xs font-semibold text-zinc-500 dark:text-zinc-400 mt-2">
+                    {selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
+                  </p>
+                </>
               )}
 
               {/* Stats Toggle (Mobile Friendly) */}

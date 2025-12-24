@@ -90,38 +90,67 @@ export function MuscleSelector({
     // Pattern (auto-set based on selection)
     onPatternChange
 }) {
+    // Track which mode the user is using
+    // If selectedFormat exists, user is in format mode
+    // If customMuscles exist, user is in custom mode
     const [selectionMode, setSelectionMode] = useState(selectedFormat ? 'format' : 'format');
 
     const primaryGroups = Object.values(MUSCLE_GROUPS).filter(g => !g.isFinisher);
     const canSelectMore = customMuscles.length < 2;
 
-    // Handle mode change - switching tabs
+    // Handle mode change - switching tabs CLEARS the other mode
     const handleModeChange = (newMode) => {
         setSelectionMode(newMode);
-        // When switching modes, we DON'T clear anything
-        // Each mode maintains its own independent state
+
+        // CLEAR the OTHER mode's selection for complete independence
+        if (newMode === 'format') {
+            // Switching TO Quick Select -> Clear Custom muscles
+            onCustomMusclesChange([]);
+        } else if (newMode === 'custom') {
+            // Switching TO Custom -> Clear Quick Select format
+            onFormatChange(null);
+            onPatternChange('mixed'); // Reset pattern
+        }
     };
 
-    // Handle Quick Select format selection
+    // Handle Quick Select format selection (with DESELECTION support)
     const handleFormatSelect = (formatId) => {
-        const format = workoutFormats[formatId];
-
-        // Set the selected format
-        onFormatChange(formatId);
-
-        // Set movement pattern based on format
-        onPatternChange(format.pattern);
+        if (selectedFormat === formatId) {
+            // DESELECT: Clicking same format again deselects it
+            onFormatChange(null);
+            onPatternChange('mixed');
+        } else {
+            // SELECT: Choose this format
+            const format = workoutFormats[formatId];
+            onFormatChange(formatId);
+            onPatternChange(format.pattern);
+        }
     };
 
     // Handle Custom muscle toggle
     const handleMuscleToggle = (muscleId) => {
         if (customMuscles.includes(muscleId)) {
-            onCustomMusclesChange(customMuscles.filter(id => id !== muscleId));
+            const newMuscles = customMuscles.filter(id => id !== muscleId);
+            onCustomMusclesChange(newMuscles);
+
+            // Update pattern for remaining muscles
+            if (newMuscles.length === 0) {
+                onPatternChange('mixed');
+            } else {
+                const patterns = newMuscles.map(m => MUSCLE_GROUPS[m]?.movementPattern);
+                if (patterns.every(p => p === 'push')) {
+                    onPatternChange('push');
+                } else if (patterns.every(p => p === 'pull')) {
+                    onPatternChange('pull');
+                } else {
+                    onPatternChange('mixed');
+                }
+            }
         } else if (canSelectMore) {
-            onCustomMusclesChange([...customMuscles, muscleId]);
+            const newMuscles = [...customMuscles, muscleId];
+            onCustomMusclesChange(newMuscles);
 
             // Auto-detect pattern for custom selection
-            const newMuscles = [...customMuscles, muscleId];
             const patterns = newMuscles.map(m => MUSCLE_GROUPS[m]?.movementPattern);
             if (patterns.every(p => p === 'push')) {
                 onPatternChange('push');

@@ -162,13 +162,30 @@ function buildPriorityQueue(muscleGroups, level, preference, movementPattern) {
                 score += (6 - typeConfig.priority) * 20; // Higher priority = higher score
             }
 
-            // Preference bonus
-            if (preference === 'compound' && typeConfig?.tag === 'COMPOUND') {
-                score += 25;
-            } else if (preference === 'isolation' && typeConfig?.tag === 'ISOLATION') {
-                score += 25;
+            // STRONG preference enforcement
+            if (preference === 'compound') {
+                // Compound focus: big bonus for compounds, penalty for isolation
+                if (typeConfig?.tag === 'COMPOUND') {
+                    score += 50;
+                } else if (typeConfig?.tag === 'ISOLATION') {
+                    score -= 30; // Reduce isolation priority
+                }
+            } else if (preference === 'isolation') {
+                // Isolation focus: big bonus for isolation, penalty for compounds
+                if (typeConfig?.tag === 'ISOLATION') {
+                    score += 60; // Strong bonus for isolation
+                } else if (typeConfig?.tag === 'COMPOUND') {
+                    score -= 40; // Significant penalty for compounds
+                }
             } else if (preference === 'balanced') {
-                score += 10; // Neutral bonus for balanced
+                // Balanced: Give isolation a boost to counter their lower base priority
+                // Compounds have priority 1-2 (base 100-80), Isolation has priority 3-4 (base 60-40)
+                // To balance: boost isolation by ~30 to bring them to similar scoring range
+                if (typeConfig?.tag === 'ISOLATION') {
+                    score += 30; // Boost isolation to match compound scoring
+                }
+                // Small bonus for variety
+                score += 5;
             }
 
             // Movement pattern bonus (for mixed workouts, matching patterns get bonus)
@@ -476,6 +493,81 @@ function generateRoutineName(muscleGroups, movementPattern, level) {
     }
 
     return `${prefix} ${patternName} ${muscleNames}`.trim();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SECTION REGENERATORS
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * Regenerate only the main workout exercises (keeps finishers, warmup, cooldown)
+ * @param {Object} currentRoutine - The current routine to regenerate from
+ * @returns {Object} New exercises array
+ */
+export function regenerateMainWorkout(currentRoutine) {
+    const {
+        muscleGroups = [],
+        level = 'moderate',
+        exercisePreference = 'balanced',
+        pushPullType = 'mixed'
+    } = currentRoutine;
+
+    // Filter to only strength muscle groups
+    const primaryGroups = muscleGroups.filter(g => !['cardio', 'core'].includes(g));
+
+    // Get level constraints
+    const levelConstraints = { ...EXPERIENCE_LEVELS[level].constraints };
+
+    // FULL BODY MODE handling
+    const isFullBody = primaryGroups.length >= 4;
+    if (isFullBody) {
+        levelConstraints.maxExercisesPerMuscle = primaryGroups.length >= 5 ? 1 : 2;
+        levelConstraints.maxTotalSets = Math.min(levelConstraints.maxTotalSets + 5, 30);
+    }
+
+    // Calculate available time (estimate from current)
+    const availableTime = 45;
+
+    // Build NEW priority queue (shuffled differently)
+    const priorityQueue = buildPriorityQueue(primaryGroups, level, exercisePreference, pushPullType);
+
+    // Add random factor to reshuffle results
+    priorityQueue.sort((a, b) => (b.score + Math.random() * 20) - (a.score + Math.random() * 20));
+
+    // Select exercises
+    const selectedExercises = selectExercises(priorityQueue, levelConstraints, availableTime, level, isFullBody);
+
+    // Sort by type priority
+    selectedExercises.sort((a, b) => {
+        const priorityA = EXERCISE_TYPES[a.type]?.priority || 99;
+        const priorityB = EXERCISE_TYPES[b.type]?.priority || 99;
+        return priorityA - priorityB;
+    });
+
+    return selectedExercises.map((ex, index) => ({
+        ...ex,
+        order: index
+    }));
+}
+
+/**
+ * Regenerate only the core/abs finisher section
+ * @param {string} level - Experience level
+ * @returns {Array} New core finishers array
+ */
+export function regenerateCoreSection(level = 'moderate') {
+    return generateCoreBlock(level);
+}
+
+/**
+ * Regenerate only the cardio finisher section
+ * @param {string[]} muscleGroups - Current muscle groups
+ * @param {string} level - Experience level
+ * @returns {Object} New cardio finisher
+ */
+export function regenerateCardioSection(muscleGroups = [], level = 'moderate') {
+    const primaryGroups = muscleGroups.filter(g => !['cardio', 'core'].includes(g));
+    return generateCardioFinisher(primaryGroups, level);
 }
 
 export default generateRoutine;

@@ -437,12 +437,33 @@ export const useWorkoutData = (selectedDate) => {
 
     /**
      * Initializes a new workout log for the selected date based on the active plan.
+     * For custom/empty routines, starts with empty exercises (no fallback to defaults).
      */
-    const initializeDailyLog = () => {
+    const initializeDailyLog = (overridePlanId = null) => {
         if (isHoliday) return; // STRICT BLOCK: Cannot start workout on holiday
 
-        let template = availablePlans.find(p => p.id === activePlanId) || savedPlans.find(p => p.id === activePlanId);
-        if (!template) template = availablePlans[0];
+        const planIdToUse = overridePlanId || activePlanId;
+
+        // First check custom/saved plans, then default plans
+        let template = savedPlans.find(p => p.id === planIdToUse) || availablePlans.find(p => p.id === planIdToUse);
+
+        // If no template found and planIdToUse starts with 'custom_', it's a new empty routine
+        // In this case, create an empty workout (no fallback to defaults!)
+        const isCustomRoutine = planIdToUse.startsWith('custom_');
+
+        if (!template) {
+            if (isCustomRoutine) {
+                // This is a "Build from Scratch" empty routine - start with NO exercises
+                template = {
+                    id: planIdToUse,
+                    name: 'New Routine',
+                    exercises: [] // Empty! User will add exercises manually
+                };
+            } else {
+                // Only fallback to default if it's NOT a custom routine
+                template = availablePlans[0];
+            }
+        }
 
         const parseTargetReps = (repsStr) => {
             if (!repsStr) return 8; // Default
