@@ -51,6 +51,8 @@ function App() {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isAboutPressed, setIsAboutPressed] = useState(false);
+  const [routineTab, setRoutineTab] = useState('default'); // 'default' or 'custom'
+  const [routineListOpen, setRoutineListOpen] = useState(false); // Collapsible list state
 
   // Warmup/Cooldown completion tracking (persisted per date)
   const [warmupCompleted, setWarmupCompleted] = useState(() => {
@@ -828,36 +830,94 @@ function App() {
                       />
                     ) : (
 
-                      <div className="relative flex flex-col min-h-0 pb-0 sm:block px-2 max-w-xl mx-auto">
+                      <div className="relative flex flex-col min-h-0 pb-0 px-2 max-w-xl mx-auto">
 
-                        {/* 1. Routine Focus (Moved to Top) */}
-                        <div className="text-center relative group">
-                          <div className="inline-flex items-center justify-center gap-2">
-                            <select
-                              value={activePlanId}
-                              onChange={(e) => setActivePlanId(e.target.value)}
+                        {/* Routine Type Tabs */}
+                        <div className="flex justify-center mb-4">
+                          <div className="inline-flex bg-zinc-100 dark:bg-zinc-800 rounded-xl p-1 gap-1">
+                            <button
+                              onClick={() => setRoutineTab?.('default')}
                               disabled={!!currentLog}
-                              className={`absolute inset-0 w-full h-full opacity-0 z-10 ${currentLog ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold tracking-wide transition-all duration-200 ${(routineTab || 'default') === 'default'
+                                ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white shadow-sm'
+                                : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
+                                } ${currentLog ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
-                              <optgroup label="My Routines">
-                                {savedPlans.map(plan => (
-                                  <option key={plan.id} value={plan.id}>{plan.name}</option>
-                                ))}
-                              </optgroup>
-                              <optgroup label="Default Routines">
-                                {availablePlans.map(plan => (
-                                  <option key={plan.id} value={plan.id}>{plan.name}</option>
-                                ))}
-                              </optgroup>
-                            </select>
-                            <h2
-                              className="text-2xl sm:text-4xl font-black italic tracking-tighter text-zinc-900 dark:text-white group-hover:text-zinc-700 dark:group-hover:text-zinc-200 transition-colors leading-tight"
+                              <Activity size={16} className={(routineTab || 'default') === 'default' ? 'text-emerald-500' : 'text-zinc-400'} />
+                              Default
+                            </button>
+                            <button
+                              onClick={() => setRoutineTab?.('custom')}
+                              disabled={!!currentLog}
+                              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold tracking-wide transition-all duration-200 ${routineTab === 'custom'
+                                ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white shadow-sm'
+                                : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
+                                } ${currentLog ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
-                              {savedPlans.find(p => p.id === activePlanId)?.name || availablePlans.find(p => p.id === activePlanId)?.name || "Select Routine"}
-                            </h2>
-                            <ChevronDown size={24} className="text-zinc-400 dark:text-zinc-500 flex-shrink-0 group-hover:text-emerald-500 transition-colors" />
+                              <Zap size={16} className={routineTab === 'custom' ? 'text-amber-500' : 'text-zinc-400'} />
+                              Custom
+                            </button>
                           </div>
                         </div>
+
+                        {/* Selected Routine Display - Tap to Expand */}
+                        <button
+                          onClick={() => !currentLog && setRoutineListOpen(!routineListOpen)}
+                          disabled={!!currentLog}
+                          className={`w-full text-center mb-2 py-2 rounded-xl transition-all duration-200 ${currentLog
+                            ? 'cursor-default'
+                            : 'hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer active:scale-[0.98]'
+                            }`}
+                        >
+                          <div className="flex items-center justify-center gap-2">
+                            <h2 className="text-2xl sm:text-3xl font-black italic tracking-tighter text-zinc-900 dark:text-white leading-tight">
+                              {savedPlans.find(p => p.id === activePlanId)?.name || availablePlans.find(p => p.id === activePlanId)?.name || "Select Routine"}
+                            </h2>
+                            {!currentLog && (
+                              <ChevronDown
+                                size={24}
+                                className={`text-zinc-400 dark:text-zinc-500 transition-transform duration-200 ${routineListOpen ? 'rotate-180' : ''}`}
+                              />
+                            )}
+                          </div>
+                          {!currentLog && (
+                            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+                              Tap to {routineListOpen ? 'hide' : 'show'} routines
+                            </p>
+                          )}
+                        </button>
+
+                        {/* Routine List - Collapsible */}
+                        {!currentLog && routineListOpen && (
+                          <div className="mb-4 max-h-48 overflow-y-auto rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 animate-in slide-in-from-top-2 duration-200">
+                            {(routineTab === 'custom' ? savedPlans : availablePlans).length === 0 ? (
+                              <div className="p-4 text-center text-zinc-500 dark:text-zinc-400 text-sm">
+                                {routineTab === 'custom'
+                                  ? "No custom routines yet. Create one below!"
+                                  : "No default routines available."}
+                              </div>
+                            ) : (
+                              (routineTab === 'custom' ? savedPlans : availablePlans).map((plan) => (
+                                <button
+                                  key={plan.id}
+                                  onClick={() => {
+                                    setActivePlanId(plan.id);
+                                    setRoutineListOpen(false); // Close list after selection
+                                  }}
+                                  className={`w-full px-4 py-3 text-left flex items-center justify-between border-b border-zinc-200 dark:border-zinc-700 last:border-b-0 transition-all duration-150 ${activePlanId === plan.id
+                                    ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400'
+                                    : 'hover:bg-zinc-100 dark:hover:bg-zinc-700/50 text-zinc-700 dark:text-zinc-300'
+                                    }`}
+                                >
+                                  <span className="font-semibold text-sm truncate">{plan.name}</span>
+                                  {activePlanId === plan.id && (
+                                    <CheckCircle size={18} className="text-emerald-500 flex-shrink-0 ml-2" />
+                                  )}
+                                </button>
+                              ))
+                            )}
+                          </div>
+                        )}
 
                         {/* System Status (Below Routine) */}
                         <div className="flex justify-center mt-2">
