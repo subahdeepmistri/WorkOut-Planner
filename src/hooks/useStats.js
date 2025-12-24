@@ -189,10 +189,23 @@ export const useStats = (workoutData, getPreviousBest) => {
 
         const topFocus = Object.entries(monthFocus).reduce((a, b) => a[1] > b[1] ? a : b)[0];
 
+        // Recent Distribution (Last 5 Sessions Only)
+        const recentDates = dates.slice(-5); // Last 5 workout dates
+        let recentS = 0, recentC = 0, recentA = 0;
+        recentDates.forEach(date => {
+            const log = workoutData[date];
+            const stats = calculateSessionStats(log, getPreviousBest);
+            if (stats.hasStrength) recentS++;
+            if (stats.hasCardio) recentC++;
+            if (stats.hasCore) recentA++;
+        });
+
         return {
             labels,
             datasets: { sVol, cMin, cDist, cLoad, aRep, aHold },
-            distribution: [sCount, cCount, aCount],
+            distribution: [sCount, cCount, aCount], // All time
+            recentDistribution: [recentS, recentC, recentA], // Last 5
+            recentSessionCount: recentDates.length,
             totalWorkouts: total, // Only valid ones
             currentStreak,
             totalVol,

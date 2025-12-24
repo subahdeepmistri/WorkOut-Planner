@@ -221,7 +221,7 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest, theme }) => {
             <div className="mt-16">
                 <SectionHeader
                     title="Recent Trends"
-                    subtitle="Last 5 Sessions Analysis"
+                    subtitle="Performance Over Time"
                     icon={TrendingUp}
                     iconColor="text-pink-500"
                     color="text-pink-500"
@@ -229,18 +229,6 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest, theme }) => {
             </div>
 
             <div className="space-y-4">
-                {/* Training Style (Muted Container) */}
-                <div className="p-4 sm:p-6 rounded-3xl bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-100 dark:border-zinc-800/80 shadow-sm">
-                    <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-4">Focus Distribution</h3>
-                    <div className="h-32 sm:h-36 relative flex items-center justify-center">
-                        {history.totalWorkouts > 0 ? (
-                            <SplitEnergyBars distribution={history.distribution} totalWorkouts={history.totalWorkouts} theme={theme} />
-                        ) : (
-                            <div className="flex flex-col items-center justify-center opacity-40"><p className="text-xs font-bold">No Data</p></div>
-                        )}
-                    </div>
-                </div>
-
                 {/* Performance Trend Cards */}
                 <AnalyticsTrends history={history} theme={theme} />
             </div>
@@ -309,6 +297,32 @@ const StatsViewUnsafe = ({ workoutData, getPreviousBest, theme }) => {
                     </div>
                 )}
             </div>
+
+            {/* Workout Focus - Compact, Less Prominent */}
+            {history.totalWorkouts > 0 && (
+                <div className="mt-6 p-4 rounded-2xl bg-zinc-50/50 dark:bg-zinc-900/20 border border-zinc-100 dark:border-zinc-800/50">
+                    <div className="flex items-center justify-between mb-3">
+                        <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Training Balance</span>
+                        <span className="text-[9px] text-zinc-400">Last {history.recentSessionCount} sessions</span>
+                    </div>
+                    <div className="flex items-center gap-4 justify-center">
+                        <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 rounded-full bg-indigo-500"></div>
+                            <span className="text-xs font-bold text-zinc-600 dark:text-zinc-400">{history.recentDistribution?.[0] || 0} Strength</span>
+                        </div>
+                        <div className="w-px h-4 bg-zinc-200 dark:bg-zinc-700"></div>
+                        <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 rounded-full bg-pink-500"></div>
+                            <span className="text-xs font-bold text-zinc-600 dark:text-zinc-400">{history.recentDistribution?.[1] || 0} Cardio</span>
+                        </div>
+                        <div className="w-px h-4 bg-zinc-200 dark:bg-zinc-700"></div>
+                        <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
+                            <span className="text-xs font-bold text-zinc-600 dark:text-zinc-400">{history.recentDistribution?.[2] || 0} Core</span>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Empty State Footer (Stage 0 only) */}
             {activeWorkouts === 0 && (

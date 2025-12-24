@@ -463,18 +463,21 @@ function App() {
                     </span>
                   </button>
 
-                  <button
-                    onClick={() => setIsFocusMode(!isFocusMode)}
-                    className="flex flex-col items-center gap-0.5 group"
-                    title="Toggle Focus Mode"
-                  >
-                    <div className={`p-2 rounded-full border transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center shadow-sm ${isFocusMode ? 'bg-amber-100 dark:bg-amber-900/30 border-amber-300 dark:border-amber-700' : 'bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 group-hover:bg-amber-50 dark:group-hover:bg-zinc-700'}`}>
-                      <Zap size={20} className={`transition-colors ${isFocusMode ? 'text-amber-600 dark:text-amber-500 fill-amber-600 dark:fill-amber-500' : 'text-zinc-400 group-hover:text-amber-500'}`} />
-                    </div>
-                    <span className={`text-[10px] font-black tracking-widest transition-colors uppercase ${isFocusMode ? 'text-amber-600 dark:text-amber-500' : 'text-zinc-800 dark:text-zinc-400 group-hover:text-black dark:group-hover:text-white'}`}>
-                      Focus
-                    </span>
-                  </button>
+                  {/* Focus button - Only show when workout is in progress */}
+                  {!!currentLog && (
+                    <button
+                      onClick={() => setIsFocusMode(!isFocusMode)}
+                      className="flex flex-col items-center gap-0.5 group"
+                      title="Toggle Focus Mode"
+                    >
+                      <div className={`p-2 rounded-full border transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center shadow-sm ${isFocusMode ? 'bg-amber-100 dark:bg-amber-900/30 border-amber-300 dark:border-amber-700' : 'bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 group-hover:bg-amber-50 dark:group-hover:bg-zinc-700'}`}>
+                        <Zap size={20} className={`transition-colors ${isFocusMode ? 'text-amber-600 dark:text-amber-500 fill-amber-600 dark:fill-amber-500' : 'text-zinc-400 group-hover:text-amber-500'}`} />
+                      </div>
+                      <span className={`text-[10px] font-black tracking-widest transition-colors uppercase ${isFocusMode ? 'text-amber-600 dark:text-amber-500' : 'text-zinc-800 dark:text-zinc-400 group-hover:text-black dark:group-hover:text-white'}`}>
+                        Focus
+                      </span>
+                    </button>
+                  )}
 
 
 
