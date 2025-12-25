@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, ChevronDown, Calendar, Activity, BarChart3, Info, Trash2, CheckCircle, Plus, Home, PlayCircle, Trophy, Timer, Sun, Moon, Zap, Terminal, Heart, Code, Mail, Phone, ArrowRight, Sparkles } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronDown, Calendar, Activity, BarChart3, Info, Trash2, CheckCircle, Plus, Home, PlayCircle, Trophy, Timer, Sun, Moon, Zap, Terminal, Heart, Code, Mail, Phone, ArrowRight, Sparkles, Dumbbell, TrendingUp, Target, Github } from 'lucide-react';
 // import MilesSticker from './assets/miles_sticker.gif';
 const MilesSticker = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYm1lZGtsNzduem10bTE5ZXdudTJuenZmOXZ6MHM2NXdiaHV6N2Z3ZSZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/uctvenxww01iIanyvT/giphy.gif";
 import GwenSticker from './assets/gwen_sticker.gif';
@@ -1238,86 +1238,137 @@ function App() {
           </main>
         ) : (
           /* Tab: About */
-          <main className="max-w-[800px] mx-auto p-4 relative pt-10 pb-32">
-            {/* Refactored Modern UI Container */}
+          <main className="max-w-[800px] mx-auto p-4 relative min-h-[calc(100vh-120px)] flex items-center justify-center">
+            {/* Compact Redesigned About Section */}
             <div className="relative w-full max-w-md mx-auto">
 
-              {/* Main Content Card */}
-              <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[32px] shadow-sm overflow-hidden">
+              {/* Subtle Glow Effects */}
+              <div className="absolute -top-10 -right-10 w-24 h-24 bg-emerald-500/15 rounded-full blur-2xl pointer-events-none" />
+              <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-pink-500/15 rounded-full blur-2xl pointer-events-none" />
 
-                {/* 1. Header Section */}
-                <div className="p-8 pb-6 text-center border-b border-zinc-100 dark:border-zinc-800/50">
-                  <div className="inline-flex items-center justify-center w-12 h-12 mb-4 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white">
-                    <Activity size={24} strokeWidth={2.5} />
-                  </div>
-                  <h1 className="text-4xl sm:text-5xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-pink-500 to-red-500 uppercase transform -skew-x-6 drop-shadow-lg mb-2">
-                    DUO-FIT
-                  </h1>
-                  <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
-                    Training System v1.0 <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 uppercase tracking-wide ml-2">Beta</span>
-                  </p>
-                </div>
+              {/* Main Content Card - Compact */}
+              <div className="relative bg-gradient-to-b from-zinc-900 via-zinc-950 to-black border border-zinc-800 rounded-2xl shadow-xl overflow-hidden">
 
-                {/* 2. Story Section */}
-                <div className="p-8 space-y-8">
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2 text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-                      <Terminal size={16} className="text-emerald-500" />
-                      <h3>Behind the Code</h3>
+                {/* Animated Top Gradient Bar */}
+                <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-emerald-500 via-cyan-400 via-pink-500 to-emerald-500 bg-[length:200%_100%] animate-gradient-x" />
+
+                <div className="p-5">
+                  {/* Compact Hero */}
+                  <div className="text-center mb-4">
+                    {/* Smaller Logo */}
+                    <div className="relative inline-block mb-2">
+                      <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-xl blur-lg opacity-40 animate-pulse" />
+                      <div className="relative p-2.5 bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 rounded-xl border border-emerald-500/30">
+                        <Dumbbell size={28} className="text-emerald-400" />
+                      </div>
                     </div>
-                    {/* Restored Origin Story Header with Heart Icon */}
-                    <div className="flex items-center gap-2 text-sm font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider mt-6 mb-2">
-                      <Heart size={14} className="text-pink-500 fill-pink-500/20" />
-                      <h3>The Origin Story</h3>
-                    </div>
-                    <div className="prose prose-sm dark:prose-invert text-zinc-600 dark:text-zinc-400 leading-relaxed text-[15px]">
-                      <p>
-                        We built <strong className="text-zinc-900 dark:text-zinc-200">DUO-FIT</strong> to solve "gym amnesia." Forgetting weights and losing track of progress was our bottleneck.
-                      </p>
-                      <p className="mt-3">
-                        This isn't just an app—it's a tool for discipline, designed by <span className="font-medium text-zinc-900 dark:text-zinc-200">Subhadeep Mistri</span> to help us stay consistent.
-                      </p>
+
+                    {/* App Name - Smaller */}
+                    <h1 className="text-2xl font-black italic tracking-tight text-white mb-1">
+                      <span className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-pink-400 bg-clip-text text-transparent">DUO</span>
+                      <span className="text-white">-LIFT</span>
+                    </h1>
+
+                    {/* Version Badge - Inline */}
+                    <div className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-zinc-900/80 border border-zinc-800 rounded-full">
+                      <Sparkles size={10} className="text-amber-400" />
+                      <span className="text-[10px] font-mono text-zinc-500">v1.0.0</span>
+                      <span className="px-1 py-0.5 bg-emerald-500/20 text-emerald-400 text-[8px] font-bold rounded uppercase">Beta</span>
                     </div>
                   </div>
 
-                  {/* 3. Developer Profile */}
-                  <div className="p-5 rounded-2xl bg-zinc-50 dark:bg-zinc-800/30 border border-zinc-100 dark:border-zinc-800">
-                    <div className="flex items-center gap-4 mb-5">
-                      <div className="w-10 h-10 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center shrink-0">
-                        <Code size={18} className="text-zinc-600 dark:text-zinc-300" />
+                  {/* Feature Badges - Compact Inline */}
+                  <div className="flex justify-center gap-2 mb-4 flex-wrap">
+                    {[
+                      { icon: Dumbbell, label: 'Tracking', color: 'emerald' },
+                      { icon: TrendingUp, label: 'Progress', color: 'cyan' },
+                      { icon: Target, label: 'Goals', color: 'pink' }
+                    ].map((feature, i) => (
+                      <div
+                        key={i}
+                        className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-[11px] font-medium ${feature.color === 'emerald' ? 'border-emerald-500/30 text-emerald-400 bg-emerald-500/5' :
+                          feature.color === 'cyan' ? 'border-cyan-500/30 text-cyan-400 bg-cyan-500/5' :
+                            'border-pink-500/30 text-pink-400 bg-pink-500/5'
+                          }`}
+                      >
+                        <feature.icon size={12} />
+                        <span>{feature.label}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Story - Single Compact Paragraph */}
+                  <div className="mb-4 p-3 bg-zinc-900/50 border border-zinc-800 rounded-xl">
+                    <div className="flex items-center gap-1.5 mb-2">
+                      <Heart size={14} className="text-pink-500 fill-pink-500/30" />
+                      <span className="text-xs font-bold text-white uppercase tracking-wide">Our Story</span>
+                    </div>
+                    <p className="text-zinc-400 text-xs leading-relaxed">
+                      Built to solve <strong className="text-white">"gym amnesia"</strong> — forgetting weights and losing track of progress.
+                      A custom tool for discipline, designed with <span className="text-pink-400 font-semibold">Sexie</span> 💕
+                    </p>
+                  </div>
+
+                  {/* Developer Card - Compact */}
+                  <div className="mb-4 p-3 bg-gradient-to-br from-zinc-900 to-zinc-950 border border-zinc-800 rounded-xl">
+                    <div className="flex items-center gap-3 mb-3">
+                      {/* Smaller Avatar */}
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center shadow-md">
+                        <span className="text-sm font-black text-white">SM</span>
                       </div>
                       <div>
-                        <h4 className="font-semibold text-zinc-900 dark:text-white leading-tight">Subhadeep Mistri</h4>
-                        <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Lead Developer & Designer</span>
+                        <h4 className="text-sm font-bold text-white leading-none mb-0.5">Subhadeep Mistri</h4>
+                        <div className="flex items-center gap-1">
+                          <Code size={10} className="text-emerald-500" />
+                          <span className="text-[10px] text-emerald-400">Developer & Designer</span>
+                        </div>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3">
+                    {/* Contact Buttons - Always Horizontal */}
+                    <div className="grid grid-cols-3 gap-1.5">
+                      <a
+                        href="https://github.com/subahdeepmistri"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-1 py-2 rounded-lg bg-zinc-950 border border-zinc-800 hover:border-zinc-600 transition-all text-[10px] font-bold text-zinc-400"
+                      >
+                        <Github size={12} />
+                        GitHub
+                      </a>
                       <a
                         href="mailto:subhadeepmistri1990@gmail.com"
-                        className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors text-sm font-semibold"
+                        className="flex items-center justify-center gap-1 py-2 rounded-lg bg-zinc-950 border border-zinc-800 hover:border-emerald-500/50 transition-all text-[10px] font-bold text-emerald-400"
                       >
-                        <Mail size={14} strokeWidth={2.5} />
+                        <Mail size={12} />
                         Email
                       </a>
                       <a
                         href="tel:8250518317"
-                        className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors text-sm font-semibold"
+                        className="flex items-center justify-center gap-1 py-2 rounded-lg bg-zinc-950 border border-zinc-800 hover:border-cyan-500/50 transition-all text-[10px] font-bold text-cyan-400"
                       >
-                        <Phone size={14} strokeWidth={2.5} />
+                        <Phone size={12} />
                         Call
                       </a>
                     </div>
                   </div>
-                </div>
 
-                {/* 4. Footer Credits - Restored Colors */}
-                <div className="px-8 pb-8 pt-0 text-center">
-                  <p className="text-xs font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-widest drop-shadow-sm">
-                    CRAFTED BY <span className="text-pink-500">SEXIE</span> & <span className="text-red-500">SPIDEY</span>
-                  </p>
+                  {/* Footer - Compact */}
+                  <div className="text-center pt-3 border-t border-zinc-800/50">
+                    <p className="flex items-center justify-center gap-1.5 text-xs text-zinc-500 mb-1">
+                      Crafted with <Heart size={12} className="text-red-500 fill-red-500 animate-pulse" /> by
+                    </p>
+                    <p className="text-sm font-black uppercase tracking-wide">
+                      <span className="text-pink-400">SEXIE</span>
+                      <span className="text-zinc-600 mx-1.5">&</span>
+                      <span className="text-red-500">SPIDEY</span>
+                    </p>
+                    <div className="flex items-center justify-center gap-1 mt-1.5">
+                      <Zap size={10} className="text-amber-500" />
+                      <span className="text-[9px] text-zinc-600 font-mono">Powered by passion & late nights</span>
+                    </div>
+                  </div>
                 </div>
-
               </div>
             </div>
           </main>
