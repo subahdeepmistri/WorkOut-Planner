@@ -531,25 +531,59 @@ function generateCardioFinisher(muscleGroups, level) {
 // ═══════════════════════════════════════════════════════════════════════════
 
 function generateRoutineName(muscleGroups, movementPattern, level) {
-    const muscleNames = muscleGroups
-        .map(g => MUSCLE_GROUPS[g]?.name || g)
-        .join(' & ');
-
-    const patternName = MOVEMENT_PATTERNS[movementPattern]?.name || '';
-
-    const levelPrefixes = {
-        beginner: 'Foundation',
-        moderate: 'Power',
-        advanced: 'Elite'
-    };
-
-    const prefix = levelPrefixes[level] || '';
-
-    if (muscleGroups.length === 1) {
-        return `${prefix} ${muscleNames} Day`;
+    // Handle Push/Pull movement patterns FIRST - they take priority
+    if (movementPattern === 'push') {
+        return 'Push Day';
+    }
+    if (movementPattern === 'pull') {
+        return 'Pull Day';
     }
 
-    return `${prefix} ${patternName} ${muscleNames}`.trim();
+    // Full body detection (4+ muscle groups)
+    if (muscleGroups.length >= 4) {
+        return 'Full Body';
+    }
+
+    // Map muscle group keys to SHORT display names
+    const shortNames = {
+        chest: 'Chest',
+        back: 'Back',
+        legs: 'Legs',
+        shoulders: 'Shoulders',
+        arms: 'Arms',
+        core: 'Core',
+        cardio: 'Cardio'
+    };
+
+    // Filter out cardio/core for naming (they're finishers)
+    const primaryGroups = muscleGroups.filter(g => !['cardio', 'core'].includes(g));
+
+    // No primary groups - fallback
+    if (primaryGroups.length === 0) {
+        return 'Custom Workout';
+    }
+
+    // Single muscle group: "Chest Day", "Legs Day", etc.
+    if (primaryGroups.length === 1) {
+        const name = shortNames[primaryGroups[0]] || primaryGroups[0];
+        return `${name} Day`;
+    }
+
+    // Two muscle groups: "Chest + Back" format
+    if (primaryGroups.length === 2) {
+        const name1 = shortNames[primaryGroups[0]] || primaryGroups[0];
+        const name2 = shortNames[primaryGroups[1]] || primaryGroups[1];
+        return `${name1} + ${name2}`;
+    }
+
+    // Three muscle groups: "Chest + Back + Legs"
+    if (primaryGroups.length === 3) {
+        const names = primaryGroups.map(g => shortNames[g] || g);
+        return names.join(' + ');
+    }
+
+    // Fallback for any edge cases
+    return 'Mixed Workout';
 }
 
 // ═══════════════════════════════════════════════════════════════════════════

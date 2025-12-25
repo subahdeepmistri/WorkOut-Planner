@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, ChevronDown, Calendar, Activity, BarChart3, Info, Trash2, CheckCircle, Plus, Home, PlayCircle, Trophy, Timer, Sun, Moon, Zap, Terminal, Heart, Code, Mail, Phone, ArrowRight, Sparkles, Dumbbell, TrendingUp, Target, Github } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronDown, Calendar, Activity, BarChart3, Info, Trash2, CheckCircle, Plus, Home, PlayCircle, Trophy, Timer, Sun, Moon, Zap, Terminal, Heart, Code, Mail, Phone, ArrowRight, Sparkles, Dumbbell, TrendingUp, Target, Github, AlertCircle } from 'lucide-react';
 // import MilesSticker from './assets/miles_sticker.gif';
 const MilesSticker = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYm1lZGtsNzduem10bTE5ZXdudTJuenZmOXZ6MHM2NXdiaHV6N2Z3ZSZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/uctvenxww01iIanyvT/giphy.gif";
 import GwenSticker from './assets/gwen_sticker.gif';
@@ -33,6 +33,45 @@ import { HeaderRest } from './components/workout/HeaderRest';
 import { WarmupCooldownCard } from './components/workout/WarmupCooldownCard';
 
 import Snowfall from 'react-snowfall';
+
+// Helper function to convert long routine names to short display names
+const getShortDisplayName = (name) => {
+  if (!name) return 'Custom Workout';
+
+  // Already short - return as is
+  if (name.length <= 20) return name;
+
+  // Known patterns - extract key parts
+  const lowerName = name.toLowerCase();
+
+  // Check for Push/Pull patterns
+  if (lowerName.includes('push')) return 'Push Day';
+  if (lowerName.includes('pull')) return 'Pull Day';
+
+  // Check for single muscle day patterns
+  if (lowerName.includes('leg') && !lowerName.includes('&') && !lowerName.includes('+')) return 'Legs Day';
+  if (lowerName.includes('chest') && !lowerName.includes('&') && !lowerName.includes('+')) return 'Chest Day';
+  if (lowerName.includes('back') && !lowerName.includes('&') && !lowerName.includes('+')) return 'Back Day';
+  if (lowerName.includes('shoulder') && !lowerName.includes('&') && !lowerName.includes('+')) return 'Shoulders Day';
+  if (lowerName.includes('arm') && !lowerName.includes('&') && !lowerName.includes('+')) return 'Arms Day';
+
+  // Check for combined muscles (extract muscle names)
+  const muscles = [];
+  if (lowerName.includes('chest')) muscles.push('Chest');
+  if (lowerName.includes('back')) muscles.push('Back');
+  if (lowerName.includes('leg')) muscles.push('Legs');
+  if (lowerName.includes('shoulder')) muscles.push('Shoulders');
+  if (lowerName.includes('arm')) muscles.push('Arms');
+
+  // Return combined format
+  if (muscles.length >= 4) return 'Full Body';
+  if (muscles.length === 3) return muscles.slice(0, 2).join(' + ') + '...';
+  if (muscles.length === 2) return muscles.join(' + ');
+  if (muscles.length === 1) return `${muscles[0]} Day`;
+
+  // Fallback: truncate with ellipsis
+  return name.substring(0, 18) + '...';
+};
 
 function App() {
   const { theme, toggleTheme } = useTheme();
@@ -931,14 +970,14 @@ function App() {
                             ? 'border-emerald-200/50 dark:border-emerald-800/30'
                             : 'border-amber-200/50 dark:border-amber-800/30'
                             }`}>
-                            <div className="flex items-center justify-center gap-3">
-                              <div className={`w-2 h-2 rounded-full animate-pulse ${(routineTab || 'default') === 'default' ? 'bg-emerald-500' : 'bg-amber-500'
+                            <div className="flex items-center justify-center gap-3 max-w-full px-2">
+                              <div className={`w-2 h-2 rounded-full animate-pulse flex-shrink-0 ${(routineTab || 'default') === 'default' ? 'bg-emerald-500' : 'bg-amber-500'
                                 }`} />
-                              <h2 className="text-xl sm:text-2xl font-black italic tracking-tighter text-zinc-900 dark:text-white leading-tight">
-                                {/* Show routine from active tab only */}
+                              <h2 className="text-lg sm:text-xl font-black italic tracking-tighter text-zinc-900 dark:text-white leading-tight truncate max-w-[280px] sm:max-w-[400px]">
+                                {/* Show routine from active tab only - using short display names */}
                                 {routineTab === 'custom'
-                                  ? (savedPlans.find(p => p.id === activePlanId)?.name || (savedPlans.length > 0 ? savedPlans[0].name : "No Custom Routines"))
-                                  : (availablePlans.find(p => p.id === activePlanId)?.name || (availablePlans.length > 0 ? availablePlans[0].name : "No Routines"))
+                                  ? getShortDisplayName(savedPlans.find(p => p.id === activePlanId)?.name || (savedPlans.length > 0 ? savedPlans[0].name : "No Custom Routines"))
+                                  : getShortDisplayName(availablePlans.find(p => p.id === activePlanId)?.name || (availablePlans.length > 0 ? availablePlans[0].name : "No Routines"))
                                 }
                               </h2>
                             </div>
@@ -960,34 +999,60 @@ function App() {
                                 </div>
                               ) : (
                                 (routineTab === 'custom' ? savedPlans : availablePlans).map((plan, index) => (
-                                  <button
+                                  <div
                                     key={`${plan.id}-${tabAnimationKey}`}
-                                    onClick={() => {
-                                      setActivePlanId(plan.id);
-                                      // Close list after brief delay to show selection feedback
-                                      setTimeout(() => setRoutineListOpen(false), 300);
-                                    }}
-                                    className={`w-full px-4 py-3 text-left flex items-center justify-between border-b last:border-b-0 transition-all duration-200 opacity-0 animate-fade-slide-in ${(routineTab || 'default') === 'default'
+                                    className={`w-full flex items-center border-b last:border-b-0 transition-all duration-200 opacity-0 animate-fade-slide-in overflow-hidden ${(routineTab || 'default') === 'default'
                                       ? 'border-emerald-100 dark:border-emerald-900/30'
                                       : 'border-amber-100 dark:border-amber-900/30'
                                       } ${activePlanId === plan.id
                                         ? (routineTab || 'default') === 'default'
-                                          ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 font-bold'
-                                          : 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 font-bold'
-                                        : 'hover:bg-white/80 dark:hover:bg-zinc-800/50 text-zinc-700 dark:text-zinc-300 active:scale-[0.99]'
+                                          ? 'bg-emerald-100 dark:bg-emerald-900/40'
+                                          : 'bg-amber-100 dark:bg-amber-900/40'
+                                        : 'hover:bg-white/80 dark:hover:bg-zinc-800/50'
                                       }`}
                                     style={{ animationDelay: `${index * 60}ms` }}
                                   >
-                                    <span className="font-semibold text-sm truncate">{plan.name}</span>
-                                    {activePlanId === plan.id && (
-                                      <div className="flex items-center gap-2">
-                                        <span className={`text-[10px] uppercase tracking-wider font-bold ${(routineTab || 'default') === 'default' ? 'text-emerald-500' : 'text-amber-500'
-                                          }`}>Selected</span>
-                                        <CheckCircle size={18} className={`flex-shrink-0 animate-bounce-subtle ${(routineTab || 'default') === 'default' ? 'text-emerald-500' : 'text-amber-500'
-                                          }`} />
+                                    {/* Routine Name - Clickable Area */}
+                                    <button
+                                      onClick={() => {
+                                        setActivePlanId(plan.id);
+                                        setTimeout(() => setRoutineListOpen(false), 300);
+                                      }}
+                                      className={`flex-1 min-w-0 px-4 py-3 text-left transition-all duration-200 overflow-hidden ${activePlanId === plan.id
+                                        ? (routineTab || 'default') === 'default'
+                                          ? 'text-emerald-700 dark:text-emerald-300 font-bold'
+                                          : 'text-amber-700 dark:text-amber-300 font-bold'
+                                        : 'text-zinc-700 dark:text-zinc-300 active:scale-[0.99]'
+                                        }`}
+                                    >
+                                      <div className="flex items-center gap-2 w-full">
+                                        <span className="font-semibold text-sm truncate block overflow-hidden text-ellipsis whitespace-nowrap" style={{ maxWidth: 'calc(100% - 90px)' }}>{getShortDisplayName(plan.name)}</span>
+                                        {activePlanId === plan.id && (
+                                          <div className="flex items-center gap-1.5 flex-shrink-0 ml-auto">
+                                            <span className={`text-[10px] uppercase tracking-wider font-bold ${(routineTab || 'default') === 'default' ? 'text-emerald-500' : 'text-amber-500'
+                                              }`}>Selected</span>
+                                            <CheckCircle size={16} className={`flex-shrink-0 ${(routineTab || 'default') === 'default' ? 'text-emerald-500' : 'text-amber-500'
+                                              }`} />
+                                          </div>
+                                        )}
                                       </div>
+                                    </button>
+
+                                    {/* Inline Delete Button - Only for Custom Routines */}
+                                    {routineTab === 'custom' && (
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setActivePlanId(plan.id);
+                                          setShowDeleteConfirm(true);
+                                        }}
+                                        className="flex-shrink-0 w-10 h-10 mr-2 flex items-center justify-center rounded-lg transition-all duration-200 text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 active:scale-95"
+                                        title={`Delete ${plan.name}`}
+                                      >
+                                        <Trash2 size={16} />
+                                      </button>
                                     )}
-                                  </button>
+                                  </div>
                                 ))
                               )}
                             </div>
@@ -1061,23 +1126,6 @@ function App() {
                                   <Plus size={18} strokeWidth={2.5} className={routineTab === 'custom' ? 'animate-bounce-subtle' : ''} />
                                   <span className="text-sm font-bold tracking-wide">Create Custom Routine</span>
                                 </button>
-
-                                {/* Delete button - only show for custom routines */}
-                                {savedPlans.some(p => p.id === activePlanId) && (
-                                  <button
-                                    onClick={() => setShowDeleteConfirm(true)}
-                                    disabled={!!currentLog}
-                                    className={`flex items-center justify-center w-12 h-12 rounded-xl border-2 transition-all duration-200 ${!!currentLog
-                                      ? 'bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-400 cursor-not-allowed'
-                                      : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 hover:border-red-300 dark:hover:border-red-700'
-                                      }`}
-                                    title="Delete this routine"
-                                  >
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                    </svg>
-                                  </button>
-                                )}
                               </div>
                             </div>
                           )}
@@ -1102,7 +1150,7 @@ function App() {
                     disabled={isLocked}
                   />
 
-                  {currentLog.exercises && (() => {
+                  {currentLog.exercises && currentLog.exercises.length > 0 ? (() => {
                     const activeExerciseIndex = currentLog.exercises.findIndex(ex => ex.sets.some(s => !s.completed));
                     return currentLog.exercises.map((exercise, i) => (
                       <ExerciseCard
@@ -1129,7 +1177,22 @@ function App() {
                         onStartSetTimer={(duration, setIndex) => startRest(duration, { type: 'set', exIndex: i, setIndex })}
                       />
                     ))
-                  })()}
+                  })() : (
+                    /* Empty State - No exercises in routine */
+                    <div className="p-8 bg-gradient-to-br from-amber-500/10 to-orange-500/10 dark:from-amber-500/5 dark:to-orange-500/5 rounded-3xl border-2 border-dashed border-amber-400/50 dark:border-amber-500/30 text-center">
+                      <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-amber-500/20 flex items-center justify-center">
+                        <AlertCircle className="w-8 h-8 text-amber-500" />
+                      </div>
+                      <h3 className="text-lg font-bold text-zinc-800 dark:text-white mb-2">No Exercises Found</h3>
+                      <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-6">
+                        This workout has no exercises. Add some below to get started!
+                      </p>
+                      <div className="grid grid-cols-2 gap-3">
+                        <Button variant="strength" onClick={() => addExercise('strength')} className="h-12">+ Strength</Button>
+                        <Button variant="cardio" onClick={() => addExercise('cardio')} className="h-12">+ Cardio</Button>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Cooldown Section */}
                   <WarmupCooldownCard
@@ -1277,8 +1340,8 @@ function App() {
                     </div>
                   </div>
 
-                  {/* Feature Badges - Compact Inline */}
-                  <div className="flex justify-center gap-2 mb-4 flex-wrap">
+                  {/* Feature Badges - Mobile Responsive */}
+                  <div className="flex justify-center gap-2 mb-4 flex-wrap px-2">
                     {[
                       { icon: Dumbbell, label: 'Tracking', color: 'emerald' },
                       { icon: TrendingUp, label: 'Progress', color: 'cyan' },
@@ -1286,12 +1349,12 @@ function App() {
                     ].map((feature, i) => (
                       <div
                         key={i}
-                        className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-[11px] font-medium ${feature.color === 'emerald' ? 'border-emerald-500/30 text-emerald-400 bg-emerald-500/5' :
+                        className={`flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs font-medium min-w-[80px] justify-center ${feature.color === 'emerald' ? 'border-emerald-500/30 text-emerald-400 bg-emerald-500/5' :
                           feature.color === 'cyan' ? 'border-cyan-500/30 text-cyan-400 bg-cyan-500/5' :
                             'border-pink-500/30 text-pink-400 bg-pink-500/5'
                           }`}
                       >
-                        <feature.icon size={12} />
+                        <feature.icon size={14} />
                         <span>{feature.label}</span>
                       </div>
                     ))}
@@ -1325,29 +1388,29 @@ function App() {
                       </div>
                     </div>
 
-                    {/* Contact Buttons - Always Horizontal */}
-                    <div className="grid grid-cols-3 gap-1.5">
+                    {/* Contact Buttons - Mobile Responsive with Wrap */}
+                    <div className="flex flex-wrap justify-center gap-2">
                       <a
                         href="https://github.com/subahdeepmistri"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-1 py-2 rounded-lg bg-zinc-950 border border-zinc-800 hover:border-zinc-600 transition-all text-[10px] font-bold text-zinc-400"
+                        className="flex items-center justify-center gap-1.5 px-4 py-2.5 min-h-[44px] min-w-[90px] rounded-xl bg-zinc-950 border border-zinc-800 hover:border-zinc-600 hover:bg-zinc-900 transition-all text-xs font-bold text-zinc-400 active:scale-95"
                       >
-                        <Github size={12} />
+                        <Github size={14} />
                         GitHub
                       </a>
                       <a
                         href="mailto:subhadeepmistri1990@gmail.com"
-                        className="flex items-center justify-center gap-1 py-2 rounded-lg bg-zinc-950 border border-zinc-800 hover:border-emerald-500/50 transition-all text-[10px] font-bold text-emerald-400"
+                        className="flex items-center justify-center gap-1.5 px-4 py-2.5 min-h-[44px] min-w-[90px] rounded-xl bg-zinc-950 border border-zinc-800 hover:border-emerald-500/50 hover:bg-zinc-900 transition-all text-xs font-bold text-emerald-400 active:scale-95"
                       >
-                        <Mail size={12} />
+                        <Mail size={14} />
                         Email
                       </a>
                       <a
                         href="tel:8250518317"
-                        className="flex items-center justify-center gap-1 py-2 rounded-lg bg-zinc-950 border border-zinc-800 hover:border-cyan-500/50 transition-all text-[10px] font-bold text-cyan-400"
+                        className="flex items-center justify-center gap-1.5 px-4 py-2.5 min-h-[44px] min-w-[90px] rounded-xl bg-zinc-950 border border-zinc-800 hover:border-cyan-500/50 hover:bg-zinc-900 transition-all text-xs font-bold text-cyan-400 active:scale-95"
                       >
-                        <Phone size={12} />
+                        <Phone size={14} />
                         Call
                       </a>
                     </div>

@@ -487,13 +487,22 @@ export const useWorkoutData = (selectedDate) => {
             return isNaN(parsed) ? 8 : parsed;
         };
 
+        // Defensive check: warn if exercises array is empty
+        if (!template.exercises || template.exercises.length === 0) {
+            console.warn('[useWorkoutData] Warning: Template has no exercises!', {
+                templateName: template.name,
+                templateId: template.id,
+                planIdUsed: planIdToUse
+            });
+        }
+
         const newLog = {
             id: dateKey,
             templateName: template.name,
-            exercises: template.exercises.map(ex => ({
+            exercises: (template.exercises || []).map(ex => ({
                 ...ex,
                 numericalTargetReps: parseTargetReps(ex.targetReps),
-                sets: Array(ex.targetSets).fill(0).map(() => ({
+                sets: Array(ex.targetSets || 3).fill(0).map(() => ({
                     weight: '', reps: '', completed: false,
                     distance: '', time: '', pace: '', duration: '', holdTime: ''
                 })),
