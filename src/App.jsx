@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, ChevronDown, Calendar, Activity, BarChart3, Info, Trash2, CheckCircle, Plus, Home, PlayCircle, Trophy, Timer, Sun, Moon, Zap, Terminal, Heart, Code, Mail, Phone } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronDown, Calendar, Activity, BarChart3, Info, Trash2, CheckCircle, Plus, Home, PlayCircle, Trophy, Timer, Sun, Moon, Zap, Terminal, Heart, Code, Mail, Phone, ArrowRight, Sparkles } from 'lucide-react';
 // import MilesSticker from './assets/miles_sticker.gif';
 const MilesSticker = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYm1lZGtsNzduem10bTE5ZXdudTJuenZmOXZ6MHM2NXdiaHV6N2Z3ZSZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/uctvenxww01iIanyvT/giphy.gif";
 import GwenSticker from './assets/gwen_sticker.gif';
@@ -53,6 +53,7 @@ function App() {
   const [isAboutPressed, setIsAboutPressed] = useState(false);
   const [routineTab, setRoutineTab] = useState('default'); // 'default' or 'custom'
   const [routineListOpen, setRoutineListOpen] = useState(false); // Collapsible list state
+  const [tabAnimationKey, setTabAnimationKey] = useState(0); // Trigger re-animation on tab click
 
   // Warmup/Cooldown completion tracking (persisted per date)
   const [warmupCompleted, setWarmupCompleted] = useState(() => {
@@ -417,7 +418,7 @@ function App() {
 
 
       {/* --- Main Content --- */}
-      <div className="relative z-10 min-h-[100dvh] text-zinc-900 dark:text-zinc-100 pb-24 w-full max-w-[800px] mx-auto px-3 sm:px-4">
+      <div className="relative z-10 min-h-[100dvh] text-zinc-900 dark:text-zinc-100 pb-16 w-full max-w-[800px] mx-auto px-3 sm:px-4">
 
         {/* Tab: Workout */}
         {activeTab === 'workout' ? (
@@ -835,92 +836,163 @@ function App() {
 
                       <div className="relative flex flex-col min-h-0 pb-0 px-2 max-w-xl mx-auto">
 
-                        {/* Routine Type Tabs */}
+                        {/* Routine Type Tabs - Enhanced with Animations */}
                         <div className="flex justify-center mb-4">
-                          <div className="inline-flex bg-zinc-100 dark:bg-zinc-800 rounded-xl p-1 gap-1">
+                          <div className="relative inline-flex bg-zinc-100 dark:bg-zinc-800 rounded-xl p-1 gap-1">
+                            {/* Sliding Indicator Background */}
+                            <div
+                              className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white dark:bg-zinc-700 rounded-lg shadow-md transition-all duration-300 ease-out ${(routineTab || 'default') === 'default'
+                                ? 'left-1'
+                                : 'left-[calc(50%+2px)]'
+                                }`}
+                            />
                             <button
-                              onClick={() => setRoutineTab?.('default')}
+                              onClick={() => {
+                                setRoutineTab?.('default');
+                                setRoutineListOpen(true);
+                                setTabAnimationKey(k => k + 1);
+                                // Reset to first default routine when switching tabs
+                                if (availablePlans.length > 0 && routineTab !== 'default') {
+                                  setActivePlanId(availablePlans[0].id);
+                                }
+                              }}
                               disabled={!!currentLog}
-                              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold tracking-wide transition-all duration-200 ${(routineTab || 'default') === 'default'
-                                ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white shadow-sm'
+                              className={`relative z-10 flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold tracking-wide transition-all duration-300 ${(routineTab || 'default') === 'default'
+                                ? 'text-zinc-900 dark:text-white'
                                 : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
                                 } ${currentLog ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
-                              <Activity size={16} className={(routineTab || 'default') === 'default' ? 'text-emerald-500' : 'text-zinc-400'} />
+                              <Activity
+                                size={16}
+                                className={`transition-all duration-300 ${(routineTab || 'default') === 'default' ? 'text-emerald-500 scale-110' : 'text-zinc-400 scale-100'}`}
+                              />
                               Default
                             </button>
                             <button
-                              onClick={() => setRoutineTab?.('custom')}
+                              onClick={() => {
+                                setRoutineTab?.('custom');
+                                setRoutineListOpen(true);
+                                setTabAnimationKey(k => k + 1);
+                                // Reset to first custom routine when switching tabs
+                                if (savedPlans.length > 0 && routineTab !== 'custom') {
+                                  setActivePlanId(savedPlans[0].id);
+                                }
+                              }}
                               disabled={!!currentLog}
-                              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold tracking-wide transition-all duration-200 ${routineTab === 'custom'
-                                ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white shadow-sm'
+                              className={`relative z-10 flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold tracking-wide transition-all duration-300 ${routineTab === 'custom'
+                                ? 'text-zinc-900 dark:text-white'
                                 : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
                                 } ${currentLog ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
-                              <Zap size={16} className={routineTab === 'custom' ? 'text-amber-500' : 'text-zinc-400'} />
+                              <Zap
+                                size={16}
+                                className={`transition-all duration-300 ${routineTab === 'custom' ? 'text-amber-500 scale-110' : 'text-zinc-400 scale-100'}`}
+                              />
                               Custom
                             </button>
                           </div>
                         </div>
 
-                        {/* Selected Routine Display - Tap to Expand */}
-                        <button
-                          onClick={() => !currentLog && setRoutineListOpen(!routineListOpen)}
-                          disabled={!!currentLog}
-                          className={`w-full text-center mb-2 py-2 rounded-xl transition-all duration-200 ${currentLog
-                            ? 'cursor-default'
-                            : 'hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer active:scale-[0.98]'
-                            }`}
+                        {/* Routine Section Preview - Always visible with highlight */}
+                        <div
+                          key={tabAnimationKey}
+                          className={`mb-4 rounded-2xl border-2 transition-all duration-500 overflow-hidden ${(routineTab || 'default') === 'default'
+                            ? 'border-emerald-300 dark:border-emerald-700/60 bg-gradient-to-br from-emerald-50 via-emerald-50/50 to-white dark:from-emerald-950/30 dark:via-emerald-900/10 dark:to-zinc-900'
+                            : 'border-amber-300 dark:border-amber-700/60 bg-gradient-to-br from-amber-50 via-amber-50/50 to-white dark:from-amber-950/30 dark:via-amber-900/10 dark:to-zinc-900'
+                            } ${routineListOpen ? 'animate-spotlight' : ''}`}
                         >
-                          <div className="flex items-center justify-center gap-2">
-                            <h2 className="text-2xl sm:text-3xl font-black italic tracking-tighter text-zinc-900 dark:text-white leading-tight">
-                              {savedPlans.find(p => p.id === activePlanId)?.name || availablePlans.find(p => p.id === activePlanId)?.name || "Select Routine"}
-                            </h2>
+                          {/* Section Header - Always visible */}
+                          <button
+                            onClick={() => !currentLog && setRoutineListOpen(!routineListOpen)}
+                            disabled={!!currentLog}
+                            className={`w-full px-4 py-3 flex items-center justify-between transition-all duration-200 ${currentLog ? 'cursor-default' : 'cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 active:scale-[0.99]'}`}
+                          >
+                            <div className={`flex items-center gap-2 text-sm font-bold uppercase tracking-wider ${(routineTab || 'default') === 'default'
+                              ? 'text-emerald-600 dark:text-emerald-400'
+                              : 'text-amber-600 dark:text-amber-400'
+                              }`}>
+                              {(routineTab || 'default') === 'default' ? (
+                                <><Activity size={14} className="animate-pulse" /> Your Default Routines</>
+                              ) : (
+                                <><Zap size={14} className="animate-pulse" /> Your Custom Routines</>
+                              )}
+                            </div>
                             {!currentLog && (
                               <ChevronDown
-                                size={24}
-                                className={`text-zinc-400 dark:text-zinc-500 transition-transform duration-200 ${routineListOpen ? 'rotate-180' : ''}`}
+                                size={18}
+                                className={`transition-transform duration-300 ${(routineTab || 'default') === 'default' ? 'text-emerald-500' : 'text-amber-500'
+                                  } ${routineListOpen ? 'rotate-180' : ''}`}
                               />
                             )}
-                          </div>
-                          {!currentLog && (
-                            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-                              Tap to {routineListOpen ? 'hide' : 'show'} routines
-                            </p>
-                          )}
-                        </button>
+                          </button>
 
-                        {/* Routine List - Collapsible */}
-                        {!currentLog && routineListOpen && (
-                          <div className="mb-4 max-h-48 overflow-y-auto rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 animate-in slide-in-from-top-2 duration-200">
-                            {(routineTab === 'custom' ? savedPlans : availablePlans).length === 0 ? (
-                              <div className="p-4 text-center text-zinc-500 dark:text-zinc-400 text-sm">
+                          {/* Selected Routine Display - Tab Specific */}
+                          <div className={`px-4 py-3 border-t transition-all duration-300 ${(routineTab || 'default') === 'default'
+                            ? 'border-emerald-200/50 dark:border-emerald-800/30'
+                            : 'border-amber-200/50 dark:border-amber-800/30'
+                            }`}>
+                            <div className="flex items-center justify-center gap-3">
+                              <div className={`w-2 h-2 rounded-full animate-pulse ${(routineTab || 'default') === 'default' ? 'bg-emerald-500' : 'bg-amber-500'
+                                }`} />
+                              <h2 className="text-xl sm:text-2xl font-black italic tracking-tighter text-zinc-900 dark:text-white leading-tight">
+                                {/* Show routine from active tab only */}
                                 {routineTab === 'custom'
-                                  ? "No custom routines yet. Create one below!"
-                                  : "No default routines available."}
-                              </div>
-                            ) : (
-                              (routineTab === 'custom' ? savedPlans : availablePlans).map((plan) => (
-                                <button
-                                  key={plan.id}
-                                  onClick={() => {
-                                    setActivePlanId(plan.id);
-                                    setRoutineListOpen(false); // Close list after selection
-                                  }}
-                                  className={`w-full px-4 py-3 text-left flex items-center justify-between border-b border-zinc-200 dark:border-zinc-700 last:border-b-0 transition-all duration-150 ${activePlanId === plan.id
-                                    ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400'
-                                    : 'hover:bg-zinc-100 dark:hover:bg-zinc-700/50 text-zinc-700 dark:text-zinc-300'
-                                    }`}
-                                >
-                                  <span className="font-semibold text-sm truncate">{plan.name}</span>
-                                  {activePlanId === plan.id && (
-                                    <CheckCircle size={18} className="text-emerald-500 flex-shrink-0 ml-2" />
-                                  )}
-                                </button>
-                              ))
-                            )}
+                                  ? (savedPlans.find(p => p.id === activePlanId)?.name || (savedPlans.length > 0 ? savedPlans[0].name : "No Custom Routines"))
+                                  : (availablePlans.find(p => p.id === activePlanId)?.name || (availablePlans.length > 0 ? availablePlans[0].name : "No Routines"))
+                                }
+                              </h2>
+                            </div>
                           </div>
-                        )}
+
+
+
+                          {/* Routine List - Expandable */}
+                          {!currentLog && routineListOpen && (
+                            <div className={`border-t max-h-40 overflow-y-auto transition-all duration-300 ${(routineTab || 'default') === 'default'
+                              ? 'border-emerald-200/50 dark:border-emerald-800/30'
+                              : 'border-amber-200/50 dark:border-amber-800/30'
+                              }`}>
+                              {(routineTab === 'custom' ? savedPlans : availablePlans).length === 0 ? (
+                                <div className="p-4 text-center text-zinc-500 dark:text-zinc-400 text-sm">
+                                  {routineTab === 'custom'
+                                    ? "No custom routines yet. Create one below!"
+                                    : "No default routines available."}
+                                </div>
+                              ) : (
+                                (routineTab === 'custom' ? savedPlans : availablePlans).map((plan, index) => (
+                                  <button
+                                    key={`${plan.id}-${tabAnimationKey}`}
+                                    onClick={() => {
+                                      setActivePlanId(plan.id);
+                                      // Close list after brief delay to show selection feedback
+                                      setTimeout(() => setRoutineListOpen(false), 300);
+                                    }}
+                                    className={`w-full px-4 py-3 text-left flex items-center justify-between border-b last:border-b-0 transition-all duration-200 opacity-0 animate-fade-slide-in ${(routineTab || 'default') === 'default'
+                                      ? 'border-emerald-100 dark:border-emerald-900/30'
+                                      : 'border-amber-100 dark:border-amber-900/30'
+                                      } ${activePlanId === plan.id
+                                        ? (routineTab || 'default') === 'default'
+                                          ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 font-bold'
+                                          : 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 font-bold'
+                                        : 'hover:bg-white/80 dark:hover:bg-zinc-800/50 text-zinc-700 dark:text-zinc-300 active:scale-[0.99]'
+                                      }`}
+                                    style={{ animationDelay: `${index * 60}ms` }}
+                                  >
+                                    <span className="font-semibold text-sm truncate">{plan.name}</span>
+                                    {activePlanId === plan.id && (
+                                      <div className="flex items-center gap-2">
+                                        <span className={`text-[10px] uppercase tracking-wider font-bold ${(routineTab || 'default') === 'default' ? 'text-emerald-500' : 'text-amber-500'
+                                          }`}>Selected</span>
+                                        <CheckCircle size={18} className={`flex-shrink-0 animate-bounce-subtle ${(routineTab || 'default') === 'default' ? 'text-emerald-500' : 'text-amber-500'
+                                          }`} />
+                                      </div>
+                                    )}
+                                  </button>
+                                ))
+                              )}
+                            </div>
+                          )}
+                        </div>
 
                         {/* System Status (Below Routine) */}
                         <div className="flex justify-center mt-2">
@@ -937,13 +1009,10 @@ function App() {
                           )}
                         </div>
 
-                        {/* Spacer for bottom pinned content */}
-
-
                         {/* Bottom Action Area */}
-                        <div className="mt-12 w-full z-10">
+                        <div className="mt-2 w-full z-10">
                           {/* 3. Primary CTA */}
-                          <div className="mb-4">
+                          <div className="mb-2">
                             <Button
                               onClick={loadRoutine}
                               disabled={!!currentLog}
@@ -965,38 +1034,51 @@ function App() {
 
                           {/* 4. Trust Copy */}
                           {!currentLog && (
-                            <p className="text-center mb-2 text-[10px] font-medium text-zinc-400 dark:text-zinc-600 opacity-80">
+                            <p className="text-center mb-1 text-[10px] font-medium text-zinc-400 dark:text-zinc-600 opacity-80">
                               Exercises can be changed anytime · Progress is saved automatically
                             </p>
                           )}
 
                           {/* 5. Secondary Actions - Only show when no workout in progress */}
                           {!currentLog && (
-                            <div className="flex justify-center gap-3 mt-0">
-                              <button
-                                onClick={() => setIsBuilderOpen(true)}
-                                className="flex items-center gap-2 px-6 py-3 rounded-xl bg-zinc-100 dark:bg-zinc-800 border-2 border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 hover:border-zinc-300 dark:hover:border-zinc-600 transition-all duration-200 shadow-sm hover:shadow-md"
-                              >
-                                <Plus size={18} strokeWidth={2.5} />
-                                <span className="text-sm font-bold tracking-wide">Create Custom Routine</span>
-                              </button>
-
-                              {/* Delete button - only show for custom routines */}
-                              {savedPlans.some(p => p.id === activePlanId) && (
-                                <button
-                                  onClick={() => setShowDeleteConfirm(true)}
-                                  disabled={!!currentLog}
-                                  className={`flex items-center justify-center w-12 h-12 rounded-xl border-2 transition-all duration-200 ${!!currentLog
-                                    ? 'bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-400 cursor-not-allowed'
-                                    : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 hover:border-red-300 dark:hover:border-red-700'
-                                    }`}
-                                  title="Delete this routine"
-                                >
-                                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                  </svg>
-                                </button>
+                            <div className="flex flex-col items-center gap-2 mt-0">
+                              {/* Visual hint for Custom tab */}
+                              {routineTab === 'custom' && (
+                                <div className="flex items-center gap-2 text-amber-500 dark:text-amber-400 text-xs font-semibold animate-fade-slide-in">
+                                  <Sparkles size={14} className="animate-pulse" />
+                                  <span>Create your personalized routine below</span>
+                                  <ArrowRight size={14} className="animate-point" />
+                                </div>
                               )}
+                              <div className="flex justify-center gap-3">
+                                <button
+                                  onClick={() => setIsBuilderOpen(true)}
+                                  className={`flex items-center gap-2 px-6 py-3 rounded-xl border-2 transition-all duration-300 shadow-sm hover:shadow-lg active:scale-[0.98] ${routineTab === 'custom'
+                                    ? 'bg-gradient-to-r from-amber-500 to-orange-500 border-amber-400 text-white font-bold animate-attention hover:from-amber-400 hover:to-orange-400'
+                                    : 'bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 hover:border-zinc-300 dark:hover:border-zinc-600'
+                                    }`}
+                                >
+                                  <Plus size={18} strokeWidth={2.5} className={routineTab === 'custom' ? 'animate-bounce-subtle' : ''} />
+                                  <span className="text-sm font-bold tracking-wide">Create Custom Routine</span>
+                                </button>
+
+                                {/* Delete button - only show for custom routines */}
+                                {savedPlans.some(p => p.id === activePlanId) && (
+                                  <button
+                                    onClick={() => setShowDeleteConfirm(true)}
+                                    disabled={!!currentLog}
+                                    className={`flex items-center justify-center w-12 h-12 rounded-xl border-2 transition-all duration-200 ${!!currentLog
+                                      ? 'bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-400 cursor-not-allowed'
+                                      : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 hover:border-red-300 dark:hover:border-red-700'
+                                      }`}
+                                    title="Delete this routine"
+                                  >
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                  </button>
+                                )}
+                              </div>
                             </div>
                           )}
                         </div>

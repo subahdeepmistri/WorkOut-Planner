@@ -2,9 +2,67 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Mobile-First Base Styles */
+html {
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 body {
   @apply bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100 text-base overflow-x-hidden;
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -webkit-overflow-scrolling: touch;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Prevent horizontal overflow on all elements */
+*,
+*::before,
+*::after {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Mobile Touch Target Minimum */
+@layer utilities {
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Clamp typography for responsive scaling */
+  .text-clamp-xs {
+    font-size: clamp(0.625rem, 2vw, 0.75rem);
+  }
+
+  .text-clamp-sm {
+    font-size: clamp(0.75rem, 2.5vw, 0.875rem);
+  }
+
+  .text-clamp-base {
+    font-size: clamp(0.875rem, 3vw, 1rem);
+  }
+
+  .text-clamp-lg {
+    font-size: clamp(1rem, 3.5vw, 1.25rem);
+  }
+
+  .text-clamp-xl {
+    font-size: clamp(1.125rem, 4vw, 1.5rem);
+  }
+
+  .text-clamp-2xl {
+    font-size: clamp(1.25rem, 5vw, 2rem);
+  }
+
+  /* Safe word breaking */
+  .break-safe {
+    word-wrap: break-word;
+    overflow-wrap: anywhere;
+    hyphens: auto;
+  }
 }
 
 /* Custom Scrollbar */
@@ -45,14 +103,141 @@ body {
 
 /* Custom Float Animation */
 @keyframes float {
-    0%, 100% {
-        transform: translateY(0);
-    }
-    50% {
-        transform: translateY(-20px);
-    }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-20px);
+  }
 }
 
 .animate-float {
-    animation: float 6s ease-in-out infinite;
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Tab Indicator Animations */
+@keyframes spotlight-pulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+
+  50% {
+    box-shadow: 0 0 20px 4px rgba(16, 185, 129, 0.15);
+  }
+}
+
+.animate-spotlight {
+  animation: spotlight-pulse 2s ease-in-out infinite;
+}
+
+@keyframes attention-glow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0), 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  50% {
+    box-shadow: 0 0 25px 6px rgba(245, 158, 11, 0.25), 0 4px 20px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.animate-attention {
+  animation: attention-glow 1.5s ease-in-out infinite;
+}
+
+@keyframes bounce-subtle {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.animate-bounce-subtle {
+  animation: bounce-subtle 2s ease-in-out infinite;
+}
+
+@keyframes fade-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-slide-in {
+  animation: fade-slide-in 0.4s ease-out forwards;
+}
+
+/* Staggered animation delays for cards */
+.stagger-1 {
+  animation-delay: 0.05s;
+}
+
+.stagger-2 {
+  animation-delay: 0.1s;
+}
+
+.stagger-3 {
+  animation-delay: 0.15s;
+}
+
+.stagger-4 {
+  animation-delay: 0.2s;
+}
+
+.stagger-5 {
+  animation-delay: 0.25s;
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+}
+
+.animate-pulse-ring {
+  animation: pulse-ring 2s ease-in-out infinite;
+}
+
+/* Arrow indicator animation */
+@keyframes point-bounce {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  50% {
+    transform: translateX(6px);
+  }
+}
+
+.animate-point {
+  animation: point-bounce 1s ease-in-out infinite;
 }
