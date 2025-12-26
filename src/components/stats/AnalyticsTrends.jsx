@@ -83,7 +83,7 @@ const TrendCard = ({ title, data, labels, color, type = 'line', category, theme,
         },
         scales: {
             x: { display: false },
-            y: { display: false, min: Math.min(...(data || [])) * 0.85 }
+            y: { display: false, min: (data && data.length > 0 ? Math.min(...data) : 0) * 0.85 }
         },
         elements: {
             point: {

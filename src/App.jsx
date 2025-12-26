@@ -1311,7 +1311,7 @@ function App() {
         ) : activeTab === 'stats' ? (
           /* Tab: Stats */
           <main className="max-w-[800px] mx-auto p-4 relative pt-10">
-            <StatsView workoutData={workoutData} getPreviousBest={getPreviousBest} theme={theme} />
+            <StatsView workoutData={workoutData} getPreviousBest={getPreviousBest} theme="dark" />
           </main>
         ) : (
           /* Tab: About */
