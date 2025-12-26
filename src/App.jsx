@@ -982,10 +982,10 @@ function App() {
                             ? 'border-emerald-200/50 dark:border-emerald-800/30'
                             : 'border-amber-200/50 dark:border-amber-800/30'
                             }`}>
-                            <div className="flex items-center justify-center gap-3 max-w-full px-2">
+                            <div className="flex items-center justify-center gap-3 w-full pr-2">
                               <div className={`w-2 h-2 rounded-full animate-pulse flex-shrink-0 ${(routineTab || 'default') === 'default' ? 'bg-emerald-500' : 'bg-amber-500'
                                 }`} />
-                              <h2 className="text-lg sm:text-xl font-black italic tracking-tighter text-zinc-900 dark:text-white leading-tight truncate max-w-[280px] sm:max-w-[400px]">
+                              <h2 className="text-lg sm:text-xl font-black italic tracking-tighter text-zinc-900 dark:text-white leading-tight pr-1">
                                 {/* Show routine from active tab only - using short display names */}
                                 {routineTab === 'custom'
                                   ? getShortDisplayName(savedPlans.find(p => p.id === activePlanId)?.name || (savedPlans.length > 0 ? savedPlans[0].name : "No Custom Routines"))
@@ -1037,8 +1037,8 @@ function App() {
                                         : 'text-zinc-700 dark:text-zinc-300 active:scale-[0.99]'
                                         }`}
                                     >
-                                      <div className="flex items-center gap-2 w-full">
-                                        <span className="font-semibold text-sm truncate block overflow-hidden text-ellipsis whitespace-nowrap" style={{ maxWidth: 'calc(100% - 90px)' }}>{getShortDisplayName(plan.name)}</span>
+                                      <div className="flex items-center gap-2 w-full min-w-0 pr-1">
+                                        <span className="font-semibold text-sm truncate flex-1 min-w-0">{getShortDisplayName(plan.name)}</span>
                                         {activePlanId === plan.id && (
                                           <div className="flex items-center gap-1.5 flex-shrink-0 ml-auto">
                                             <span className={`text-[10px] uppercase tracking-wider font-bold ${(routineTab || 'default') === 'default' ? 'text-emerald-500' : 'text-amber-500'
