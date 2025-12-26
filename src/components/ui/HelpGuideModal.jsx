@@ -3,7 +3,7 @@ import {
     X, HelpCircle, Dumbbell, Activity, Zap, Calendar, Timer,
     TrendingUp, ChevronDown, ChevronRight, PlayCircle, Pause,
     CheckCircle, Plus, Trash2, Lock, Unlock, Link, Brain,
-    BarChart3, Target, ArrowLeftRight, Sun, Moon, Sparkles
+    BarChart3, Target, ArrowLeftRight, Sparkles, Save
 } from 'lucide-react';
 
 const GUIDE_SECTIONS = [
@@ -162,9 +162,9 @@ const GUIDE_SECTIONS = [
                 description: 'Tap the lightning bolt in the header to blur completed exercises and highlight your current set.'
             },
             {
-                icon: Sun,
-                title: 'Theme Toggle',
-                description: 'Switch between light and dark mode using the sun/moon button in the header.'
+                icon: Save,
+                title: 'Save as Custom',
+                description: 'Modified a default routine? Save it as a custom routine to keep your changes for future sessions.'
             },
             {
                 icon: Trash2,
@@ -205,11 +205,11 @@ export const HelpGuideModal = ({ onClose }) => {
 
     return (
         <div
-            className="fixed inset-0 z-[80] flex items-end sm:items-center justify-center bg-black/90 backdrop-blur-md animate-fade-in"
+            className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-fade-in"
             onClick={onClose}
         >
             <div
-                className="relative w-full sm:max-w-lg max-h-[92vh] sm:max-h-[85vh] overflow-hidden bg-gradient-to-b from-zinc-900 via-zinc-950 to-black border border-zinc-800 rounded-t-3xl sm:rounded-3xl shadow-2xl flex flex-col"
+                className="relative w-full max-w-md max-h-[85vh] overflow-hidden bg-gradient-to-b from-zinc-900 via-zinc-950 to-black border border-zinc-800 rounded-2xl shadow-2xl flex flex-col"
                 onClick={e => e.stopPropagation()}
             >
                 {/* Gradient Top Bar */}
@@ -234,9 +234,9 @@ export const HelpGuideModal = ({ onClose }) => {
                     </button>
                 </div>
 
-                {/* Tab Navigation - Horizontal Scroll */}
-                <div className="flex-shrink-0 overflow-x-auto scrollbar-hide border-b border-zinc-800/50">
-                    <div className="flex gap-1 p-2 min-w-max">
+                {/* Tab Navigation - Centered Icons */}
+                <div className="flex-shrink-0 border-b border-zinc-800/50 px-2 py-2">
+                    <div className="flex justify-around items-center">
                         {GUIDE_SECTIONS.map(section => {
                             const Icon = section.icon;
                             const isActive = activeSection === section.id;
@@ -244,13 +244,13 @@ export const HelpGuideModal = ({ onClose }) => {
                                 <button
                                     key={section.id}
                                     onClick={() => setActiveSection(section.id)}
-                                    className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${isActive
-                                            ? `${getColorClasses(section.color)} border`
-                                            : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50'
+                                    className={`flex items-center justify-center p-2.5 rounded-xl transition-all ${isActive
+                                        ? `${getColorClasses(section.color)} border`
+                                        : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50'
                                         }`}
+                                    title={section.title}
                                 >
-                                    <Icon size={16} />
-                                    <span className="hidden sm:inline">{section.title}</span>
+                                    <Icon size={18} />
                                 </button>
                             );
                         })}

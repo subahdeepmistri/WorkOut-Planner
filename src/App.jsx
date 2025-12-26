@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, ChevronDown, Calendar, Activity, BarChart3, Info, Trash2, CheckCircle, Plus, Home, PlayCircle, Trophy, Timer, Sun, Moon, Zap, Terminal, Heart, Code, Mail, Phone, ArrowRight, Sparkles, Dumbbell, TrendingUp, Target, Github, AlertCircle, HelpCircle } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronDown, Calendar, Activity, BarChart3, Info, Trash2, CheckCircle, Plus, Home, PlayCircle, Trophy, Timer, Zap, Terminal, Heart, Code, Mail, Phone, ArrowRight, Sparkles, Dumbbell, TrendingUp, Target, Github, AlertCircle, HelpCircle } from 'lucide-react';
 // import MilesSticker from './assets/miles_sticker.gif';
 const MilesSticker = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYm1lZGtsNzduem10bTE5ZXdudTJuenZmOXZ6MHM2NXdiaHV6N2Z3ZSZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/uctvenxww01iIanyvT/giphy.gif";
 import GwenSticker from './assets/gwen_sticker.gif';
@@ -9,7 +9,7 @@ import LoadingSticker from './assets/loading_sticker.gif';
 // Hooks
 import { useWorkoutData, WORKOUT_PLANS } from './hooks/useWorkoutData';
 import { useRestTimer } from './hooks/useRestTimer';
-import { useTheme } from './context/ThemeContext';
+// Theme context removed - app is dark mode only
 
 // Helpers
 import { calculateSessionStats } from './utils/statsEngine';
@@ -75,7 +75,7 @@ const getShortDisplayName = (name) => {
 };
 
 function App() {
-  const { theme, toggleTheme } = useTheme();
+  // Dark mode only - no theme toggle needed
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [activeTab, setActiveTab] = useState('workout'); // 'workout' | 'stats' | 'about'
   const [showCalendar, setShowCalendar] = useState(false);
@@ -489,24 +489,6 @@ function App() {
 
                 {/* Right Side Icons */}
                 <div className="flex items-start gap-3">
-
-                  {/* Theme Toggle */}
-                  <button
-                    onClick={toggleTheme}
-                    className="flex flex-col items-center gap-0.5 group"
-                    title="Toggle Theme"
-                  >
-                    <div className="p-2 rounded-full bg-orange-100 dark:bg-zinc-800 border border-orange-300 dark:border-zinc-700 group-hover:bg-orange-200 dark:group-hover:bg-zinc-700 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center shadow-sm">
-                      {theme === 'dark' ? (
-                        <Moon size={20} className="text-indigo-400 group-hover:text-indigo-300 transition-colors" />
-                      ) : (
-                        <Sun size={20} className="text-orange-600 group-hover:text-orange-700 transition-colors" />
-                      )}
-                    </div>
-                    <span className="text-[10px] font-black tracking-widest text-zinc-800 dark:text-zinc-400 group-hover:text-black dark:group-hover:text-white transition-colors uppercase">
-                      {theme === 'dark' ? 'Light' : 'Dark'}
-                    </span>
-                  </button>
 
                   {/* Help Button */}
                   <button
