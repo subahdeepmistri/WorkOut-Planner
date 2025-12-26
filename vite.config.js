@@ -8,27 +8,44 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
+      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'icons/*.png'],
       manifest: {
         name: 'DUO-FIT',
         short_name: 'DUO-FIT',
-        description: 'Your friendly neighborhood workout tracker.',
-        theme_color: '#ffffff',
+        description: 'Your workout tracking app for couples. Track workouts, log exercises, and achieve fitness goals together.',
+        theme_color: '#000000',
+        background_color: '#000000',
+        display: 'standalone',
+        orientation: 'portrait',
+        scope: '/',
+        start_url: '/',
+        categories: ['fitness', 'health', 'lifestyle'],
         icons: [
           {
-            src: 'vite.svg',
+            src: 'icons/icon-192x192.png',
             sizes: '192x192',
-            type: 'image/svg+xml'
+            type: 'image/png'
           },
           {
-            src: 'vite.svg',
+            src: 'icons/icon-512x512.png',
             sizes: '512x512',
-            type: 'image/svg+xml'
+            type: 'image/png'
+          },
+          {
+            src: 'icons/maskable-icon-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable'
           }
         ],
-        start_url: '/',
-        scope: '/',
-        display: 'standalone',
+        screenshots: [
+          {
+            src: 'screenshots/mobile-home.png',
+            sizes: '1080x1920',
+            type: 'image/png',
+            form_factor: 'narrow'
+          }
+        ]
       }
     })
   ],
