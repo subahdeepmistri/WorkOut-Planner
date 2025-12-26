@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, ChevronDown, Calendar, Activity, BarChart3, Info, Trash2, CheckCircle, Plus, Home, PlayCircle, Trophy, Timer, Sun, Moon, Zap, Terminal, Heart, Code, Mail, Phone, ArrowRight, Sparkles, Dumbbell, TrendingUp, Target, Github, AlertCircle } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronDown, Calendar, Activity, BarChart3, Info, Trash2, CheckCircle, Plus, Home, PlayCircle, Trophy, Timer, Sun, Moon, Zap, Terminal, Heart, Code, Mail, Phone, ArrowRight, Sparkles, Dumbbell, TrendingUp, Target, Github, AlertCircle, HelpCircle } from 'lucide-react';
 // import MilesSticker from './assets/miles_sticker.gif';
 const MilesSticker = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYm1lZGtsNzduem10bTE5ZXdudTJuenZmOXZ6MHM2NXdiaHV6N2Z3ZSZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/uctvenxww01iIanyvT/giphy.gif";
 import GwenSticker from './assets/gwen_sticker.gif';
@@ -20,6 +20,7 @@ import { Button } from './components/ui/Button';
 import { DeleteConfirmationModal } from './components/ui/DeleteConfirmationModal';
 import { CalendarModal } from './components/ui/CalendarModal';
 import { AboutModal } from './components/ui/AboutModal';
+import { HelpGuideModal } from './components/ui/HelpGuideModal';
 import { ExerciseCard } from './components/workout/ExerciseCard';
 import { RoutineBuilder } from './components/workout/RoutineBuilder';
 import { CreateRoutineWizard } from './components/workout/CreateRoutineWizard';
@@ -93,6 +94,7 @@ function App() {
   const [routineTab, setRoutineTab] = useState('default'); // 'default' or 'custom'
   const [routineListOpen, setRoutineListOpen] = useState(false); // Collapsible list state
   const [tabAnimationKey, setTabAnimationKey] = useState(0); // Trigger re-animation on tab click
+  const [showHelpGuide, setShowHelpGuide] = useState(false); // Help modal state
 
   // Warmup/Cooldown completion tracking (persisted per date)
   const [warmupCompleted, setWarmupCompleted] = useState(() => {
@@ -454,7 +456,10 @@ function App() {
         />
       )}
 
-
+      {/* Help Guide Modal */}
+      {showHelpGuide && (
+        <HelpGuideModal onClose={() => setShowHelpGuide(false)} />
+      )}
 
       {/* --- Main Content --- */}
       <div className="relative z-10 min-h-[100dvh] text-zinc-900 dark:text-zinc-100 pb-16 w-full max-w-[800px] mx-auto px-3 sm:px-4">
@@ -500,6 +505,20 @@ function App() {
                     </div>
                     <span className="text-[10px] font-black tracking-widest text-zinc-800 dark:text-zinc-400 group-hover:text-black dark:group-hover:text-white transition-colors uppercase">
                       {theme === 'dark' ? 'Light' : 'Dark'}
+                    </span>
+                  </button>
+
+                  {/* Help Button */}
+                  <button
+                    onClick={() => setShowHelpGuide(true)}
+                    className="flex flex-col items-center gap-0.5 group"
+                    title="App Guide"
+                  >
+                    <div className="p-2 rounded-full bg-cyan-100 dark:bg-zinc-800 border border-cyan-300 dark:border-zinc-700 group-hover:bg-cyan-200 dark:group-hover:bg-zinc-700 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center shadow-sm">
+                      <HelpCircle size={20} className="text-cyan-600 dark:text-cyan-400 group-hover:text-cyan-700 dark:group-hover:text-cyan-300 transition-colors" />
+                    </div>
+                    <span className="text-[10px] font-black tracking-widest text-zinc-800 dark:text-zinc-400 group-hover:text-black dark:group-hover:text-white transition-colors uppercase">
+                      Help
                     </span>
                   </button>
 
