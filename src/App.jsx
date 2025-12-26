@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, ChevronDown, Calendar, Activity, BarChart3, Info, Trash2, CheckCircle, Plus, Home, Trophy, Timer, Zap, Heart, Code, Mail, Phone, ArrowRight, Sparkles, Dumbbell, TrendingUp, Target, Github, AlertCircle, HelpCircle } from 'lucide-react';
-import MilesSticker from './assets/miles_sticker.gif';
+import MilesSticker from './assets/Shooting Super Hero Sticker by Disney Jr..gif';
 import GwenSticker from './assets/gwen_sticker.gif';
 import LoadingSticker from './assets/loading_sticker.gif';
 // import LoadRoutineSticker from './assets/load_btn_sticker.gif';
