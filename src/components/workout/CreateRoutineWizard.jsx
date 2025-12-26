@@ -172,10 +172,6 @@ export function CreateRoutineWizard({ onSave, onCancel, onStartNow, onManualCrea
         }
     }, [effectiveMuscles, experienceLevel, exercisePreference, detectedPattern, includeCardio, includeCore]);
 
-    const handleRegenerate = useCallback(() => {
-        setCurrentStep(4);
-        setGeneratedRoutine(null);
-    }, []);
 
     // ─────────────────────────────────────────────────────────────────────────
     // SECTION REGENERATION HANDLERS
@@ -308,7 +304,6 @@ export function CreateRoutineWizard({ onSave, onCancel, onStartNow, onManualCrea
                 return (
                     <RoutinePreview
                         routine={generatedRoutine}
-                        onRegenerate={handleRegenerate}
                         onContinue={() => setCurrentStep(6)}
                         onRegenerateMain={handleRegenerateMain}
                         onRegenerateCore={handleRegenerateCore}

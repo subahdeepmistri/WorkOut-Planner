@@ -29,7 +29,6 @@ const MuscleIcon = ({ muscleId, size = 20, className = "" }) => {
 
 export function RoutinePreview({
     routine,
-    onRegenerate,
     onContinue,
     onRegenerateMain,
     onRegenerateCore,
@@ -337,21 +336,10 @@ export function RoutinePreview({
 
             {/* Fixed Bottom Actions */}
             <div className="fixed bottom-0 left-0 right-0 bg-zinc-900/95 backdrop-blur-xl border-t border-zinc-800 p-4 z-50">
-                <div className="flex gap-3 max-w-md mx-auto">
-                    <button
-                        onClick={onRegenerate}
-                        className="flex-1 py-3.5 rounded-xl font-semibold
-                       bg-zinc-800 text-zinc-300 border border-zinc-700
-                       hover:bg-zinc-700 active:scale-[0.98] transition-all
-                       flex items-center justify-center gap-2"
-                    >
-                        <span>🔄</span>
-                        Regenerate
-                    </button>
-
+                <div className="max-w-md mx-auto">
                     <button
                         onClick={onContinue}
-                        className="flex-1 py-3.5 rounded-xl font-bold
+                        className="w-full py-3.5 rounded-xl font-bold
                        bg-gradient-to-r from-emerald-600 to-emerald-500 text-white
                        hover:from-emerald-500 hover:to-emerald-400
                        active:scale-[0.98] transition-all

@@ -887,12 +887,18 @@ function App() {
                             />
                             <button
                               onClick={() => {
-                                setRoutineTab?.('default');
-                                setRoutineListOpen(true);
-                                setTabAnimationKey(k => k + 1);
-                                // Reset to first default routine when switching tabs
-                                if (availablePlans.length > 0 && routineTab !== 'default') {
-                                  setActivePlanId(availablePlans[0].id);
+                                // If already on this tab, toggle the list
+                                if ((routineTab || 'default') === 'default') {
+                                  setRoutineListOpen(prev => !prev);
+                                } else {
+                                  // Switching to this tab - open the list
+                                  setRoutineTab?.('default');
+                                  setRoutineListOpen(true);
+                                  setTabAnimationKey(k => k + 1);
+                                  // Reset to first default routine when switching tabs
+                                  if (availablePlans.length > 0) {
+                                    setActivePlanId(availablePlans[0].id);
+                                  }
                                 }
                               }}
                               disabled={!!currentLog}
@@ -909,12 +915,18 @@ function App() {
                             </button>
                             <button
                               onClick={() => {
-                                setRoutineTab?.('custom');
-                                setRoutineListOpen(true);
-                                setTabAnimationKey(k => k + 1);
-                                // Reset to first custom routine when switching tabs
-                                if (savedPlans.length > 0 && routineTab !== 'custom') {
-                                  setActivePlanId(savedPlans[0].id);
+                                // If already on this tab, toggle the list
+                                if (routineTab === 'custom') {
+                                  setRoutineListOpen(prev => !prev);
+                                } else {
+                                  // Switching to this tab - open the list
+                                  setRoutineTab?.('custom');
+                                  setRoutineListOpen(true);
+                                  setTabAnimationKey(k => k + 1);
+                                  // Reset to first custom routine when switching tabs
+                                  if (savedPlans.length > 0) {
+                                    setActivePlanId(savedPlans[0].id);
+                                  }
                                 }
                               }}
                               disabled={!!currentLog}
