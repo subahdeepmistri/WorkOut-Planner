@@ -38,8 +38,8 @@ export const AboutModal = ({ onClose }) => {
 
                         {/* App Name with Shimmer */}
                         <h1 className="text-3xl sm:text-4xl font-black italic tracking-tight text-white mb-2 relative overflow-hidden">
-                            <span className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-pink-400 bg-clip-text text-transparent animate-shimmer bg-[length:200%_100%]">SPIDEY</span>
-                            <span className="text-white">LIFT</span>
+                            <span className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-pink-400 bg-clip-text text-transparent animate-shimmer bg-[length:200%_100%]">DUO</span>
+                            <span className="text-white">-FIT</span>
                         </h1>
 
                         {/* Version Badge */}
@@ -61,8 +61,8 @@ export const AboutModal = ({ onClose }) => {
                                 <div
                                     key={i}
                                     className={`flex-shrink-0 flex items-center gap-2 px-4 py-3 rounded-xl border bg-zinc-900/50 transition-all duration-300 hover:scale-105 hover:-translate-y-1 cursor-default ${feature.color === 'emerald' ? 'border-emerald-500/30 text-emerald-400 hover:border-emerald-500/60 hover:shadow-lg hover:shadow-emerald-500/10' :
-                                            feature.color === 'cyan' ? 'border-cyan-500/30 text-cyan-400 hover:border-cyan-500/60 hover:shadow-lg hover:shadow-cyan-500/10' :
-                                                'border-pink-500/30 text-pink-400 hover:border-pink-500/60 hover:shadow-lg hover:shadow-pink-500/10'
+                                        feature.color === 'cyan' ? 'border-cyan-500/30 text-cyan-400 hover:border-cyan-500/60 hover:shadow-lg hover:shadow-cyan-500/10' :
+                                            'border-pink-500/30 text-pink-400 hover:border-pink-500/60 hover:shadow-lg hover:shadow-pink-500/10'
                                         }`}
                                     style={{ animationDelay: `${0.3 + i * 0.1}s` }}
                                 >

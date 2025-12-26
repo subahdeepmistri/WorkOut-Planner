@@ -10,8 +10,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
-        name: 'SpideyLift Web',
-        short_name: 'SpideyLift',
+        name: 'DUO-FIT',
+        short_name: 'DUO-FIT',
         description: 'Your friendly neighborhood workout tracker.',
         theme_color: '#ffffff',
         icons: [

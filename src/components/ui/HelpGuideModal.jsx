@@ -222,7 +222,7 @@ export const HelpGuideModal = ({ onClose }) => {
                             <HelpCircle size={20} className="text-emerald-400" />
                         </div>
                         <div>
-                            <h2 className="text-lg font-bold text-white">How to Use SpideyLift</h2>
+                            <h2 className="text-lg font-bold text-white">How to Use DUO-FIT</h2>
                             <p className="text-xs text-zinc-500">Complete app guide</p>
                         </div>
                     </div>

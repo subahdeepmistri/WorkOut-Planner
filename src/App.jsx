@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, ChevronDown, Calendar, Activity, BarChart3, Info, Trash2, CheckCircle, Plus, Home, Trophy, Timer, Zap, Heart, Code, Mail, Phone, ArrowRight, Sparkles, Dumbbell, TrendingUp, Target, Github, AlertCircle, HelpCircle } from 'lucide-react';
-// import MilesSticker from './assets/miles_sticker.gif';
-const MilesSticker = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYm1lZGtsNzduem10bTE5ZXdudTJuenZmOXZ6MHM2NXdiaHV6N2Z3ZSZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/uctvenxww01iIanyvT/giphy.gif";
+import MilesSticker from './assets/miles_sticker.gif';
 import GwenSticker from './assets/gwen_sticker.gif';
 import LoadingSticker from './assets/loading_sticker.gif';
 // import LoadRoutineSticker from './assets/load_btn_sticker.gif';
@@ -405,13 +404,11 @@ function App() {
           <img
             src={LoadingSticker}
             alt="Loading..."
+            fetchpriority="high"
+            loading="eager"
             className="w-56 h-56 object-contain animate-in zoom-in-50 duration-300 drop-shadow-[0_0_25px_rgba(255,255,255,0.2)]"
           />
-          <img
-            src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMDMxYzdlcGhkdWQzOW96NGxnZTk4YmZ4Z3U1MHZrYnJhYTRuYnlmYyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/17mNCcKU1mJlrbXodo/giphy.gif"
-            alt="Please wait..."
-            className="h-12 object-contain animate-pulse"
-          />
+          <p className="text-white/80 text-sm font-medium animate-pulse tracking-wide">Loading workout...</p>
         </div>
       )}
 
@@ -543,6 +540,7 @@ function App() {
                     {/* Left Arrow - Circular */}
                     <button
                       onClick={() => changeDate(-1)}
+                      aria-label="Previous day"
                       className="w-10 h-10 flex items-center justify-center rounded-full bg-zinc-200 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-300 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:hover:text-white transition-all active:scale-95"
                     >
                       <ChevronLeft size={20} />
@@ -575,6 +573,7 @@ function App() {
                     {/* Right Arrow - Circular */}
                     <button
                       onClick={() => changeDate(1)}
+                      aria-label="Next day"
                       disabled={(() => {
                         const s = new Date(selectedDate); s.setHours(0, 0, 0, 0);
                         const t = new Date(); t.setHours(0, 0, 0, 0);
@@ -610,6 +609,7 @@ function App() {
                     {/* Left Arrow - Circular */}
                     <button
                       onClick={() => changeDate(-1)}
+                      aria-label="Previous day"
                       className="w-10 h-10 flex items-center justify-center rounded-full bg-zinc-200 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-300 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:hover:text-white transition-all active:scale-95"
                     >
                       <ChevronLeft size={20} />
@@ -642,6 +642,7 @@ function App() {
                     {/* Right Arrow - Circular */}
                     <button
                       onClick={() => changeDate(1)}
+                      aria-label="Next day"
                       disabled={(() => {
                         const s = new Date(selectedDate); s.setHours(0, 0, 0, 0);
                         const t = new Date(); t.setHours(0, 0, 0, 0);
@@ -1342,7 +1343,7 @@ function App() {
                     {/* App Name - Smaller */}
                     <h1 className="text-2xl font-black italic tracking-tight text-white mb-1">
                       <span className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-pink-400 bg-clip-text text-transparent">DUO</span>
-                      <span className="text-white">-LIFT</span>
+                      <span className="text-white">-FIT</span>
                     </h1>
 
                     {/* Version Badge - Inline */}

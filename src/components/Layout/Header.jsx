@@ -16,7 +16,7 @@ export const Header = () => {
     return (
         <header className="fixed top-0 left-0 right-0 z-40 bg-black/50 backdrop-blur-md border-b border-white/5 pb-safe">
             <div className="flex flex-col items-center py-2">
-                <div className="text-neon-purple font-black tracking-widest text-xl neon-text">SPIDEYLIFT</div>
+                <div className="text-neon-purple font-black tracking-widest text-xl neon-text">DUO-FIT</div>
                 <div className="text-[10px] text-gray-500 tracking-[0.2em] uppercase">Web-Slinging Strength</div>
             </div>
 

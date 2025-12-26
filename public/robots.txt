@@ -1,0 +1,6 @@
+# DUO-FIT Robots.txt
+User-agent: *
+Allow: /
+
+# Sitemap (add when you have one)
+# Sitemap: https://your-domain.com/sitemap.xml
