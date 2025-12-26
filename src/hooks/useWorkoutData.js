@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { EXERCISE_DATABASE } from '../lib/exerciseDatabase';
 
 // Default Workout Plans Data - Updated with Antagonist Alpha Protocol
 export const WORKOUT_PLANS = [
@@ -496,12 +497,39 @@ export const useWorkoutData = (selectedDate) => {
             });
         }
 
+        // Helper to lookup isUnilateral from exercise database
+        const lookupIsUnilateral = (exerciseName) => {
+            if (!exerciseName) return false;
+            const nameLower = exerciseName.toLowerCase();
+
+            // First: Check database for exact/partial match
+            const match = EXERCISE_DATABASE.find(dbEx =>
+                dbEx.name.toLowerCase() === nameLower ||
+                nameLower.includes(dbEx.name.toLowerCase()) ||
+                dbEx.name.toLowerCase().includes(nameLower)
+            );
+            if (match?.isUnilateral) return true;
+
+            // Second: Keyword-based detection for common unilateral exercises
+            const unilateralKeywords = [
+                'lunge', 'lunges',
+                'split squat',
+                'single arm', 'single-arm', 'one arm', 'one-arm',
+                'step up', 'step-up',
+                'kickback',
+                'concentration curl',
+                'pistol squat'
+            ];
+            return unilateralKeywords.some(keyword => nameLower.includes(keyword));
+        };
+
         const newLog = {
             id: dateKey,
             templateName: template.name,
             exercises: (template.exercises || []).map(ex => ({
                 ...ex,
                 numericalTargetReps: parseTargetReps(ex.targetReps),
+                isUnilateral: ex.isUnilateral ?? lookupIsUnilateral(ex.name),
                 sets: Array(ex.targetSets || 3).fill(0).map(() => ({
                     weight: '', reps: '', completed: false,
                     distance: '', time: '', pace: '', duration: '', holdTime: ''
@@ -606,6 +634,24 @@ export const useWorkoutData = (selectedDate) => {
             if (day.exercises[exIndex].isLocked) return prev;
             day.exercises = day.exercises.map((ex, i) =>
                 i === exIndex ? { ...ex, coreMode: mode } : ex
+            );
+            return { ...prev, [dateKey]: day };
+        });
+    };
+
+    /**
+     * Toggles unilateral (L/R) tracking mode for an exercise.
+     * Allows manual override of auto-detection for custom/renamed exercises.
+     */
+    const updateUnilateralMode = (exIndex, isUnilateral) => {
+        if (isLocked) return;
+        setWorkoutData(prev => {
+            const day = { ...prev[dateKey] };
+            const expired = day.endTime && (Date.now() - day.endTime > 86400000);
+            if (day.isLocked || expired) return prev;
+            if (day.exercises[exIndex].isLocked) return prev;
+            day.exercises = day.exercises.map((ex, i) =>
+                i === exIndex ? { ...ex, isUnilateral } : ex
             );
             return { ...prev, [dateKey]: day };
         });
@@ -875,6 +921,7 @@ export const useWorkoutData = (selectedDate) => {
         updateSet,
         updateCardioMode,
         updateCoreMode,
+        updateUnilateralMode,
         addSet,
         removeSet,
         addExercise,

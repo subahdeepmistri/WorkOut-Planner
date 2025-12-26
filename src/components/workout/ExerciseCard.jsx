@@ -5,7 +5,7 @@ import { AdherenceBar } from './AdherenceBar';
 
 
 
-export const ExerciseCard = ({ exercise, index, onUpdateSet, onAddSet, onRemoveSet, onLink, previousBest, onRemove, onCardioMode, onCoreMode, pendingSuperset, onUpdateName, disabled, onStartRest, activeTimer, timerControls, onToggleLock, isFocusMode, onStartSetTimer, isActiveExercise }) => {
+export const ExerciseCard = ({ exercise, index, onUpdateSet, onAddSet, onRemoveSet, onLink, previousBest, onRemove, onCardioMode, onCoreMode, onUnilateralMode, pendingSuperset, onUpdateName, disabled, onStartRest, activeTimer, timerControls, onToggleLock, isFocusMode, onStartSetTimer, isActiveExercise }) => {
     const isSuperset = exercise.supersetId !== null;
     const isWaiting = pendingSuperset === index;
     const isCardLocked = exercise.isLocked;
@@ -176,9 +176,24 @@ export const ExerciseCard = ({ exercise, index, onUpdateSet, onAddSet, onRemoveS
                                         <button onClick={(e) => { e.stopPropagation(); onCoreMode(index, 'hold'); }} className={`py-0.5 rounded-full text-[9px] font-bold uppercase transition-all flex items-center justify-center ${exercise.coreMode === 'hold' ? 'bg-white dark:bg-emerald-500 text-emerald-600 dark:text-white shadow-sm' : 'text-emerald-400 dark:text-emerald-300 hover:bg-white/50'}`}>Hold</button>
                                     </div>
                                 ) : (
-                                    <span className="text-[10px] font-mono text-indigo-600/70 dark:text-indigo-400/70 bg-indigo-100/50 dark:bg-indigo-900/20 px-1.5 py-0.5 rounded">
-                                        Target: {exercise.targetSets} × {exercise.numericalTargetReps}
-                                    </span>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-[10px] font-mono text-indigo-600/70 dark:text-indigo-400/70 bg-indigo-100/50 dark:bg-indigo-900/20 px-1.5 py-0.5 rounded">
+                                            Target: {exercise.targetSets} × {exercise.numericalTargetReps}
+                                        </span>
+                                        {/* L/R Toggle for Strength Exercises */}
+                                        <div className="grid grid-cols-2 bg-violet-100 dark:bg-violet-900/30 rounded-full p-0.5 gap-0.5 w-[70px] sm:w-[80px]">
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); onUnilateralMode && onUnilateralMode(index, false); }}
+                                                className={`py-0.5 rounded-full text-[9px] font-bold uppercase transition-all flex items-center justify-center ${!exercise.isUnilateral ? 'bg-white dark:bg-violet-500 text-violet-600 dark:text-white shadow-sm' : 'text-violet-400 dark:text-violet-300 hover:bg-white/50'}`}
+                                                title="Single reps input"
+                                            >1×</button>
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); onUnilateralMode && onUnilateralMode(index, true); }}
+                                                className={`py-0.5 rounded-full text-[9px] font-bold uppercase transition-all flex items-center justify-center ${exercise.isUnilateral ? 'bg-white dark:bg-violet-500 text-violet-600 dark:text-white shadow-sm' : 'text-violet-400 dark:text-violet-300 hover:bg-white/50'}`}
+                                                title="Left/Right split reps"
+                                            >L/R</button>
+                                        </div>
+                                    </div>
                                 )}
                             </div>
                         )}

@@ -312,7 +312,8 @@ function selectExercises(priorityQueue, constraints, availableTime, level, isFul
                 sets,
                 reps,
                 rest: restSeconds,
-                equipment: exercise.equipment
+                equipment: exercise.equipment,
+                isUnilateral: exercise.isUnilateral || false
             });
 
             timeRemaining -= timeCost;
@@ -338,7 +339,8 @@ function selectExercises(priorityQueue, constraints, availableTime, level, isFul
                     sets,
                     reps,
                     rest: restSeconds,
-                    equipment: exercise.equipment
+                    equipment: exercise.equipment,
+                    isUnilateral: exercise.isUnilateral || false
                 });
 
                 timeRemaining -= timeCost;

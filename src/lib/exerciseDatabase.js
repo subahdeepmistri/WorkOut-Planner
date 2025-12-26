@@ -197,7 +197,8 @@ export const EXERCISE_DATABASE = [
         allowedLevels: ['beginner', 'moderate', 'advanced'],
         isSafeForBeginners: true,
         equipment: 'dumbbells',
-        movementPattern: 'pull'
+        movementPattern: 'pull',
+        isUnilateral: true
     },
     {
         id: 'deadlift',
@@ -296,7 +297,8 @@ export const EXERCISE_DATABASE = [
         allowedLevels: ['beginner', 'moderate', 'advanced'],
         isSafeForBeginners: true,
         equipment: 'kettlebell',
-        movementPattern: 'pull'
+        movementPattern: 'pull',
+        isUnilateral: true
     },
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -503,7 +505,8 @@ export const EXERCISE_DATABASE = [
         allowedLevels: ['beginner', 'moderate', 'advanced'],
         isSafeForBeginners: true,
         equipment: 'dumbbells',
-        movementPattern: 'pull'
+        movementPattern: 'pull',
+        isUnilateral: true
     },
     {
         id: 'incline_curl',
@@ -593,7 +596,8 @@ export const EXERCISE_DATABASE = [
         allowedLevels: ['beginner', 'moderate', 'advanced'],
         isSafeForBeginners: true,
         equipment: 'dumbbells',
-        movementPattern: 'push'
+        movementPattern: 'push',
+        isUnilateral: true
     },
     {
         id: 'diamond_pushup',
@@ -707,7 +711,20 @@ export const EXERCISE_DATABASE = [
         allowedLevels: ['beginner', 'moderate', 'advanced'],
         isSafeForBeginners: true,
         equipment: 'dumbbells',
-        movementPattern: 'push'
+        movementPattern: 'push',
+        isUnilateral: true
+    },
+    {
+        id: 'reverse_lunges',
+        name: 'Reverse Lunges',
+        type: 'secondaryCompound',
+        primaryMuscle: 'legs',
+        secondaryMuscle: null,
+        allowedLevels: ['beginner', 'moderate', 'advanced'],
+        isSafeForBeginners: true,
+        equipment: 'dumbbells',
+        movementPattern: 'push',
+        isUnilateral: true
     },
     {
         id: 'step_ups',
@@ -718,7 +735,8 @@ export const EXERCISE_DATABASE = [
         allowedLevels: ['beginner', 'moderate', 'advanced'],
         isSafeForBeginners: true,
         equipment: 'step_platform',
-        movementPattern: 'push'
+        movementPattern: 'push',
+        isUnilateral: true
     },
     {
         id: 'bulgarian_split_squat',
@@ -729,7 +747,8 @@ export const EXERCISE_DATABASE = [
         allowedLevels: ['moderate', 'advanced'],
         isSafeForBeginners: false,
         equipment: 'dumbbells',
-        movementPattern: 'push'
+        movementPattern: 'push',
+        isUnilateral: true
     },
     {
         id: 'leg_extension',
@@ -762,7 +781,8 @@ export const EXERCISE_DATABASE = [
         allowedLevels: ['beginner', 'moderate', 'advanced'],
         isSafeForBeginners: true,
         equipment: 'cables',
-        movementPattern: 'push'
+        movementPattern: 'push',
+        isUnilateral: true
     },
     {
         id: 'calf_raise_smith',

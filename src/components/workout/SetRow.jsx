@@ -5,7 +5,11 @@ import { QuickChips } from './QuickChips';
 import { useAiCoach } from '../../hooks/useAiCoach';
 
 export const SetRow = ({ set, index, onChange, onRemove, previousBest, targetReps, isCardio, cardioMode, coreMode, isAbs, disabled, onRest, isFocusMode, onStartTimer, previousSet, isActiveSet, exercise }) => {
-    const reps = set.reps || 0;
+    // For unilateral exercises, combine L+R reps for progress
+    const isUnilateral = exercise?.isUnilateral && !isCardio && !isAbs;
+    const reps = isUnilateral
+        ? (parseFloat(set.repsL) || 0) + (parseFloat(set.repsR) || 0)
+        : (set.reps || 0);
     const defaultTarget = parseTargetReps(targetReps) || 0;
     const rowTarget = set.target !== undefined ? set.target : (defaultTarget || 1);
 
@@ -64,7 +68,14 @@ export const SetRow = ({ set, index, onChange, onRemove, previousBest, targetRep
                 isValid = parseFloat(set.reps) > 0;
             }
         } else {
-            isValid = parseFloat(set.reps) > 0 && parseFloat(set.weight) >= 0;
+            // Strength exercises - check for unilateral
+            if (isUnilateral) {
+                // For unilateral: at least one side needs reps
+                isValid = (parseFloat(set.repsL) > 0 || parseFloat(set.repsR) > 0)
+                    && parseFloat(set.weight) >= 0;
+            } else {
+                isValid = parseFloat(set.reps) > 0 && parseFloat(set.weight) >= 0;
+            }
         }
 
         if (isValid) {
@@ -145,7 +156,13 @@ export const SetRow = ({ set, index, onChange, onRemove, previousBest, targetRep
         } else {
             // Strength
             if (previousSet.weight) onChange(index, 'weight', previousSet.weight);
-            if (previousSet.reps) onChange(index, 'reps', previousSet.reps);
+            // Handle unilateral L/R copy
+            if (isUnilateral) {
+                if (previousSet.repsL) onChange(index, 'repsL', previousSet.repsL);
+                if (previousSet.repsR) onChange(index, 'repsR', previousSet.repsR);
+            } else {
+                if (previousSet.reps) onChange(index, 'reps', previousSet.reps);
+            }
             if (previousSet.target) onChange(index, 'target', previousSet.target);
         }
     }
@@ -330,15 +347,49 @@ export const SetRow = ({ set, index, onChange, onRemove, previousBest, targetRep
                 <span className="text-zinc-600 text-sm font-mono text-center">{index + 1}</span>
 
                 <div className="flex flex-col w-full">
-                    <div className="grid gap-2 w-full grid-cols-3">
-                        <div className="relative"><input type="number" min="0" disabled={disabled} value={set.target !== undefined ? set.target : (defaultTarget || '')} onChange={(e) => handleNumChange('target', e.target.value)} placeholder={defaultTarget || '-'} className="w-full bg-indigo-50/50 dark:bg-zinc-900/50 border-b border-indigo-200 dark:border-indigo-900/30 text-indigo-900 dark:text-indigo-500/70 focus:border-indigo-500 px-1 py-3 text-center font-mono outline-none disabled:opacity-50 font-bold rounded-t-md transition-colors placeholder:text-indigo-700/50 dark:placeholder:text-indigo-500/30" /></div>
+                    {/* Responsive grid: narrower Goal/KG when L/R mode is active */}
+                    <div className={`grid gap-1.5 sm:gap-2 w-full ${isUnilateral ? 'grid-cols-[0.7fr_0.7fr_1.6fr]' : 'grid-cols-3'}`}>
+                        <div className="relative"><input type="number" min="0" disabled={disabled} value={set.target !== undefined ? set.target : (defaultTarget || '')} onChange={(e) => handleNumChange('target', e.target.value)} placeholder={defaultTarget || '-'} className="w-full bg-indigo-50/50 dark:bg-zinc-900/50 border-b border-indigo-200 dark:border-indigo-900/30 text-indigo-900 dark:text-indigo-500/70 focus:border-indigo-500 px-0.5 sm:px-1 py-2.5 sm:py-3 text-center font-mono outline-none disabled:opacity-50 font-bold rounded-t-md transition-colors placeholder:text-indigo-700/50 dark:placeholder:text-indigo-500/30 text-sm sm:text-base" /></div>
 
-                        <div className="relative"><input type="number" min="0" disabled={disabled} value={set.weight || ''} onChange={(e) => handleNumChange('weight', e.target.value)} placeholder="kg" className="w-full bg-indigo-50/50 dark:bg-zinc-900/50 border-b border-indigo-200 dark:border-indigo-900/30 focus:border-indigo-500 px-2 py-3 text-center font-mono text-indigo-900 dark:text-indigo-100 outline-none disabled:opacity-50 font-bold rounded-t-md transition-colors placeholder:text-indigo-700/50 dark:placeholder:text-indigo-500/30" />{previousBest && (<div className="absolute -top-5 left-0 w-full text-center text-[10px] text-green-600/70 dark:text-green-500/50">Best: {previousBest.weight}kg</div>)}</div>
+                        <div className="relative"><input type="number" min="0" disabled={disabled} value={set.weight || ''} onChange={(e) => handleNumChange('weight', e.target.value)} placeholder="kg" className="w-full bg-indigo-50/50 dark:bg-zinc-900/50 border-b border-indigo-200 dark:border-indigo-900/30 focus:border-indigo-500 px-0.5 sm:px-2 py-2.5 sm:py-3 text-center font-mono text-indigo-900 dark:text-indigo-100 outline-none disabled:opacity-50 font-bold rounded-t-md transition-colors placeholder:text-indigo-700/50 dark:placeholder:text-indigo-500/30 text-sm sm:text-base" />{previousBest && (<div className="absolute -top-5 left-0 w-full text-center text-[10px] text-green-600/70 dark:text-green-500/50">Best: {previousBest.weight}kg</div>)}</div>
 
-                        <div className="relative group">
-                            <input type="number" min="0" disabled={disabled} value={set.reps || ''} onChange={(e) => handleNumChange('reps', e.target.value)} placeholder="-" className="w-full bg-indigo-50/50 dark:bg-zinc-900/50 border-b border-indigo-200 dark:border-indigo-900/30 focus:border-indigo-500 px-2 py-3 text-center font-mono text-indigo-900 dark:text-indigo-100 outline-none disabled:opacity-50 font-bold rounded-t-md transition-colors placeholder:text-indigo-700/50 dark:placeholder:text-indigo-500/30" />
-                            {!disabled && <button onClick={() => adjustValue('reps', 1)} className="absolute right-0 top-0 h-full px-2 text-indigo-300 hover:text-indigo-600 active:scale-90 transition-all opacity-0 group-hover:opacity-100"><Plus size={14} /></button>}
-                        </div>
+                        {isUnilateral ? (
+                            /* L/R Split Input for Unilateral Exercises */
+                            <div className="flex gap-1 items-center min-w-0">
+                                <div className="flex-1 min-w-0 relative group">
+                                    <span className="absolute left-1 top-1/2 -translate-y-1/2 text-[9px] sm:text-[10px] font-black text-violet-500 dark:text-violet-400 z-10 pointer-events-none">L</span>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        disabled={disabled}
+                                        value={set.repsL || ''}
+                                        onChange={(e) => handleNumChange('repsL', e.target.value)}
+                                        placeholder="-"
+                                        className="w-full min-w-0 bg-violet-50/50 dark:bg-zinc-900/50 border-b-2 border-violet-300 dark:border-violet-900/40 focus:border-violet-500 pl-4 pr-1 py-2.5 sm:py-3 text-center font-mono text-violet-900 dark:text-violet-100 outline-none disabled:opacity-50 font-bold rounded-t-md transition-colors placeholder:text-violet-400/50 dark:placeholder:text-violet-500/30 text-sm sm:text-base"
+                                    />
+                                    {!disabled && <button onClick={() => adjustValue('repsL', 1)} className="absolute right-0 top-0 h-full px-0.5 text-violet-300 hover:text-violet-600 active:scale-90 transition-all opacity-0 group-hover:opacity-100"><Plus size={10} /></button>}
+                                </div>
+                                <div className="flex-1 min-w-0 relative group">
+                                    <span className="absolute left-1 top-1/2 -translate-y-1/2 text-[9px] sm:text-[10px] font-black text-emerald-500 dark:text-emerald-400 z-10 pointer-events-none">R</span>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        disabled={disabled}
+                                        value={set.repsR || ''}
+                                        onChange={(e) => handleNumChange('repsR', e.target.value)}
+                                        placeholder="-"
+                                        className="w-full min-w-0 bg-emerald-50/50 dark:bg-zinc-900/50 border-b-2 border-emerald-300 dark:border-emerald-900/40 focus:border-emerald-500 pl-4 pr-1 py-2.5 sm:py-3 text-center font-mono text-emerald-900 dark:text-emerald-100 outline-none disabled:opacity-50 font-bold rounded-t-md transition-colors placeholder:text-emerald-400/50 dark:placeholder:text-emerald-500/30 text-sm sm:text-base"
+                                    />
+                                    {!disabled && <button onClick={() => adjustValue('repsR', 1)} className="absolute right-0 top-0 h-full px-0.5 text-emerald-300 hover:text-emerald-600 active:scale-90 transition-all opacity-0 group-hover:opacity-100"><Plus size={10} /></button>}
+                                </div>
+                            </div>
+                        ) : (
+                            /* Standard Single Reps Input */
+                            <div className="relative group">
+                                <input type="number" min="0" disabled={disabled} value={set.reps || ''} onChange={(e) => handleNumChange('reps', e.target.value)} placeholder="-" className="w-full bg-indigo-50/50 dark:bg-zinc-900/50 border-b border-indigo-200 dark:border-indigo-900/30 focus:border-indigo-500 px-2 py-2.5 sm:py-3 text-center font-mono text-indigo-900 dark:text-indigo-100 outline-none disabled:opacity-50 font-bold rounded-t-md transition-colors placeholder:text-indigo-700/50 dark:placeholder:text-indigo-500/30 text-sm sm:text-base" />
+                                {!disabled && <button onClick={() => adjustValue('reps', 1)} className="absolute right-0 top-0 h-full px-2 text-indigo-300 hover:text-indigo-600 active:scale-90 transition-all opacity-0 group-hover:opacity-100"><Plus size={14} /></button>}
+                            </div>
+                        )}
                     </div>
                     {/* Chips (Horizontal Scroll) */}
                     {!set.completed && isActiveSet && !disabled && (

@@ -154,7 +154,7 @@ function App() {
   const {
     workoutData, savedPlans, activePlanId, setActivePlanId,
     currentLog, isLocked, pendingSuperset,
-    initializeDailyLog, updateSet, updateCardioMode, updateCoreMode, addSet, removeSet,
+    initializeDailyLog, updateSet, updateCardioMode, updateCoreMode, updateUnilateralMode, addSet, removeSet,
     addExercise, removeExercise, updateExerciseName, handleLinkAction,
     saveCustomRoutine, toggleLock, deleteRoutine, discardWorkout, finishSession,
     getPreviousBest, userProfile, setUserProfile, availablePlans,
@@ -1178,6 +1178,7 @@ function App() {
                         onRemove={removeExercise}
                         onCardioMode={updateCardioMode}
                         onCoreMode={updateCoreMode}
+                        onUnilateralMode={updateUnilateralMode}
                         onUpdateName={updateExerciseName}
                         pendingSuperset={pendingSuperset}
                         disabled={isLocked}
