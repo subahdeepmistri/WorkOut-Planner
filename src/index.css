@@ -2,6 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Accessibility: Respect user motion preferences */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* Mobile-First Base Styles */
 html {
   -webkit-text-size-adjust: 100%;
