@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, ChevronDown, Calendar, Activity, BarChart3, Info, Trash2, CheckCircle, Plus, Home, Trophy, Timer, Zap, Heart, Code, Mail, Phone, ArrowRight, Sparkles, Dumbbell, TrendingUp, Target, Github, AlertCircle, HelpCircle } from 'lucide-react';
-import MilesSticker from './assets/Shooting Super Hero Sticker by Disney Jr..gif';
-import GwenSticker from './assets/gwen_sticker.gif';
-import LoadingSticker from './assets/loading_sticker.gif';
+import MilesSticker from './assets/ShootingSuperHeroStickerbyDisneyJr.-ezgif.com-gif-to-webp-converter.webp';
+import GwenSticker from './assets/gwen_sticker-ezgif.com-gif-to-webp-converter.webp';
 // import LoadRoutineSticker from './assets/load_btn_sticker.gif';
 
 // Hooks
@@ -398,19 +397,7 @@ function App() {
       </div>
       <BackgroundController profile={userProfile} />
 
-      {/* --- GIF Loading Overlay --- */}
-      {loadingGif && (
-        <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-md flex flex-col gap-4 items-center justify-center animate-in fade-in duration-300">
-          <img
-            src={LoadingSticker}
-            alt="Loading..."
-            fetchpriority="high"
-            loading="eager"
-            className="w-56 h-56 object-contain animate-in zoom-in-50 duration-300 drop-shadow-[0_0_25px_rgba(255,255,255,0.2)]"
-          />
-          <p className="text-white/80 text-sm font-medium animate-pulse tracking-wide">Loading workout...</p>
-        </div>
-      )}
+
 
       {/* --- Modals & Overlays --- */}
 
